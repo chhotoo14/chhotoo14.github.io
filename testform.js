@@ -4,7 +4,6 @@ export const SkincareConcernForm = {
     match: ({ trace }) =>
         trace.type === 'ext_skincare_concern' || (trace.payload && trace.payload.name === 'ext_skincare_concern'),
     render: ({ trace, element }) => {
-        // Parse payload dynamically (same pattern as OrderReturnForm)
         let payloadObj = {};
         try {
             payloadObj = typeof trace.payload === 'string' ? JSON.parse(trace.payload) : trace.payload || {};
@@ -12,11 +11,10 @@ export const SkincareConcernForm = {
             console.error('Payload parse error:', e);
         }
 
-        // Create form container with matching UI
         const formContainer = document.createElement('form');
         formContainer.innerHTML = `
             <style>
-                /* Maintain original OrderReturnForm styling */
+                /* Updated styles */
                 .return-form {
                     display: flex;
                     flex-direction: column;
@@ -32,15 +30,20 @@ export const SkincareConcernForm = {
                     font-weight: bold;
                     font-size: 14px;
                     margin-bottom: 5px;
+                    color: #333;
                 }
                 input, textarea, button {
                     padding: 12px;
                     font-size: 16px;
-                    border: 1px solid #ccc;
+                    border: 1px solid #ddd;
                     border-radius: 6px;
                     width: 100%;
                     outline: none;
                     transition: all 0.3s ease;
+                }
+                ::placeholder {
+                    color: #999;
+                    opacity: 1;
                 }
                 textarea {
                     height: 80px;
@@ -51,49 +54,85 @@ export const SkincareConcernForm = {
                     color: white;
                     border: none;
                     cursor: pointer;
+                    font-weight: 600;
                 }
-                .file-upload {
+                button:hover {
+                    background-color: #36645d;
+                }
+                /* File upload styling */
+                .file-upload-wrapper {
+                    position: relative;
+                    margin-top: 5px;
+                }
+                .custom-file-upload {
+                    display: inline-block;
+                    padding: 10px 15px;
+                    background: #447f76;
+                    color: white;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    text-align: center;
+                    font-size: 14px;
+                    font-weight: 500;
+                }
+                .custom-file-upload:hover {
+                    background-color: #36645d;
+                }
+                #file-name {
+                    margin-left: 10px;
                     font-size: 14px;
                     color: #666;
+                }
+                input[type="file"] {
+                    display: none;
                 }
             </style>
 
             <div class="return-form">
                 <!-- Full Name -->
                 <label for="name">Full name *</label>
-                <input type="text" id="name" required placeholder="Emma Carter">
+                <input type="text" id="name" required placeholder="e.g. Emma Carter">
 
                 <!-- Email -->
                 <label for="email">Email *</label>
-                <input type="email" id="email" required placeholder="emma123@gmail.com">
+                <input type="email" id="email" required placeholder="e.g. emma123@gmail.com">
 
                 <!-- Problem Description -->
                 <label for="description">Describe the problem *</label>
-                <textarea id="description" required placeholder="Is this product safe for sensitive skin?"></textarea>
+                <textarea id="description" required placeholder="e.g. Is this product safe for sensitive skin?"></textarea>
 
-                <!-- File Upload -->
-                <label class="file-upload">
-                    <input type="file" id="photo" accept="image/jpeg, image/png">
-                    Upload Picture (optional)
-                </label>
+                <!-- File Upload Section -->
+                <label>Upload Picture (optional)</label>
+                <div class="file-upload-wrapper">
+                    <label class="custom-file-upload">
+                        <input type="file" id="photo" accept="image/jpeg, image/png"/>
+                        Choose File
+                    </label>
+                    <span id="file-name"></span>
+                </div>
 
                 <button type="submit">Submit</button>
             </div>
         `;
 
-        // Handle form submission
+        // File input handler
+        const fileInput = formContainer.querySelector('#photo');
+        const fileName = formContainer.querySelector('#file-name');
+
+        fileInput.addEventListener('change', function() {
+            fileName.textContent = this.files[0] ? this.files[0].name : '';
+        });
+
+        // Form submission handler
         formContainer.addEventListener('submit', (event) => {
             event.preventDefault();
-
-            // Get form values
             const formData = {
                 name: formContainer.querySelector('#name').value,
                 email: formContainer.querySelector('#email').value,
                 description: formContainer.querySelector('#description').value,
                 photo: formContainer.querySelector('#photo').files[0] || null
             };
-
-            // Send to Voiceflow
             window.voiceflow.chat.interact({
                 type: 'complete',
                 payload: formData

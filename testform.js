@@ -14,6 +14,7 @@ export const SkincareConcernForm = {
         const formContainer = document.createElement('form');
         formContainer.innerHTML = `
             <style>
+                /* Updated styles */
                 .return-form {
                     display: flex;
                     flex-direction: column;
@@ -58,6 +59,34 @@ export const SkincareConcernForm = {
                 button:hover {
                     background-color: #36645d;
                 }
+                /* File upload styling */
+                .file-upload-wrapper {
+                    position: relative;
+                    margin-top: 5px;
+                }
+                .custom-file-upload {
+                    display: inline-block;
+                    padding: 10px 15px;
+                    background: #447f76;
+                    color: white;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    text-align: center;
+                    font-size: 14px;
+                    font-weight: 500;
+                }
+                .custom-file-upload:hover {
+                    background-color: #36645d;
+                }
+                #file-name {
+                    margin-left: 10px;
+                    font-size: 14px;
+                    color: #666;
+                }
+                input[type="file"] {
+                    display: none;
+                }
             </style>
 
             <div class="return-form">
@@ -73,9 +102,27 @@ export const SkincareConcernForm = {
                 <label for="description">Describe the problem *</label>
                 <textarea id="description" required placeholder="e.g. Is this product safe for sensitive skin?"></textarea>
 
+                <!-- File Upload Section -->
+                <label>Upload Picture (optional)</label>
+                <div class="file-upload-wrapper">
+                    <label class="custom-file-upload">
+                        <input type="file" id="photo" accept="image/jpeg, image/png"/>
+                        Choose File
+                    </label>
+                    <span id="file-name"></span>
+                </div>
+
                 <button type="submit">Submit</button>
             </div>
         `;
+
+        // File input handler
+        const fileInput = formContainer.querySelector('#photo');
+        const fileName = formContainer.querySelector('#file-name');
+
+        fileInput.addEventListener('change', function() {
+            fileName.textContent = this.files[0] ? this.files[0].name : '';
+        });
 
         // Form submission handler
         formContainer.addEventListener('submit', (event) => {
@@ -83,7 +130,8 @@ export const SkincareConcernForm = {
             const formData = {
                 name: formContainer.querySelector('#name').value,
                 email: formContainer.querySelector('#email').value,
-                description: formContainer.querySelector('#description').value
+                description: formContainer.querySelector('#description').value,
+                photo: formContainer.querySelector('#photo').files[0] || null
             };
             window.voiceflow.chat.interact({
                 type: 'complete',

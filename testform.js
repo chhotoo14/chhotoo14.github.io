@@ -58,16 +58,28 @@ export const SkincareConcernForm = {
                 button:hover {
                     background-color: #36645d;
                 }
+                .error-message {
+                    color: #dc3545;
+                    font-size: 12px;
+                    margin-top: -10px;
+                    margin-bottom: 5px;
+                    display: none;
+                }
+                .invalid {
+                    border-color: #dc3545 !important;
+                }
             </style>
 
             <div class="return-form">
                 <!-- Full Name -->
                 <label for="name">Full name *</label>
                 <input type="text" id="name" required placeholder="e.g. Emma Carter">
+                <div class="error-message" id="name-error">Please enter a valid name (letters and spaces only)</div>
 
                 <!-- Email -->
                 <label for="email">Email *</label>
                 <input type="email" id="email" required placeholder="e.g. emma123@gmail.com">
+                <div class="error-message" id="email-error">Please enter a valid email address</div>
 
                 <!-- Problem Description -->
                 <label for="description">Describe the problem *</label>
@@ -77,17 +89,67 @@ export const SkincareConcernForm = {
             </div>
         `;
 
+        // Get DOM elements
+        const nameInput = formContainer.querySelector('#name');
+        const emailInput = formContainer.querySelector('#email');
+        const nameError = formContainer.querySelector('#name-error');
+        const emailError = formContainer.querySelector('#email-error');
+
+        // Validation functions
+        const validateName = (name) => {
+            const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/;
+            return nameRegex.test(name) && name.length >= 2 && name.length <= 50;
+        };
+
+        const validateEmail = (email) => {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email.trim());
+        };
+
+        // Real-time validation
+        nameInput.addEventListener('input', () => {
+            const isValid = validateName(nameInput.value);
+            nameError.style.display = isValid ? 'none' : 'block';
+            nameInput.classList.toggle('invalid', !isValid);
+        });
+
+        emailInput.addEventListener('input', () => {
+            const isValid = validateEmail(emailInput.value);
+            emailError.style.display = isValid ? 'none' : 'block';
+            emailInput.classList.toggle('invalid', !isValid);
+        });
+
         // Form submission handler
         formContainer.addEventListener('submit', (event) => {
             event.preventDefault();
-            const formData = {
-                name: formContainer.querySelector('#name').value,
-                email: formContainer.querySelector('#email').value,
-                description: formContainer.querySelector('#description').value
-            };
+            
+            const name = nameInput.value;
+            const email = emailInput.value;
+            const description = formContainer.querySelector('#description').value;
+
+            // Validate inputs
+            let isValid = true;
+            
+            if (!validateName(name)) {
+                nameError.style.display = 'block';
+                nameInput.classList.add('invalid');
+                isValid = false;
+            }
+            
+            if (!validateEmail(email)) {
+                emailError.style.display = 'block';
+                emailInput.classList.add('invalid');
+                isValid = false;
+            }
+
+            if (!isValid) {
+                return;
+            }
+
+            // Submit if valid
             window.voiceflow.chat.interact({
                 type: 'complete',
-                payload: formData
+                payload: { name, email, description }
             });
         });
 

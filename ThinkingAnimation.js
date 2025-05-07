@@ -1,4 +1,4 @@
-const ThinkingAnimation = {
+export const ThinkingAnimation = {
     name: 'ThinkingAnimation',
     type: 'response',
     match: ({ trace }) =>

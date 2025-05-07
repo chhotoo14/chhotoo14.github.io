@@ -2,133 +2,131 @@ export const ThinkingAnimation = {
     name: 'ThinkingAnimation',
     type: 'response',
     match: ({ trace }) =>
-        trace.type === 'ext_thinking' || (trace.payload && trace.payload.name === 'ext_thinking'),
+        trace.type === 'ext_thinking' || (trace.payload?.name === 'ext_thinking'),
     render: ({ trace, element }) => {
         console.log('Rendering ThinkingAnimation');
 
-        // Parse payload dynamically
-        let payloadObj;
-        if (typeof trace.payload === 'string') {
-            try {
-                payloadObj = JSON.parse(trace.payload);
-            } catch (e) {
-                console.error('Error parsing payload:', e);
-                payloadObj = {};
-            }
-        } else {
-            payloadObj = trace.payload || {};
+        // Parse payload with error handling
+        let payloadObj = {};
+        try {
+            payloadObj = typeof trace.payload === 'string' ? 
+                JSON.parse(trace.payload) : 
+                trace.payload || {};
+        } catch (e) {
+            console.error('Payload parse error:', e);
         }
 
-        // Extract configurable properties
-        const message = payloadObj.message || 'thinking';
-        const textColor = payloadObj.textColor || 'black';
-        const textPositionLeft = payloadObj.textPositionLeft || '10px';
-        const textPositionTop = payloadObj.textPositionTop || '15px';
+        // Configuration with defaults
+        const config = {
+            message: payloadObj.message || 'Thinking',
+            textColor: payloadObj.textColor || '#333',
+            textPositionLeft: payloadObj.textPositionLeft || '120px',
+            textPositionTop: payloadObj.textPositionTop || '15px',
+            backgroundColor: payloadObj.backgroundColor || '#f0f0f0',
+            catColor: payloadObj.catColor || '#2c2c2c'
+        };
 
-        // Create animation container
+        // Create container
         const container = document.createElement('div');
         container.innerHTML = `
             <style>
-                .bar {
+                .thinking-container {
                     position: relative;
                     width: 200px;
-                    height: 50px;
-                    background-color: lightgray;
-                    border-radius: 10px;
-                    margin: 12px 0;
+                    height: 60px;
+                    background: ${config.backgroundColor};
+                    border-radius: 12px;
+                    margin: 10px 0;
+                    overflow: hidden;
                 }
-                .cat-container {
+
+                .cat {
                     position: absolute;
                     left: 20px;
-                    top: -40px;
+                    top: 15px;
+                    width: 80px;
+                    height: 30px;
                 }
+
                 .cat-body {
                     position: absolute;
-                    width: 100px;
-                    height: 30px;
-                    background-color: black;
-                    border-radius: 50px;
-                    left: 0;
-                    top: 10px;
+                    width: 60px;
+                    height: 25px;
+                    background: ${config.catColor};
+                    border-radius: 15px;
                 }
+
                 .cat-head {
                     position: absolute;
-                    width: 30px;
-                    height: 30px;
-                    background-color: black;
-                    border-radius: 50%;
                     left: -10px;
-                    top: 0;
-                    animation: nod 3s infinite;
+                    top: -5px;
+                    width: 25px;
+                    height: 25px;
+                    background: ${config.catColor};
+                    border-radius: 50%;
+                    animation: nod 2s infinite;
                 }
-                @keyframes nod {
-                    0% { transform: rotate(0deg); }
-                    50% { transform: rotate(5deg); }
-                    100% { transform: rotate(0deg); }
-                }
+
                 .cat-tail {
                     position: absolute;
+                    right: -15px;
+                    top: 5px;
                     width: 20px;
                     height: 40px;
-                    background-color: black;
-                    left: 100px;
-                    top: 20px;
+                    background: ${config.catColor};
                     transform-origin: top left;
-                    animation: sway 2s infinite;
+                    animation: sway 1.5s infinite;
                 }
+
+                @keyframes nod {
+                    0%, 100% { transform: rotate(0); }
+                    50% { transform: rotate(8deg); }
+                }
+
                 @keyframes sway {
-                    0% { transform: rotate(-10deg); }
-                    50% { transform: rotate(10deg); }
-                    100% { transform: rotate(-10deg); }
-                }
-                .cat-ear {
-                    position: absolute;
-                    width: 0;
-                    height: 0;
-                    border-left: 5px solid transparent;
-                    border-right: 5px solid transparent;
-                    border-bottom: 10px solid black;
-                    left: 5px;
-                    top: -10px;
-                    animation: twitch 1s infinite;
-                }
-                @keyframes twitch {
-                    0% { transform: rotate(0deg); }
+                    0%, 100% { transform: rotate(-15deg); }
                     50% { transform: rotate(15deg); }
-                    100% { transform: rotate(0deg); }
                 }
+
                 .thinking-text {
                     position: absolute;
-                    left: ${textPositionLeft};
-                    top: ${textPositionTop};
-                    color: ${textColor};
-                    font-size: 14px;
-                    font-weight: 500;
-                    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+                    left: ${config.textPositionLeft};
+                    top: ${config.textPositionTop};
+                    color: ${config.textColor};
+                    font: 500 14px/1.5 system-ui;
+                    display: flex;
+                    gap: 2px;
                 }
             </style>
-            <div class="bar" role="status" aria-live="polite">
-                <div class="cat-container">
+
+            <div class="thinking-container">
+                <div class="cat">
                     <div class="cat-body"></div>
                     <div class="cat-head"></div>
                     <div class="cat-tail"></div>
-                    <div class="cat-ear"></div>
                 </div>
                 <div class="thinking-text"></div>
             </div>
         `;
 
-        element.appendChild(container);
-
-        // Add dynamic dots to the "thinking" text
+        // Animated dots logic
         const thinkingText = container.querySelector('.thinking-text');
         let dots = 0;
-        const interval = setInterval(() => {
+        const animateDots = () => {
             dots = (dots + 1) % 4;
-            thinkingText.textContent = message + '.'.repeat(dots);
-        }, 1000);
+            thinkingText.textContent = config.message + '.'.repeat(dots);
+        };
+        
+        const interval = setInterval(animateDots, 500);
+        animateDots(); // Initial call
 
-        // Cleanup interval when component is removed
-        element.addEventListener('remove', () => clearInterval(interval));
-    },
+        // Cleanup
+        const cleanup = () => {
+            clearInterval(interval);
+            container.removeEventListener('animation-cancel', cleanup);
+        };
+        container.addEventListener('animation-cancel', cleanup);
+
+        element.appendChild(container);
+    }
 };

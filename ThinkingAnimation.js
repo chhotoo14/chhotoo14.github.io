@@ -4,7 +4,7 @@ export const ThinkingAnimation = {
     match: ({ trace }) =>
         trace.type === 'ext_thinking' || (trace.payload && trace.payload.name === 'ext_thinking'),
     render: ({ trace, element }) => {
-        console.log('Rendering Thinking Animation');
+        console.log('Rendering ThinkingAnimation');
 
         // Parse payload dynamically
         let payloadObj;

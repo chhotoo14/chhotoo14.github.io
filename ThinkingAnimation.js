@@ -3,10 +3,7 @@ export const ThinkingAnimation = {
   type: 'response',
   match: ({ trace }) => trace.type === 'ext_thinking',
   render: ({ element }) => {
-    // clear out any existing
     element.innerHTML = '';
-    
-    // container + dots
     const wrapper = document.createElement('div');
     wrapper.innerHTML = `
       <style>
@@ -14,8 +11,9 @@ export const ThinkingAnimation = {
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          background: transparent !important;
-          padding: 0;
+          background: #E7F5FD !important;
+          padding: 6px 10px;
+          border-radius: 8px;
         }
         .wf-think span {
           font-size: 14px;
@@ -43,7 +41,6 @@ export const ThinkingAnimation = {
         <div class="wf-dot"></div>
       </div>
     `;
-    
     element.appendChild(wrapper);
   }
 };

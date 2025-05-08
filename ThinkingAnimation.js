@@ -21,12 +21,12 @@ export const ThinkingAnimation = {
           align-items: center;
           gap: 8px;
           background: transparent;
-          transform: translateY(2px);
+          transform: translateY(2px); /* Vertical alignment fix */
         }
-        /* Increased to 40px */
-        .tf-face { width: 40px; height: 40px; }
+        /* Increased sizes */
+        .tf-face { width: 34px; height: 34px; } /* Original: 28px */
         .tf-text {
-          font-size: 18px;
+          font-size: 18px; /* Original: 16px */
           color: #333;
           font-weight: 600;
           display: flex;
@@ -34,8 +34,8 @@ export const ThinkingAnimation = {
           gap: 4px;
         }
         .tf-text .dot {
-          width: 5px;
-          height: 5px;
+          width: 5px; /* Original: 4px */
+          height: 5px; /* Original: 4px */
         }
         /* Keep existing animations below */
         .tf-face .antenna { stroke: currentColor; stroke-width: 2; fill: transparent; }
@@ -48,14 +48,14 @@ export const ThinkingAnimation = {
       <div class="tf-container">
         <div class="tf-wrapper">
           <svg class="tf-face" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <!-- Antenna with radius 3 -->
-            <line class="antenna" x1="12" y1="2" x2="12" y2="9" />
-            <circle cx="12" cy="2" r="3" fill="currentColor" />
-            <!-- Adjusted body position -->
-            <rect class="body" x="4" y="9" width="16" height="12" rx="4" />
+            <!-- Enlarged antenna circle -->
+            <line class="antenna" x1="12" y1="2" x2="12" y2="8" /> <!-- Adjusted y2 -->
+            <circle cx="12" cy="2" r="2.5" fill="currentColor" /> <!-- Original r="1.5" -->
+            <!-- Body adjusted for bigger head -->
+            <rect class="body" x="4" y="8" width="16" height="12" rx="4" /> <!-- Original y="6" -->
             <!-- Eyes -->
-            <circle class="eye" cx="9" cy="15" r="2" />
-            <circle class="eye" cx="15" cy="15" r="2" />
+            <circle class="eye" cx="9" cy="14" r="2" /> <!-- Original cy="12" r="1.5" -->
+            <circle class="eye" cx="15" cy="14" r="2" /> <!-- Original cy="12" r="1.5" -->
           </svg>
           <div class="tf-text">
             Thinking

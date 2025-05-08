@@ -10,32 +10,29 @@ export const ThinkingAnimation = {
       faceSrc = 'https://your-cdn.com/ai-face.png',
       text = 'Thinking...',
       dotColor = '#888',
-      faceSize = 24,
-      speed = 1.2
+      faceSize = 16,
+      speed = 1
     } = payload;
 
-    const c = document.createElement('div');
-    c.innerHTML = `
+    // Clear previous content
+    element.innerHTML = '';
+
+    const container = document.createElement('div');
+    container.className = 'tv-thinking';
+    container.innerHTML = `
       <style>
-        .ta{display:flex;align-items:center;gap:8px;background:transparent}
-        .face{width:${faceSize}px;height:auto;animation:blink ${speed * 4}s infinite}
-        @keyframes blink{
-          0%,75%,100%{opacity:1}
-          80%,90%{opacity:0.3}
-        }
-        .txt{font-size:14px;color:${dotColor};display:flex;gap:4px;margin-left:4px}
-        .dot{width:6px;height:6px;border-radius:50%;background:${dotColor};opacity:0.3;animation:dot ${speed}s infinite}
-        .dot:nth-child(2){animation-delay:${speed/3}s}
-        .dot:nth-child(3){animation-delay:${(speed/3)*2}s}
-        @keyframes dot{0%,80%,100%{opacity:0.3}40%{opacity:1}}
+        .tv-thinking { display: inline-flex; align-items: center; gap: 4px; background: transparent !important; padding: 0; }
+        .tv-thinking .face { width: ${faceSize}px; height: auto; animation: blink ${speed * 3}s infinite; }
+        @keyframes blink { 0%,75%,100% { opacity:1 } 80%,90% { opacity:0 } }
+        .tv-thinking .txt { display: flex; align-items: center; font-size: 12px; color: ${dotColor}; margin: 0; }
+        .tv-thinking .dot { width: 4px; height: 4px; margin: 0 2px; border-radius:50%; background:${dotColor}; opacity:0.3; animation: dot ${speed}s infinite; }
+        .tv-thinking .dot:nth-child(2) { animation-delay: ${speed/3}s; }
+        .tv-thinking .dot:nth-child(3) { animation-delay: ${(speed/3)*2}s; }
+        @keyframes dot { 0%,80%,100% { opacity:0.3 } 40% { opacity:1 } }
       </style>
-      <div class="ta">
-        <img src="${faceSrc}" class="face" alt="AI" />
-        <div class="txt">
-          ${text}<div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        </div>
-      </div>
+      <img src="${faceSrc}" class="face" alt="AI face" />
+      <div class="txt">${text}<div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
     `;
-    element.appendChild(c);
+    element.appendChild(container);
   }
 };

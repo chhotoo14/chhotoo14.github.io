@@ -9,79 +9,51 @@ export const ThinkingAnimation = {
       : trace.payload || {};
 
     const {
-      message = 'Thinking...',
-      textColor = '#333',
-      barColor = '#e0e0e0',
-      progressColor = '#4a90e2',
-      catImage = 'https://your-cdn.com/cat.png',
-      speed = 2, // seconds per cycle
-      catWidth = 24
+      message = '',
+      dotColor = '#888',
+      background = 'transparent',
+      size = 8,
+      speed = 0.8
     } = payloadObj;
 
     const container = document.createElement('div');
-    container.className = 'thinking-wrapper';
+    container.className = 'thinking-bubble';
     container.innerHTML = `
       <style>
-        .thinking-wrapper {
-          position: relative;
-          overflow: visible;
-          width: 100%;
-          max-width: 300px;
-          margin: 10px auto;
-          font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-          text-align: center;
+        .thinking-bubble {
+          display: inline-flex;
+          align-items: center;
+          padding: 8px;
+          border-radius: 8px;
+          background: ${background};
         }
-        .bar {
-          position: relative;
-          width: 100%;
-          height: 6px;
-          background: ${barColor};
-          border-radius: 3px;
-          overflow: visible;
-          margin: 0 auto;
+        .dot {
+          width: ${size}px;
+          height: ${size}px;
+          margin: 0 ${size / 2}px;
+          background: ${dotColor};
+          border-radius: 50%;
+          opacity: 0.3;
+          animation: blink ${speed}s infinite;
         }
-        .progress {
-          position: absolute;
-          top: 0;
-          left: -50%;
-          width: 50%;
-          height: 100%;
-          background: ${progressColor};
-          animation: slide ${speed}s linear infinite;
+        .dot:nth-child(1) { animation-delay: 0s; }
+        .dot:nth-child(2) { animation-delay: ${speed / 3}s; }
+        .dot:nth-child(3) { animation-delay: ${(speed / 3) * 2}s; }
+        @keyframes blink {
+          0%, 80%, 100% { opacity: 0.3; }
+          40% { opacity: 1; }
         }
-        @keyframes slide {
-          0% { left: -50%; }
-          100% { left: 100%; }
-        }
-        .cat {
-          position: absolute;
-          bottom: 100%;
-          left: 0;
-          width: ${catWidth}px;
-          height: auto;
-          z-index: 1;
-          animation: walk ${speed}s linear infinite;
-        }
-        @keyframes walk {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(calc(100% - ${catWidth}px)); }
-        }
-        .thinking-text {
-          margin-top: 8px;
-          color: ${textColor};
+        .message {
           font-size: 14px;
-          animation: fade 1.5s ease-in-out infinite;
-        }
-        @keyframes fade {
-          0%,100% { opacity: .8; }
-          50% { opacity: .4; }
+          color: ${dotColor};
+          margin-left: 6px;
+          opacity: ${message ? 1 : 0};
         }
       </style>
-      <div class="bar">
-        <div class="progress"></div>
-        <img src="${catImage}" class="cat" alt="Cat loading" />
-      </div>
-      <div class="thinking-text">${message}</div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="message">${message}</div>
     `;
 
     element.addEventListener('remove', () => {
@@ -89,5 +61,5 @@ export const ThinkingAnimation = {
     });
 
     element.appendChild(container);
-  },
+  }
 };

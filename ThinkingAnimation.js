@@ -1,86 +1,46 @@
 export const ThinkingAnimation = {
-    name: 'ThinkingAnimation',
-    type: 'response',
-    match: ({ trace }) => trace.type === 'ext_thinking' || (trace.payload && trace.payload.name === 'ext_thinking'),
-    render: ({ trace, element }) => {
-        // Parse payload dynamically
-        let payloadObj;
-        if (typeof trace.payload === 'string') {
-            try {
-                payloadObj = JSON.parse(trace.payload);
-            } catch (e) {
-                console.error('Error parsing payload:', e);
-                payloadObj = {};
-            }
-        } else {
-            payloadObj = trace.payload || {};
+  name: 'ThinkingAnimation',
+  type: 'response',
+  match: ({ trace }) => trace.type === 'ext_thinking',
+  render: ({ element }) => {
+    element.innerHTML = '';
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = `
+      <style>
+        .wf-think {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: #E7F5FD !important;
+          padding: 6px 10px;
+          border-radius: 8px;
         }
-
-        // Extract configurable properties
-        const message = payloadObj.message || 'Thinking';
-        const textColor = payloadObj.textColor || 'black';
-
-        // Create animation container
-        const container = document.createElement('div');
-        container.innerHTML = `
-            <style>
-                .thinking-container {
-                    display: flex;
-                    align-items: center;
-                }
-                .thinking-text {
-                    font-size: 14px;
-                    color: ${textColor};
-                    margin-right: 10px;
-                }
-                .dot-container {
-                    position: relative;
-                    width: 40px;
-                    height: 40px;
-                }
-                .dot {
-                    position: absolute;
-                    left: 50%;
-                    top: 50%;
-                    margin-left: -5px;
-                    margin-top: -5px;
-                    width: 10px;
-                    height: 10px;
-                    background-color: black;
-                    border-radius: 50%;
-                    animation: rotate 2s linear infinite;
-                }
-                @keyframes rotate {
-                    from {
-                        transform: rotate(0deg) translateX(20px) rotate(0deg);
-                    }
-                    to {
-                        transform: rotate(360deg) translateX(20px) rotate(-360deg);
-                    }
-                }
-            </style>
-            <div class="thinking-container">
-                <span class="thinking-text" id="thinking-text">${message}</span>
-                <div class="dot-container">
-                    <div class="dot"></div>
-                </div>
-            </div>
-        `;
-
-        // Get thinking text element
-        const thinkingText = container.querySelector('#thinking-text');
-
-        // Add blinking dots
-        let dots = 0;
-        const interval = setInterval(() => {
-            dots = (dots + 1) % 4;
-            thinkingText.textContent = message + '.'.repeat(dots);
-        }, 500);
-
-        // Cleanup interval when component is removed
-        element.addEventListener('remove', () => clearInterval(interval));
-
-        // Append container to element
-        element.appendChild(container);
-    },
+        .wf-think span {
+          font-size: 14px;
+          color: #666;
+        }
+        .wf-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: #888;
+          opacity: 0.3;
+          animation: wf-blink 1s infinite ease-in-out;
+        }
+        .wf-dot:nth-child(2) { animation-delay: 0.2s; }
+        .wf-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes wf-blink {
+          0%, 80%, 100% { opacity: 0.3; }
+          40% { opacity: 1; }
+        }
+      </style>
+      <div class="wf-think">
+        <span>Thinking...</span>
+        <div class="wf-dot"></div>
+        <div class="wf-dot"></div>
+        <div class="wf-dot"></div>
+      </div>
+    `;
+    element.appendChild(wrapper);
+  }
 };

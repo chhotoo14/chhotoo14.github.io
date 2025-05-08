@@ -14,7 +14,8 @@ export const ThinkingAnimation = {
       barColor = '#e0e0e0',
       progressColor = '#4a90e2',
       catImage = 'https://your-cdn.com/cat.png',
-      speed = 2 // seconds per cycle
+      speed = 2, // seconds per cycle
+      catWidth = 24
     } = payloadObj;
 
     const container = document.createElement('div');
@@ -23,6 +24,7 @@ export const ThinkingAnimation = {
       <style>
         .thinking-wrapper {
           position: relative;
+          overflow: visible;
           width: 100%;
           max-width: 300px;
           margin: 10px auto;
@@ -55,13 +57,14 @@ export const ThinkingAnimation = {
           position: absolute;
           bottom: 100%;
           left: 0;
-          width: 24px;
+          width: ${catWidth}px;
           height: auto;
+          z-index: 1;
           animation: walk ${speed}s linear infinite;
         }
         @keyframes walk {
-          0% { left: 0; }
-          100% { left: calc(100% - 24px); }
+          0% { transform: translateX(0); }
+          100% { transform: translateX(calc(100% - ${catWidth}px)); }
         }
         .thinking-text {
           margin-top: 8px;

@@ -3,22 +3,17 @@ export const ThinkingAnimation = {
     type: 'response',
     match: ({ trace }) => trace.type === 'ext_thinking' || (trace.payload && trace.payload.name === 'ext_thinking'),
     render: ({ trace, element }) => {
-        // Parse payload dynamically
-        let payloadObj;
-        if (typeof trace.payload === 'string') {
-            try {
-                payloadObj = JSON.parse(trace.payload);
-            } catch (e) {
-                console.error('Error parsing payload:', e);
-                payloadObj = {};
-            }
-        } else {
-            payloadObj = trace.payload || {};
-        }
+        // Parse payload with safe defaults
+        const payloadObj = typeof trace.payload === 'string' 
+            ? JSON.parse(trace.payload || '{}') 
+            : trace.payload || {};
 
-        // Extract configurable properties
-        const message = payloadObj.message || 'Thinking';
-        const textColor = payloadObj.textColor || 'black';
+        const {
+            message = 'Thinking',
+            textColor = '#666',
+            dotColor = '#888',
+            speed = 1.5
+        } = payloadObj;
 
         // Create animation container
         const container = document.createElement('div');
@@ -27,60 +22,80 @@ export const ThinkingAnimation = {
                 .thinking-container {
                     display: flex;
                     align-items: center;
+                    gap: 0.8em;
+                    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
                 }
-                .thinking-text {
+
+                .text-container {
+                    position: relative;
                     font-size: 14px;
                     color: ${textColor};
-                    margin-right: 10px;
+                    animation: text-pulse 1.2s ease-in-out infinite;
                 }
-                .dot-container {
+
+                @keyframes text-pulse {
+                    0%, 100% { opacity: 0.9; transform: translateY(0); }
+                    50% { opacity: 0.6; transform: translateY(-1px); }
+                }
+
+                .orbit {
                     position: relative;
-                    width: 40px;
-                    height: 40px;
+                    width: 2.2em;
+                    height: 2.2em;
                 }
+
                 .dot {
                     position: absolute;
-                    left: 50%;
-                    top: 50%;
-                    margin-left: -5px;
-                    margin-top: -5px;
-                    width: 10px;
-                    height: 10px;
-                    background-color: black;
+                    width: 0.4em;
+                    height: 0.4em;
+                    background: ${dotColor};
                     border-radius: 50%;
-                    animation: rotate 2s linear infinite;
+                    animation: orbit ${2 / speed}s linear infinite;
                 }
-                @keyframes rotate {
-                    from {
-                        transform: rotate(0deg) translateX(20px) rotate(0deg);
+
+                .dot:nth-child(1) { animation-delay: -0.1s; }
+                .dot:nth-child(2) { animation-delay: -0.33s; }
+                .dot:nth-child(3) { animation-delay: -0.66s; }
+
+                @keyframes orbit {
+                    0% {
+                        transform: 
+                            rotate(0deg) 
+                            translateX(1em) 
+                            rotate(0deg);
+                        opacity: 1;
                     }
-                    to {
-                        transform: rotate(360deg) translateX(20px) rotate(-360deg);
+                    50% {
+                        transform: 
+                            rotate(180deg) 
+                            translateX(1em) 
+                            rotate(-180deg);
+                        opacity: 0.7;
+                    }
+                    100% {
+                        transform: 
+                            rotate(360deg) 
+                            translateX(1em) 
+                            rotate(-360deg);
+                        opacity: 1;
                     }
                 }
             </style>
             <div class="thinking-container">
-                <span class="thinking-text" id="thinking-text">${message}</span>
-                <div class="dot-container">
+                <div class="text-container">${message}</div>
+                <div class="orbit">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
                     <div class="dot"></div>
                 </div>
             </div>
         `;
 
-        // Get thinking text element
-        const thinkingText = container.querySelector('#thinking-text');
+        // Cleanup when removed
+        element.addEventListener('remove', () => {
+            container.querySelectorAll('*').forEach(el => el.remove());
+        });
 
-        // Add blinking dots
-        let dots = 0;
-        const interval = setInterval(() => {
-            dots = (dots + 1) % 4;
-            thinkingText.textContent = message + '.'.repeat(dots);
-        }, 500);
-
-        // Cleanup interval when component is removed
-        element.addEventListener('remove', () => clearInterval(interval));
-
-        // Append container to element
         element.appendChild(container);
     },
 };

@@ -1,86 +1,86 @@
 export const ThinkingAnimation = {
   name: 'ThinkingAnimation',
   type: 'response',
-  match: ({ trace }) => 
-    trace.type === 'ext_thinking' || trace.payload?.name === 'ext_thinking',
+  match: ({ trace }) => {
+    console.log('[DEBUG] Trace received:', trace); // Add debug logging
+    return trace.type === 'ext_thinking' || trace.payload?.name === 'ext_thinking';
+  },
   render: ({ trace, element }) => {
-    // Clear previous content
-    element.replaceChildren();
+    console.log('[DEBUG] Rendering animation...');
     
-    // Create container with scoped styles
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = `
+    // Create shadow DOM for style isolation
+    const shadow = element.attachShadow({ mode: 'open' });
+    
+    // Create container with atomic CSS
+    shadow.innerHTML = `
       <style>
-        /* Unique animation names with component prefix */
-        @keyframes wf-think-blink {
-          0%, 80%, 100% { 
-            opacity: 0.3; 
-            transform: translateY(0); 
-          }
-          40% { 
-            opacity: 1; 
-            transform: translateY(-2px); 
-          }
+        :host {
+          display: block;
+          contain: content;
         }
         
-        @keyframes wf-think-pulse {
-          0%, 100% { opacity: 0.9; }
+        .container {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 16px;
+          border-radius: 24px;
+          background: #f0f9ff;
+          font-family: system-ui, sans-serif;
+        }
+        
+        .text {
+          font-size: 14px;
+          color: #1e3a8a;
+          animation: text-pulse 1.4s infinite;
+        }
+        
+        .dots {
+          display: flex;
+          gap: 4px;
+        }
+        
+        .dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #3b82f6;
+          animation: dot-bounce 1.4s infinite;
+        }
+        
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes text-pulse {
+          0%, 100% { opacity: 1; }
           50% { opacity: 0.6; }
         }
         
-        .wf-think-container {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          background: #E7F5FD;
-          padding: 6px 12px;
-          border-radius: 8px;
-          font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-        
-        .wf-think-text {
-          font-size: 14px;
-          color: #666;
-          animation: wf-think-pulse 1.2s ease-in-out infinite;
-        }
-        
-        .wf-think-dot {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: #888;
-          opacity: 0.3;
-          animation: wf-think-blink 1.2s infinite ease-in-out;
-        }
-        
-        .wf-think-dot:nth-child(2) { 
-          animation-delay: 0.2s; 
-        }
-        .wf-think-dot:nth-child(3) { 
-          animation-delay: 0.4s; 
+        @keyframes dot-bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-4px); }
         }
       </style>
-      <div class="wf-think-container">
-        <span class="wf-think-text">${trace.payload?.message || 'Thinking...'}</span>
-        <div class="wf-think-dot"></div>
-        <div class="wf-think-dot"></div>
-        <div class="wf-think-dot"></div>
+      
+      <div class="container">
+        <span class="text">${trace.payload?.message || 'Processing...'}</span>
+        <div class="dots">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
       </div>
     `;
 
-    // Force animation restart
-    requestAnimationFrame(() => {
-      wrapper.querySelectorAll('.wf-think-dot').forEach(dot => {
+    // Force animation start
+    setTimeout(() => {
+      shadow.querySelectorAll('.dot').forEach(dot => {
         dot.style.animation = 'none';
-        dot.offsetHeight; // Trigger reflow
+        void dot.offsetWidth; // Trigger reflow
         dot.style.animation = '';
       });
-    });
+    }, 50);
 
-    // Cleanup
-    const cleanup = () => wrapper.remove();
-    element.addEventListener('remove', cleanup);
-    
-    element.appendChild(wrapper);
+    console.log('[DEBUG] Animation elements:', shadow.innerHTML);
   }
 };

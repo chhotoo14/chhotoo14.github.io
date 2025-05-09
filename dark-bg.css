@@ -1,37 +1,23 @@
-/* dark-bg.css */
 @layer vfrc-override {
-  /* Outer widget container */
-  .vfrc-widget {
+  /* Target the main chat container */
+  .vfrc-chat.s9t6010 {
     background: url("https://chhotoo14.github.io/test12.jpg") no-repeat center center !important;
     background-size: cover !important;
     height: 100vh !important;
   }
 
-  /* Transparent chat container */
-  .vfrc-chat {
+  /* Remove white background from inner dialog */
+  .vfrc-chat-dialog {
     background: transparent !important;
   }
 
-  /* Semi-transparent header */
-  .vfrc-header {
-    background: rgba(0, 0, 0, 0.6) !important;
-    border: none !important;
-  }
-
-  /* Message bubbles */
-  .vfrc-message {
-    background: rgba(255, 255, 255, 0.9) !important;
-    border-radius: 15px !important;
-  }
-
-  /* Input area */
+  /* Make footer transparent */
   .vfrc-footer {
     background: rgba(0, 0, 0, 0.6) !important;
   }
 
-  /* Remove default background patterns */
-  .vfrc-chat::before,
-  .vfrc-chat::after {
-    display: none !important;
+  /* Remove box shadows */
+  .vfrc-chat {
+    box-shadow: none !important;
   }
 }

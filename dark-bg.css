@@ -1,0 +1,16 @@
+/* dark-bg.css */
+@layer vf-override {
+  /* Entire widget shell */
+  .vf-widget,
+  /* The chat window container */
+  .vf-widget .vf-chat-container {
+    background: url("https://chhotoo14.github.io/test12.jpg")
+                no-repeat center center !important;
+    background-size: cover !important;
+  }
+
+  /* Make the inner chat body transparent so your image shows through */
+  .vf-widget .vf-chat-body {
+    background: transparent !important;
+  }
+}

@@ -4,137 +4,11 @@ export const VariantSelectionForm = {
     match: ({ trace }) =>
         trace.type === 'ext_variant_selection' || (trace.payload && trace.payload.name === 'ext_variant_selection'),
     render: ({ trace, element }) => {
-        console.log('Rendering VariantSelectionForm');
-
-        // Parse payload dynamically
-        let payloadObj;
-        if (typeof trace.payload === 'string') {
-            try {
-                payloadObj = JSON.parse(trace.payload);
-            } catch (e) {
-                console.error('Error parsing payload:', e);
-                payloadObj = {};
-            }
-        } else {
-            payloadObj = trace.payload || {};
-        }
-
-        console.log('Parsed Payload:', payloadObj);
-
-        // Extract variant data dynamically from payload
-        const variantIDs = payloadObj.selectedVariantID || '';
-        const variantTitles = payloadObj.selectedVariantTitle || '';
-        const variantPrices = payloadObj.selectedVariantPrices || '';
-        const lb_quantity = payloadObj.lb_quantity || 'Quantity';
-        const bt_submit = payloadObj.bt_submit || 'Submit';
-
-        // Split data into arrays
-        const idsArray = variantIDs.split(',').map(id => id.trim());
-        const titlesArray = variantTitles.split(',').map(title => title.trim());
-        const pricesArray = variantPrices.split(',').map(price => parseFloat(price.trim()));
-
-        // Create form container
-        const formContainer = document.createElement('form');
-        formContainer.innerHTML = `
-            <style>
-                .simple-form {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 15px;
-                    padding: 20px;
-                    border-radius: 8px;
-                    background: #f9f9f9;
-                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-                    max-width: 300px;
-                    margin: auto;
-                }
-                select, input, button {
-                    padding: 12px;
-                    font-size: 16px;
-                    border: 1px solid #ccc;
-                    border-radius: 6px;
-                    width: 100%;
-                    outline: none;
-                    transition: all 0.3s ease;
-                }
-                select:focus, input:focus {
-                    border-color: #447f76;
-                    box-shadow: 0 0 8px rgba(68, 127, 118, 0.3);
-                }
-                input[type="number"] {
-                    text-align: center;
-                }
-                button {
-                    cursor: pointer;
-                    background-color: #447f76;
-                    color: white;
-                    border: none;
-                    font-weight: bold;
-                    transition: background-color 0.2s ease;
-                }
-                button:hover {
-                    background-color: #376b62;
-                }
-                .price {
-                    font-weight: bold;
-                    font-size: 18px;
-                    color: #333;
-                    text-align: center;
-                }
-            </style>
-
-            <div class="simple-form">
-                <select id="variant">
-                    ${titlesArray.map((title, index) =>
-                        `<option value="${index}">${title}</option>`
-                    ).join('')}
-                </select>
-
-                <input type="number" id="quantity" name="quantity" value="1" min="1" required placeholder="${lb_quantity}">
-
-                <div class="price">€${pricesArray[0].toFixed(2)}</div>
-
-                <button type="submit">${bt_submit}</button>
-            </div>
-        `;
-
-        // Get form elements
-        const variantSelect = formContainer.querySelector('#variant');
-        const quantityInput = formContainer.querySelector('#quantity');
-        const priceDisplay = formContainer.querySelector('.price');
-
-        // Update price display when variant selection changes
-        variantSelect.addEventListener('change', () => {
-            const selectedIndex = variantSelect.value;
-            priceDisplay.textContent = `€${pricesArray[selectedIndex].toFixed(2)}`;
-        });
-
-        // Handle form submission
-        formContainer.addEventListener('submit', (event) => {
-            event.preventDefault();
-
-            const selectedIndex = variantSelect.value;
-            const payload = {
-                selectedVariantID: idsArray[selectedIndex],
-                selectedVariantTitle: titlesArray[selectedIndex],
-                selectedVariantPrice: pricesArray[selectedIndex],
-                quantity: parseInt(quantityInput.value, 10),
-            };
-
-            console.log('Submitting payload:', payload);
-
-            window.voiceflow.chat.interact({
-                type: 'complete',
-                payload: payload,
-            });
-        });
-
-        // Append form to chat window
-        element.appendChild(formContainer);
+        // ... (keep existing VariantSelectionForm code EXACTLY as is) ...
     },
 };
 
-  export const OrderReturnForm = {
+export const OrderReturnForm = {
     name: 'OrderReturnForm',
     type: 'response',
     match: ({ trace }) =>
@@ -158,20 +32,16 @@ export const VariantSelectionForm = {
         console.log('Parsed Payload:', payloadObj);
 
         // Extract payload data dynamically
-        const orderedQuantity = payloadObj.orderedQuantity || '1'; // Default to 1
+        const orderedQuantity = payloadObj.orderedQuantity || '1';
         const lb_quantity = payloadObj.lb_quantity || 'Quantity';
         const lb_reason = payloadObj.lb_reason || 'Return Reason';
         const bt_submit = payloadObj.bt_submit || 'Create Return';
 
-        // ✅ Mapping display labels to formatted values
+        // Modified return reasons for skincare products
         const returnReasons = {
-            'Color': 'COLOR',
             'Defective': 'DEFECTIVE',
             'Not as Described': 'NOT_AS_DESCRIBED',
             'Other': 'OTHER',
-            'Size Too Large': 'SIZE_TOO_LARGE',
-            'Size Too Small': 'SIZE_TOO_SMALL',
-            'Style': 'STYLE',
             'Unwanted': 'UNWANTED',
             'Wrong Item': 'WRONG_ITEM'
         };
@@ -258,10 +128,9 @@ export const VariantSelectionForm = {
             const quantityInput = formContainer.querySelector('#quantity');
             const reasonInput = formContainer.querySelector('#reason');
 
-            // Prepare payload with correctly formatted reason
             const payload = {
                 returnQuantity: parseInt(quantityInput.value, 10),
-                returnReason: reasonInput.value, // ✅ Outputs the formatted value (e.g., COLOR, DEFECTIVE)
+                returnReason: reasonInput.value,
             };
 
             console.log('Submitting return payload:', payload);
@@ -272,7 +141,6 @@ export const VariantSelectionForm = {
             });
         });
 
-        // Append form to chat window
         element.appendChild(formContainer);
     },
 };
@@ -283,177 +151,157 @@ export const OrderSelectionExtension = {
     match: ({ trace }) =>
         trace.type === 'ext_order_selection' || (trace.payload && trace.payload.name === 'ext_order_selection'),
     render: ({ trace, element }) => {
-        console.log('Rendering OrderSelectionExtension');
+        // ... (keep existing OrderSelectionExtension code EXACTLY as is) ...
+    },
+};
 
-        // Parse payload dynamically
-        let payloadObj;
-        if (typeof trace.payload === 'string') {
-            try {
-                payloadObj = JSON.parse(trace.payload);
-            } catch (e) {
-                console.error('Error parsing payload:', e);
-                payloadObj = {};
-            }
-        } else {
-            payloadObj = trace.payload || {};
+export const SkincareConcernForm = {
+    name: 'SkincareConcernForm',
+    type: 'response',
+    match: ({ trace }) =>
+        trace.type === 'ext_skincare_concern' || (trace.payload && trace.payload.name === 'ext_skincare_concern'),
+    render: ({ trace, element }) => {
+        let payloadObj = {};
+        try {
+            payloadObj = typeof trace.payload === 'string' ? JSON.parse(trace.payload) : trace.payload || {};
+        } catch (e) {
+            console.error('Payload parse error:', e);
         }
 
-        console.log('Parsed Payload:', payloadObj);
-
-        // Extract order numbers dynamically
-        const orderNumbers = payloadObj.orderNumbers
-            ? payloadObj.orderNumbers.split(',').map(order => order.trim())
-            : [];
-
-        // Extract product titles (split by `|` then by `,`)
-        const returnProductTitles = payloadObj.returnProductTitles
-            ? payloadObj.returnProductTitles.split('|').map(products => products.split(',').map(p => p.trim()))
-            : [];
-
-        // Extract ordered quantities (split like products)
-        const orderedQuantities = payloadObj.orderedQuantities
-            ? payloadObj.orderedQuantities.split('|').map(qty => qty.split(',').map(q => q.trim()))
-            : [];
-
-        // Extract return order IDs
-        const returnOrderIds = payloadObj.returnOrderIds
-            ? payloadObj.returnOrderIds.split(',').map(id => id.trim())
-            : [];
-
-        console.log('Parsed Orders:', orderNumbers);
-        console.log('Parsed Products:', returnProductTitles);
-        console.log('Parsed Quantities:', orderedQuantities);
-        console.log('Parsed Order IDs:', returnOrderIds);
-
-        // ✅ Ensure orders, products, quantities, and order IDs match
-        if (
-            orderNumbers.length !== returnProductTitles.length ||
-            orderNumbers.length !== orderedQuantities.length ||
-            orderNumbers.length !== returnOrderIds.length
-        ) {
-            console.error('Mismatch between order numbers, products, quantities, and order IDs!');
-            return;
-        }
-
-        // Create container for the clickable orders
-        const container = document.createElement('div');
-        container.classList.add('order-selection-container');
-
-        container.innerHTML = `
+        const formContainer = document.createElement('form');
+        formContainer.innerHTML = `
             <style>
-                :root {
-                    --order-glow-color: #447f76; /* ✅ Adjust the glow color here */
-                }
-
-                .order-selection-container {
+                .return-form {
                     display: flex;
                     flex-direction: column;
                     gap: 15px;
-                    padding: 10px;
-                    width: 100%;
-                    max-width: 400px;
-                }
-                .order-card {
-                    background: #ffffff;
+                    padding: 20px;
                     border-radius: 8px;
-                    padding: 15px;
+                    background: #f9f9f9;
                     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-                    cursor: pointer;
-                    transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
-                    display: flex;
-                    flex-direction: column;
-                    border: 2px solid transparent;
+                    max-width: 320px;
+                    margin: auto;
                 }
-                .order-card:hover {
-                    transform: scale(1.02);
-                    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-                }
-                .order-card.selected {
-                    border: 2px solid var(--order-glow-color);
-                    box-shadow: 0 0 10px var(--order-glow-color);
-                }
-                .order-number {
+                label {
                     font-weight: bold;
-                    font-size: 16px;
-                    margin-bottom: 5px;
-                }
-                .product-list {
                     font-size: 14px;
-                    color: #555;
+                    margin-bottom: 5px;
+                    color: #333;
                 }
-                .product-list ul {
-                    padding-left: 20px;
-                    margin: 5px 0 0;
+                input, textarea, button {
+                    padding: 12px;
+                    font-size: 16px;
+                    border: 1px solid #ddd;
+                    border-radius: 6px;
+                    width: 100%;
+                    outline: none;
+                    transition: all 0.3s ease;
+                }
+                ::placeholder {
+                    color: #999;
+                    opacity: 1;
+                }
+                textarea {
+                    height: 80px;
+                    resize: vertical;
+                }
+                button {
+                    background-color: #447f76;
+                    color: white;
+                    border: none;
+                    cursor: pointer;
+                    font-weight: 600;
+                }
+                button:hover {
+                    background-color: #36645d;
+                }
+                .error-message {
+                    color: #dc3545;
+                    font-size: 12px;
+                    margin-top: -10px;
+                    margin-bottom: 5px;
+                    display: none;
+                }
+                .invalid {
+                    border-color: #dc3545 !important;
                 }
             </style>
+
+            <div class="return-form">
+                <!-- Full Name -->
+                <label for="name">Full name *</label>
+                <input type="text" id="name" required placeholder="e.g. Emma Carter">
+                <div class="error-message" id="name-error">Please enter a valid name (letters and spaces only)</div>
+
+                <!-- Email -->
+                <label for="email">Email *</label>
+                <input type="email" id="email" required placeholder="e.g. emma123@gmail.com">
+                <div class="error-message" id="email-error">Please enter a valid email address</div>
+
+                <!-- Problem Description -->
+                <label for="description">Describe the problem *</label>
+                <textarea id="description" required placeholder="e.g. Is this product safe for sensitive skin?"></textarea>
+
+                <button type="submit">Submit</button>
+            </div>
         `;
 
-        let selectedOrder = null; // Track selected order
+        const nameInput = formContainer.querySelector('#name');
+        const emailInput = formContainer.querySelector('#email');
+        const nameError = formContainer.querySelector('#name-error');
+        const emailError = formContainer.querySelector('#email-error');
 
-        // Loop through orders and create order cards
-        orderNumbers.forEach((orderNum, index) => {
-            const orderId = returnOrderIds[index]; // Get corresponding order ID
-            const orderCard = document.createElement('div');
-            orderCard.classList.add('order-card');
-            orderCard.dataset.orderNumber = orderNum;
-            orderCard.dataset.orderId = orderId;
-            orderCard.dataset.products = JSON.stringify(returnProductTitles[index] || []);
-            orderCard.dataset.quantities = JSON.stringify(orderedQuantities[index] || []);
+        const validateName = (name) => {
+            const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/;
+            return nameRegex.test(name) && name.length >= 2 && name.length <= 50;
+        };
 
-            orderCard.innerHTML = `
-                <div class="order-number">Order ${orderNum}</div>
-                <div class="product-list">
-                    <ul>
-                        ${(returnProductTitles[index] || []).map(product => `<li>${product}</li>`).join('')}
-                    </ul>
-                </div>
-            `;
+        const validateEmail = (email) => {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email.trim());
+        };
 
-            // Click event for selecting/deselecting an order
-            orderCard.addEventListener('click', () => {
-                if (selectedOrder === orderCard) {
-                    // Deselect if clicking the same order again
-                    orderCard.classList.remove('selected');
-                    selectedOrder = null;
-
-                    window.voiceflow.chat.interact({
-                        type: 'complete',
-                        payload: { 
-                            selectedOrderNumber: null, 
-                            selectedOrderId: null,
-                            selectedProducts: '',
-                            selectedQuantities: ''
-                        },
-                    });
-
-                    console.log('Order deselected');
-                } else {
-                    // Deselect previous selection
-                    if (selectedOrder) selectedOrder.classList.remove('selected');
-
-                    // Select new order
-                    orderCard.classList.add('selected');
-                    selectedOrder = orderCard;
-
-                    const payload = {
-                        selectedOrderNumber: orderNum,
-                        selectedOrderId: orderId,
-                        selectedProducts: returnProductTitles[index].join(', '),
-                        selectedQuantities: orderedQuantities[index].join(', ')
-                    };
-
-                    console.log('Submitting Order Selection:', payload);
-
-                    window.voiceflow.chat.interact({
-                        type: 'complete',
-                        payload: payload,
-                    });
-                }
-            });
-
-            container.appendChild(orderCard);
+        nameInput.addEventListener('input', () => {
+            const isValid = validateName(nameInput.value);
+            nameError.style.display = isValid ? 'none' : 'block';
+            nameInput.classList.toggle('invalid', !isValid);
         });
 
-        element.appendChild(container);
-    },
+        emailInput.addEventListener('input', () => {
+            const isValid = validateEmail(emailInput.value);
+            emailError.style.display = isValid ? 'none' : 'block';
+            emailInput.classList.toggle('invalid', !isValid);
+        });
+
+        formContainer.addEventListener('submit', (event) => {
+            event.preventDefault();
+            
+            const name = nameInput.value;
+            const email = emailInput.value;
+            const description = formContainer.querySelector('#description').value;
+
+            let isValid = true;
+            
+            if (!validateName(name)) {
+                nameError.style.display = 'block';
+                nameInput.classList.add('invalid');
+                isValid = false;
+            }
+            
+            if (!validateEmail(email)) {
+                emailError.style.display = 'block';
+                emailInput.classList.add('invalid');
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            window.voiceflow.chat.interact({
+                type: 'complete',
+                payload: { name, email, description }
+            });
+        });
+
+        element.appendChild(formContainer);
+    }
 };

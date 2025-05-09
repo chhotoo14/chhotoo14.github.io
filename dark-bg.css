@@ -1,16 +1,36 @@
 /* dark-bg.css */
 @layer vf-override {
-  /* Entire widget shell */
-  .vf-widget,
-  /* The chat window container */
-  .vf-widget .vf-chat-container {
-    background: url("https://chhotoo14.github.io/test12.jpg")
+  /* 1) put the image on the very outer wrapper */
+  .vf-widget {
+    background: url("https://chhotoo14.github.io/test12.jpg") 
                 no-repeat center center !important;
     background-size: cover !important;
   }
 
-  /* Make the inner chat body transparent so your image shows through */
+  /* 2) make the chat “window” container transparent */
+  .vf-widget .vf-chat-container {
+    background: transparent !important;
+  }
+
+  /* 3) make the header transparent so the image shows behind */
+  .vf-widget .vf-chat-header {
+    background: rgba(0, 0, 0, 0.6) !important; /* optional semi-dark overlay for contrast */
+  }
+
+  /* 4) chat body wrapper – also transparent */
+  .vf-widget .vf-chat-body-wrapper,
   .vf-widget .vf-chat-body {
     background: transparent !important;
+  }
+
+  /* 5) footer/input area – transparent too */
+  .vf-widget .vf-chat-footer {
+    background: rgba(0, 0, 0, 0.6) !important;
+  }
+
+  /* 6) any panels or cards that were white */
+  .vf-widget .vf-chat-message,
+  .vf-widget .vf-card {
+    background: rgba(255, 255, 255, 0.9) !important; /* or tweak as desired */
   }
 }

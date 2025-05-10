@@ -13,25 +13,13 @@
   }
 
   /* Footer Styling - Dark Black */
-  [class*="vfrc-footer"] {
-    background: #000000 !important; /* Pure black */
-    border-top: 1px solid #333 !important;
-  }
+/* Dark black footer */
+.vfrc-footer._1vj16242 {
+  background-color: #000000 !important;
+}
 
-  /* Input Container - Medium Gray */
-  [class*="vfrc-input-container"] {
-    background: #666666 !important; /* Medium gray */
-    border-radius: 8px !important;
-  }
-
-  /* Input Text Styling */
-  [class*="vfrc-input"] {
-    color: #ffffff !important; /* White text */
-  }
-
-  /* Message Bubbles (existing style) */
-  .vfrc-message {
-    background: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  }
+/* Medium gray chat input */
+.vfrc-chat-input._1gdvh9t6 {
+  background-color: #666666 !important;
+  color: #ffffff !important;
 }

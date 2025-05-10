@@ -1,23 +1,26 @@
 @layer vfrc-override {
-  /* Full-screen background */
+  /* full‐screen background */
   .vfrc-chat {
-    background: url("https://chhotoo14.github.io/test12.jpg") no-repeat center/cover !important;
+    background: url("https://chhotoo14.github.io/test12.jpg")
+      no-repeat center/cover !important;
     height: 100vh !important;
     box-shadow: none !important;
   }
 
-  /* Transparent inner dialog so messages float over the image */
+  /* transparent message pane */
   .vfrc-chat-dialog {
     background: transparent !important;
   }
 
-  /* Header & Footer share the same dark overlay */
-  .vfrc-header,
-  .vfrc-footer {
+  /* footer + all of its children get the same overlay */
+  .vfrc-footer,
+  .vfrc-footer *,
+  .vfrc-chat-input-container,
+  .vfrc-chat-input-container * {
     background: rgba(0, 0, 0, 0.6) !important;
   }
 
-  /* Input textarea slightly lighter than header/footer */
+  /* then override the textarea + send button to be a bit lighter */
   .vfrc-chat-input textarea,
   .vfrc-chat-input--button {
     background: rgba(0, 0, 0, 0.4) !important;

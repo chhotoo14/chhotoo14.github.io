@@ -1,82 +1,63 @@
 @layer vfrc-override {
-  /* Coding Theme Base */
-  :root {
-    --code-bg: #011627;
-    --code-text: #d6deeb;
-    --code-border: #004777;
-    --user-msg: #1d3b53;
-    --system-msg: #283758;
-  }
-
-  /* Main Container with Background Image */
+  /* Background & Structural Styles */
   [class*="vfrc-chat"] {
     background: url("https://chhotoo14.github.io/test12.jpg") center/cover !important;
-    font-family: 'Source Code Pro', monospace !important;
-    color: var(--code-text) !important;
     min-height: 100vh !important;
+    color: #d6deeb !important;
   }
 
-  /* Header with Glass Effect */
+  /* Header with Text Visibility */
   [class*="vfrc-header"] {
     background: rgba(1, 22, 39, 0.85) !important;
     backdrop-filter: blur(8px) !important;
-    border-bottom: 1px solid var(--code-border) !important;
+    border-bottom: 1px solid #004777 !important;
   }
 
-  /* Title/Description with Coding Font */
   [class*="vfrc-assistant-info-title"],
   [class*="vfrc-assistant-info-description"] {
-    font-family: 'Source Code Pro', monospace !important;
     -webkit-text-stroke: 0.8px #000 !important;
     text-shadow: 0 0 5px rgba(0,0,0,0.7) !important;
+    color: #fff !important;
   }
 
   /* Message Bubbles */
   [class*="vfrc-system-response"] [class*="vfrc-message"] {
-    background: var(--system-msg) !important;
-    border: 1px solid var(--code-border) !important;
-    border-radius: 4px !important;
+    background: #283758 !important;
+    border: 1px solid #004777 !important;
   }
 
   [class*="vfrc-user-response"] [class*="vfrc-message"] {
-    background: var(--user-msg) !important;
-    border: 1px solid var(--code-border) !important;
-    border-radius: 4px !important;
+    background: #1d3b53 !important;
+    border: 1px solid #004777 !important;
   }
 
   /* Input Field */
   [class*="vfrc-input"] {
     background: rgba(29, 59, 83, 0.9) !important;
-    border: 1px solid var(--code-border) !important;
-    color: var(--code-text) !important;
-    font-family: 'Source Code Pro', monospace !important;
+    border: 1px solid #004777 !important;
+    color: #fff !important;
     padding: 12px !important;
+  }
+
+  /* Scroll & Layout Fixes */
+  [class*="s9t6011"] { /* Scroll container */
+    height: calc(100vh - 160px) !important;
+    padding-bottom: 20px !important;
+  }
+
+  [class*="vfrc-footer"] {
+    background: rgba(1, 22, 39, 0.85) !important;
+    backdrop-filter: blur(8px) !important;
   }
 
   /* Launcher Button */
   [class*="vfrc-launcher"] {
-    background: var(--code-bg) !important;
-    border: 1px solid var(--code-border) !important;
+    background: #011627 !important;
+    border: 1px solid #004777 !important;
     width: 200px !important;
     height: 40px !important;
     border-radius: 30px !important;
     right: -50px !important;
     bottom: 20px !important;
-    transition: all 0.3s ease !important;
-  }
-
-  [class*="vfrc-launcher"]:hover {
-    right: 20px !important;
-  }
-
-  /* Scrollbar Styling */
-  ::-webkit-scrollbar {
-    width: 8px !important;
-    background: var(--code-bg) !important;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: var(--code-border) !important;
-    border-radius: 4px !important;
   }
 }

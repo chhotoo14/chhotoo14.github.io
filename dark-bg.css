@@ -1,23 +1,20 @@
 @layer vfrc-override {
-  /* Target ONLY the chat widget content area */
-  .vfrc-chat-container {
-    background: url('https://chhotoo14.github.io/test12.jpg') center/cover no-repeat !important;
-    position: relative;
-    isolation: isolate;
+  /* Full chat widget background */
+  .vfrc-chat {
+    background-image: url('https://chhotoo14.github.io/test123.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Keeps background fixed while scrolling */
   }
 
-  /* Add overlay to prevent background bleed */
-  .vfrc-chat-container::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: inherit;
+  /* Header overlay for visibility */
+  .vfrc-header {
+    background-color: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(2px);
   }
 
-  /* Transparent header/footer */
-  .vfrc-header, 
+  /* Optional: Make footer background transparent so image is visible */
   .vfrc-footer {
-    background: transparent !important;
+    background-color: transparent !important;
   }
 }

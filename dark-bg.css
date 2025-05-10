@@ -1,63 +1,42 @@
 @layer vfrc-override {
-  /* Background & Structural Styles */
-  [class*="vfrc-chat"] {
-    background: url("https://chhotoo14.github.io/test12.jpg") center/cover !important;
+  /* Main Container with Layered Background */
+  .vfrc-widget {
+    position: relative !important;
     min-height: 100vh !important;
-    color: #d6deeb !important;
+    isolation: isolate !important;
   }
 
-  /* Header with Text Visibility */
-  [class*="vfrc-header"] {
-    background: rgba(1, 22, 39, 0.85) !important;
-    backdrop-filter: blur(8px) !important;
-    border-bottom: 1px solid #004777 !important;
+  /* Background Image Layer */
+  .vfrc-widget::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("https://chhotoo14.github.io/test12.jpg") center/cover;
+    z-index: -1;
+    opacity: 0.9;
   }
 
-  [class*="vfrc-assistant-info-title"],
-  [class*="vfrc-assistant-info-description"] {
-    -webkit-text-stroke: 0.8px #000 !important;
-    text-shadow: 0 0 5px rgba(0,0,0,0.7) !important;
-    color: #fff !important;
+  /* Content Containers */
+  .vfrc-header,
+  .vfrc-chat,
+  .vfrc-footer {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(4px) !important;
+    margin: 10px !important;
+    border-radius: 8px !important;
   }
 
   /* Message Bubbles */
-  [class*="vfrc-system-response"] [class*="vfrc-message"] {
-    background: #283758 !important;
-    border: 1px solid #004777 !important;
-  }
-
-  [class*="vfrc-user-response"] [class*="vfrc-message"] {
-    background: #1d3b53 !important;
-    border: 1px solid #004777 !important;
+  .vfrc-message {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
   }
 
   /* Input Field */
-  [class*="vfrc-input"] {
-    background: rgba(29, 59, 83, 0.9) !important;
-    border: 1px solid #004777 !important;
-    color: #fff !important;
-    padding: 12px !important;
-  }
-
-  /* Scroll & Layout Fixes */
-  [class*="s9t6011"] { /* Scroll container */
-    height: calc(100vh - 160px) !important;
-    padding-bottom: 20px !important;
-  }
-
-  [class*="vfrc-footer"] {
-    background: rgba(1, 22, 39, 0.85) !important;
-    backdrop-filter: blur(8px) !important;
-  }
-
-  /* Launcher Button */
-  [class*="vfrc-launcher"] {
-    background: #011627 !important;
-    border: 1px solid #004777 !important;
-    width: 200px !important;
-    height: 40px !important;
-    border-radius: 30px !important;
-    right: -50px !important;
-    bottom: 20px !important;
+  .vfrc-input-container {
+    background: rgba(255, 255, 255, 0.95) !important;
   }
 }

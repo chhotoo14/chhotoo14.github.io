@@ -31,8 +31,3 @@
   .vfrc-chat-dialog {
     background: transparent !important;
   }
-
-  /* Ensure all input text is white */
-  [class*="vfrc-input"] {
-    color: #ffffff !important;
-  }

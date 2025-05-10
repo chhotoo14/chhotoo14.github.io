@@ -3,8 +3,8 @@
   .vfrc-chat.s9t6010 {
     background: url("https://chhotoo14.github.io/test12.jpg") no-repeat center center !important;
     background-size: cover !important;
-    height: calc(100vh - 60px) !important; /* Creates space for footer */
-    padding-bottom: 60px !important; /* Footer height */
+    height: calc(100vh - 60px) !important;   /* Creates space for footer */
+    padding-bottom: 60px !important;         /* Footer height */
     position: relative !important;
     box-shadow: none !important;
     overflow: visible !important;
@@ -12,32 +12,27 @@
 
   /* Scroll Container Adjustment */
   .s9t6011 {
-    height: calc(100% - 120px) !important; /* Account for header/footer */
+    height: calc(100% - 120px) !important;   /* Account for header/footer */
     overflow-y: auto !important;
   }
 
-  /* Footer Positioning */
-  [class*="vfrc-footer"] {
-    background: #000000 !important;
-    position: absolute !important;
-    bottom: 0 !important;
-    width: 100% !important;
-    height: 60px !important;
-    z-index: 2 !important;
+  /* Footer Styling */
+  .vfrc-footer {
+    background-color: #000000 !important;
   }
 
-  /* Input Container Styling */
-  [class*="vfrc-input-container"] {
-    background: #666666 !important;
-    border-radius: 8px !important;
-    margin: 0 15px 15px 15px !important;
+  /* Chat Input Textarea Styling */
+  .vfrc-chat-input textarea {
+    background-color: #666666 !important;
+    color: #d6deeb !important;
   }
 
-  /* Existing Styles */
-  .vfrc-chat-dialog { 
-    background: transparent !important; 
+  /* Transparent Message Pane */
+  .vfrc-chat-dialog {
+    background: transparent !important;
   }
+
+  /* Ensure all input text is white */
   [class*="vfrc-input"] {
     color: #ffffff !important;
   }
-}

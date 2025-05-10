@@ -1,36 +1,43 @@
 @layer vfrc-override {
-  /* Main Chat Container */
+  /* Main Container Positioning */
   .vfrc-chat.s9t6010 {
     background: url("https://chhotoo14.github.io/test12.jpg") no-repeat center center !important;
     background-size: cover !important;
-    height: 100vh !important;
+    height: calc(100vh - 60px) !important; /* Creates space for footer */
+    padding-bottom: 60px !important; /* Footer height */
+    position: relative !important;
     box-shadow: none !important;
+    overflow: visible !important;
   }
 
-  /* Chat Dialog Transparency */
-  .vfrc-chat-dialog {
-    background: transparent !important;
+  /* Scroll Container Adjustment */
+  .s9t6011 {
+    height: calc(100% - 120px) !important; /* Account for header/footer */
+    overflow-y: auto !important;
   }
 
-  /* Pure black footer */
-  div.vfrc-footer._1vj16242 {
-    background-color: #000000 !important;
+  /* Footer Positioning */
+  [class*="vfrc-footer"] {
+    background: #000000 !important;
+    position: absolute !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 60px !important;
+    z-index: 2 !important;
   }
 
-  /* Medium gray input wrapper */
-  div.vfrc-input-container._1gdvh9t1 {
-    background-color: #666666 !important;
+  /* Input Container Styling */
+  [class*="vfrc-input-container"] {
+    background: #666666 !important;
+    border-radius: 8px !important;
+    margin: 0 15px 15px 15px !important;
   }
 
-  /* If there’s a direct textarea or input inside */
-  div.vfrc-input-container._1gdvh9t1 textarea,
-  div.vfrc-input-container._1gdvh9t1 input {
-    background-color: #666666 !important;
+  /* Existing Styles */
+  .vfrc-chat-dialog { 
+    background: transparent !important; 
+  }
+  [class*="vfrc-input"] {
     color: #ffffff !important;
-  }
-
-  /* Just in case the inner “jsli…” div needs the bg too */
-  div.jsli361.jsli363 {
-    background-color: #666666 !important;
   }
 }

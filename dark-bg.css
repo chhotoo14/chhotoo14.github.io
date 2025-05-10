@@ -1,18 +1,16 @@
 @layer vfrc-override {
-  /* Stretch background image behind header/footer */
-  .vfrc-chat {
+  /* Full background image */
+  .vfrc-widget {
     background: url('https://chhotoo14.github.io/test12.jpg') center/cover no-repeat !important;
-    position: relative;
   }
 
-  /* Create overlay for content */
-  .vfrc-chat::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: -1;
+  /* Make header/footer transparent */
+  .vfrc-header, .vfrc-footer {
+    background-color: transparent !important;
+  }
+
+  /* Make chat body transparent */
+  .vfrc-chat {
+    background: transparent !important;
   }
 }

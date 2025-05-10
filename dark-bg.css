@@ -32,3 +32,22 @@
     z-index: -1;
   }
 }
+
+@layer vfrc-override {
+  /* Header color (reference point) */
+  .vfrc-header {
+    background-color: #004777 !important; /* Replace with your desired color */
+  }
+
+  /* Match footer background to header */
+  .vfrc-footer {
+    background-color: #004777 !important;
+  }
+
+  /* Match chat input area to header */
+  .vfrc-chat-input textarea,
+  .vfrc-chat-input--button {
+    background-color: #004777 !important;
+    color: #ffffff !important; /* Text color for readability */
+  }
+}

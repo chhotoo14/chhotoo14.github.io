@@ -17,28 +17,7 @@
     color: #ffffff !important;
   }
 
-  /* 3. Chat input styling */
-  .vfrc-chat-input {
-    background-color: #666666 !important;
-    color: #ffffff !important;
-  }
-  
-  .vfrc-chat-input input,
-  .vfrc-chat-input textarea,
-  .vfrc-chat-input button {
-    background-color: #666666 !important;
-    color: #ffffff !important;
-    border-color: #ffffff;
-  }
-
-  .vfrc-chat-input input::placeholder,
-  .vfrc-chat-input textarea::placeholder {
-    color: #ffffff !important;
-    opacity: 1;
-  }
-
   /* 5. Full-height conversation pane */
   .vfrc-chat-conversation {
     height: 100% !important;
   }
-}

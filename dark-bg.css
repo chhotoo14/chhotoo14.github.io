@@ -1,23 +1,7 @@
-@layer vfrc-override {
-  /* 1. Full chat container background image */
-  .vfrc-chat {
-    background-image: url('https://chhotoo14.github.io/test12.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-
-  /* 2. Header and footer styling */
-  .vfrc-header, 
-  .vfrc-footer {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-  }
-
-  /* 5. Full-height conversation pane */
-  .vfrc-chat-conversation {
-    height: 100% !important;
-  }
+.vfrc-widget--chat {
+  background: url("https://chhotoo14.github.io/test123.jpg") no-repeat center center fixed;
+  background-size: cover;
+}
+.vfrc-header {
+  background-color: rgba(0, 0, 0, 0.5);
+}

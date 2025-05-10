@@ -20,4 +20,14 @@
   .vfrc-chat {
     box-shadow: none !important;
   }
+
+  /* Styling for the chat input textarea */
+.vfrc-chat-input textarea {
+  background-color: #434040 !important; /* Darker shade for input area */
+  color: #d6deeb !important;           /* Light text color for better visibility */
+}
+
+/* Styling for the footer */
+.vfrc-footer {
+  background-color: #000000 !important;
 }

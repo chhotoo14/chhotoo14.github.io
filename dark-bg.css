@@ -1,42 +1,23 @@
 @layer vfrc-override {
-  /* Main Container with Layered Background */
-  .vfrc-widget {
-    position: relative !important;
-    min-height: 100vh !important;
-    isolation: isolate !important;
+  /* Target the main chat container */
+  .vfrc-chat.s9t6010 {
+    background: url("https://chhotoo14.github.io/test12.jpg") no-repeat center center !important;
+    background-size: cover !important;
+    height: 100vh !important;
   }
 
-  /* Background Image Layer */
-  .vfrc-widget::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url("https://chhotoo14.github.io/test12.jpg") center/cover;
-    z-index: -1;
-    opacity: 0.9;
+  /* Remove white background from inner dialog */
+  .vfrc-chat-dialog {
+    background: transparent !important;
   }
 
-  /* Content Containers */
-  .vfrc-header,
-  .vfrc-chat,
+  /* Make footer transparent */
   .vfrc-footer {
-    background: rgba(255, 255, 255, 0.9) !important;
-    backdrop-filter: blur(4px) !important;
-    margin: 10px !important;
-    border-radius: 8px !important;
+    background: rgba(0, 0, 0, 0.6) !important;
   }
 
-  /* Message Bubbles */
-  .vfrc-message {
-    background: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  }
-
-  /* Input Field */
-  .vfrc-input-container {
-    background: rgba(255, 255, 255, 0.95) !important;
+  /* Remove box shadows */
+  .vfrc-chat {
+    box-shadow: none !important;
   }
 }

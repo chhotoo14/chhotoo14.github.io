@@ -1,7 +1,18 @@
-.vfrc-widget--chat {
-  background: url("https://chhotoo14.github.io/test123.jpg") no-repeat center center fixed;
-  background-size: cover;
-}
-.vfrc-header {
-  background-color: rgba(0, 0, 0, 0.5);
+@layer vfrc-override {
+  /* Stretch background image behind header/footer */
+  .vfrc-chat {
+    background: url('https://chhotoo14.github.io/test12.jpg') center/cover no-repeat !important;
+    position: relative;
+  }
+
+  /* Create overlay for content */
+  .vfrc-chat::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+  }
 }

@@ -1,23 +1,53 @@
 @layer vfrc-override {
-  /* Target the main chat container */
-  .vfrc-chat.s9t6010 {
-    background: url("https://chhotoo14.github.io/test12.jpg") no-repeat center center !important;
-    background-size: cover !important;
-    height: 100vh !important;
+  /* 1. Title & Subtitle Styling */
+  .vfrc-assistant-info-title {
+    text-shadow: 
+      -1px -1px 0 #000,  
+      1px -1px 0 #000,
+      -1px 1px 0 #000,
+      1px 1px 0 #000 !important;
+    color: white !important;
+    font-size: 24px !important;
   }
 
-  /* Remove white background from inner dialog */
+  .vfrc-assistant-info-description {
+    text-shadow: 
+      -1px -1px 0 #000,
+      1px -1px 0 #000,
+      -1px 1px 0 #000,
+      1px 1px 0 #000 !important;
+    color: white !important;
+    font-size: 16px !important;
+  }
+
+  /* 2. Background Image Positioning */
+  .vfrc-chat {
+    background: url("https://chhotoo14.github.io/test12.jpg") no-repeat center center/cover !important;
+    height: 100vh !important;
+    padding-bottom: 80px !important; /* Space for footer */
+  }
+
+  /* 3. Header and Message Area Transparency */
+  .vfrc-header {
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(5px) !important;
+  }
+
   .vfrc-chat-dialog {
     background: transparent !important;
   }
 
-  /* Make footer transparent */
+  /* 4. Footer Fix */
   .vfrc-footer {
+    position: absolute !important;
+    bottom: 0 !important;
+    width: 100% !important;
     background: rgba(0, 0, 0, 0.6) !important;
   }
 
-  /* Remove box shadows */
-  .vfrc-chat {
-    box-shadow: none !important;
+  /* 5. Overflow Fix */
+  .s9t6011 { /* Scroll container */
+    height: calc(100vh - 160px) !important;
+    overflow-y: auto !important;
   }
 }

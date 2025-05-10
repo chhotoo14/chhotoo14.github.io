@@ -1,33 +1,37 @@
 @layer vfrc-override {
-  /* Target the main chat container */
+  /* Main Chat Container */
   .vfrc-chat.s9t6010 {
     background: url("https://chhotoo14.github.io/test12.jpg") no-repeat center center !important;
     background-size: cover !important;
     height: 100vh !important;
+    box-shadow: none !important;
   }
 
-  /* Remove white background from inner dialog */
+  /* Chat Dialog Transparency */
   .vfrc-chat-dialog {
     background: transparent !important;
   }
 
-  /* Make footer transparent */
-  .vfrc-footer {
-    background: rgba(0, 0, 0, 0.6) !important;
+  /* Footer Styling - Dark Black */
+  [class*="vfrc-footer"] {
+    background: #000000 !important; /* Pure black */
+    border-top: 1px solid #333 !important;
   }
 
-  /* Remove box shadows */
-  .vfrc-chat {
-    box-shadow: none !important;
+  /* Input Container - Medium Gray */
+  [class*="vfrc-input-container"] {
+    background: #666666 !important; /* Medium gray */
+    border-radius: 8px !important;
   }
 
-  /* Styling for the chat input textarea */
-.vfrc-chat-input textarea {
-  background-color: #434040 !important; /* Darker shade for input area */
-  color: #d6deeb !important;           /* Light text color for better visibility */
-}
+  /* Input Text Styling */
+  [class*="vfrc-input"] {
+    color: #ffffff !important; /* White text */
+  }
 
-/* Styling for the footer */
-.vfrc-footer {
-  background-color: #000000 !important;
+  /* Message Bubbles (existing style) */
+  .vfrc-message {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  }
 }

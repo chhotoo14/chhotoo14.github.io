@@ -1,97 +1,44 @@
-/* Import Poppins font */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+@layer vfrc-override {
+  /* 1. Full chat container background image */
+  .vfrc-chat {
+    background-image: url('https://chhotoo14.github.io/test12.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
 
-/* Apply Poppins font to all Voiceflow chat elements */
-.vfrc-root, .vfrc-root * {
-  font-family: 'Poppins', sans-serif;
-}
+  /* 2. Header and footer styling */
+  .vfrc-header, 
+  .vfrc-footer {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+  }
 
-/* Set the chat background image (full-size, centered, no-repeat) */
-.vfrc-root {
-  background-image: url('https://chhotoo14.github.io/test123.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
+  /* 3. Chat input styling */
+  .vfrc-chat-input {
+    background-color: #666666 !important;
+    color: #ffffff !important;
+  }
+  
+  .vfrc-chat-input input,
+  .vfrc-chat-input textarea,
+  .vfrc-chat-input button {
+    background-color: #666666 !important;
+    color: #ffffff !important;
+    border-color: #ffffff;
+  }
 
-/* Header and footer: black background, white text */
-.vfrc-header, .vfrc-footer {
-  background-color: #000000;
-  color: #ffffff;
-}
+  .vfrc-chat-input input::placeholder,
+  .vfrc-chat-input textarea::placeholder {
+    color: #ffffff !important;
+    opacity: 1;
+  }
 
-/* Input field placeholder styling (actual text set via config to "Message...") */
-.vfrc-input input::placeholder {
-  color: #aaaaaa;
-  font-style: italic;
-}
-
-/* Buttons and quick replies: pink base, darker pink on hover */
-button,
-.vfrc-button,
-.vfrc-quick-reply button {
-  background-color: #F3C8C8;
-  color: #000000;
-  border: none;
-  padding: 0.5em 1em;
-  cursor: pointer;
-}
-button:hover,
-.vfrc-button:hover,
-.vfrc-quick-reply button:hover {
-  background-color: #FF9B9B;
-}
-
-/* Quick-reply container spacing */
-.vfrc-quick-replies {
-  margin: 0.5em 0;
-}
-.vfrc-quick-reply {
-  margin: 0.25em 0.25em 0.25em 0;
-}
-.vfrc-quick-reply button {
-  display: block;
-}
-
-/* Message bubbles (assistant/system and user): pink background, black text */
-.vfrc-system-response .vfrc-message,
-.vfrc-user-response .vfrc-message {
-  background-color: #F3C8C8;
-  color: #000000;
-  border-radius: 0.5em;
-  padding: 0.75em;
-  margin: 0.25em 0;
-  max-width: 75%;
-}
-
-/* Card backgrounds (e.g. image cards): pink background */
-.vfrc-card, 
-.vfrc-card > * {
-  background-color: #F3C8C8;
-  color: #000000;
-}
-
-/* Voice input icon (microphone): pink color to match theme */
-.vfrc-voice-button svg,
-.vfrc-voice-button {
-  color: #F3C8C8;
-}
-.vfrc-voice-button:hover svg,
-.vfrc-voice-button:hover {
-  color: #FF9B9B;
-}
-
-/* Ensure conversation area uses full height with no extra padding */
-.vfrc-widget--chat {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-.vfrc-messages {
-  flex: 1;
-  overflow-y: auto;
-  margin: 0;
-  padding: 0 0.5em;
+  /* 5. Full-height conversation pane */
+  .vfrc-chat-conversation {
+    height: 100% !important;
+  }
 }

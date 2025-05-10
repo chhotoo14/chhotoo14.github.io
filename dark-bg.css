@@ -1,44 +1,24 @@
 @layer vfrc-override {
-  /* 1. Background Image Fix */
-  [class^="vfrc-chat"] { /* Target main container */
-    background: url("https://chhotoo14.github.io/test12.jpg") no-repeat center center/cover !important;
-    min-height: 100vh !important;
+  /* Fix input field visibility */
+  [class*="vfrc-input-container"] {
     display: flex !important;
-    flex-direction: column !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 8px !important;
+    padding: 12px !important;
   }
 
-  /* 2. Header Text Outline */
-  [class*="vfrc-assistant-info-title"] {
-    -webkit-text-stroke: 1px #000 !important;
-    text-shadow: 0 0 5px rgba(0,0,0,0.5) !important;
-    color: white !important;
-    font-size: 24px !important;
-  }
-
-  [class*="vfrc-assistant-info-description"] {
-    -webkit-text-stroke: 0.5px #000 !important;
-    color: white !important;
-    font-size: 16px !important;
-  }
-
-  /* 3. Footer Background Extension */
-  [class*="vfrc-footer"] {
-    background: rgba(0,0,0,0.6) !important;
-    margin-top: auto !important; /* Push footer to bottom */
-    position: relative !important;
-    z-index: 2 !important;
-  }
-
-  /* 4. Scrollable Area Adjustment */
-  [class*="s9t6011"] { /* Scroll container */
-    flex: 1 !important;
-    min-height: 300px !important;
-    overflow-y: auto !important;
-    padding-bottom: 20px !important;
-  }
-
-  /* 5. Message Area Transparency */
-  [class*="vfrc-chat-dialog"] {
+  /* Restore input field functionality */
+  [class*="vfrc-input"] {
     background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    font-size: 16px !important;
+    width: 100% !important;
+  }
+
+  /* Fix placeholder text */
+  [class*="vfrc-input"]::placeholder {
+    color: #666 !important;
+    font-style: italic !important;
   }
 }

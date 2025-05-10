@@ -24,20 +24,11 @@
   .vfrc-chat-input button {
     background-color: #666666 !important;
     color: #ffffff !important;
-    border-color: #ffffff;           /* optional: white border/text on buttons */
   }
   .vfrc-chat-input input::placeholder,
   .vfrc-chat-input textarea::placeholder {
     color: #ffffff !important;       /* white placeholder text */
     opacity: 1;
-  }
-  /* 4. Transparent message/dialog area */
-  .vfrc-chat-body,
-  .vfrc-chat .vfrc-message,
-  .vfrc-chat .vfrc-message-content,
-  .vfrc-chat .vfrc-message-bubble {
-    background-color: transparent !important;
-    box-shadow: none !important;     /* remove any bubble shadows */
   }
   /* 5. Ensure full height of conversation pane */
   .vfrc-chat-conversation {

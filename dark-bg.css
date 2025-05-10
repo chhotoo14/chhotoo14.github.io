@@ -1,53 +1,26 @@
 @layer vfrc-override {
-  /* Full widget background */
+  /* Full-screen background */
   .vfrc-chat {
-    background: url("https://chhotoo14.github.io/test12.jpg ") no-repeat center/cover !important;
+    background: url("https://chhotoo14.github.io/test12.jpg") no-repeat center/cover !important;
     height: 100vh !important;
     box-shadow: none !important;
-    position: relative !important;
-    overflow: hidden !important;
   }
 
-  /* Force footer to inherit background */
-  .vfrc-footer {
-    background: transparent !important;
-    position: relative !important;
-    z-index: 1 !important;
-  }
-
-  /* Ensure inner dialog doesn't block background */
+  /* Transparent inner dialog so messages float over the image */
   .vfrc-chat-dialog {
     background: transparent !important;
   }
 
-  /* Optional: Add a dark overlay to the footer for readability */
-  .vfrc-footer::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6) !important;
-    z-index: -1;
-  }
-}
-
-@layer vfrc-override {
-  /* Header color (reference point) */
-  .vfrc-header {
-    background-color: #004777 !important; /* Replace with your desired color */
-  }
-
-  /* Match footer background to header */
+  /* Header & Footer share the same dark overlay */
+  .vfrc-header,
   .vfrc-footer {
-    background-color: #004777 !important;
+    background: rgba(0, 0, 0, 0.6) !important;
   }
 
-  /* Match chat input area to header */
+  /* Input textarea slightly lighter than header/footer */
   .vfrc-chat-input textarea,
   .vfrc-chat-input--button {
-    background-color: #004777 !important;
-    color: #ffffff !important; /* Text color for readability */
+    background: rgba(0, 0, 0, 0.4) !important;
+    color: #fff !important;
   }
 }

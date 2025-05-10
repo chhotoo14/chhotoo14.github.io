@@ -12,14 +12,25 @@
     background: transparent !important;
   }
 
-  /* Footer Styling - Dark Black */
-/* Dark black footer */
-.vfrc-footer._1vj16242 {
-  background-color: #000000 !important;
-}
+  /* Pure black footer */
+  div.vfrc-footer._1vj16242 {
+    background-color: #000000 !important;
+  }
 
-/* Medium gray chat input */
-.vfrc-chat-input._1gdvh9t6 {
-  background-color: #666666 !important;
-  color: #ffffff !important;
+  /* Medium gray input wrapper */
+  div.vfrc-input-container._1gdvh9t1 {
+    background-color: #666666 !important;
+  }
+
+  /* If there’s a direct textarea or input inside */
+  div.vfrc-input-container._1gdvh9t1 textarea,
+  div.vfrc-input-container._1gdvh9t1 input {
+    background-color: #666666 !important;
+    color: #ffffff !important;
+  }
+
+  /* Just in case the inner “jsli…” div needs the bg too */
+  div.jsli361.jsli363 {
+    background-color: #666666 !important;
+  }
 }

@@ -1,46 +1,182 @@
-@layer vfrc-override {
-  /* 1. Full chat container background image */
-  .vfrc-chat {
-    background-image: url('https://chhotoo14.github.io/test12.jpg');
-    background-size: cover;           /* cover entire container:contentReference[oaicite:6]{index=6} */
-    background-position: center;      /* center-aligned:contentReference[oaicite:7]{index=7} */
-    background-repeat: no-repeat;     /* no tiling:contentReference[oaicite:8]{index=8} */
-    height: 100% !important;          /* ensure full height */
-    padding: 0 !important;            /* remove default padding */
-    margin: 0 !important;
-  }
-  /* 2. Header and footer black */
-  .vfrc-header, .vfrc-footer {
-    background-color: #000000 !important;
-    color: #ffffff;                   /* ensure text (if any) is visible */
-  }
-  /* 3. Chat input area gray with white text */
-  .vfrc-chat-input {
-    background-color: #666666 !important;
-    color: #ffffff !important;
-  }
-  .vfrc-chat-input input,
-  .vfrc-chat-input textarea,
-  .vfrc-chat-input button {
-    background-color: #666666 !important;
-    color: #ffffff !important;
-    border-color: #ffffff;           /* optional: white border/text on buttons */
-  }
-  .vfrc-chat-input input::placeholder,
-  .vfrc-chat-input textarea::placeholder {
-    color: #ffffff !important;       /* white placeholder text */
-    opacity: 1;
-  }
-  /* 4. Transparent message/dialog area */
-  .vfrc-chat-body,
-  .vfrc-chat .vfrc-message,
-  .vfrc-chat .vfrc-message-content,
-  .vfrc-chat .vfrc-message-bubble {
-    background-color: transparent !important;
-    box-shadow: none !important;     /* remove any bubble shadows */
-  }
-  /* 5. Ensure full height of conversation pane */
-  .vfrc-chat-conversation {
-    height: 100% !important;
-  }
+/* ====================
+   VARIABLES (Customizable)
+   ==================== */
+:root {
+  --font-family: 'Poppins', sans-serif;
+  --header-bg-color: #000000;
+  --header-text-color: #ffffff;
+  --header-height: 60px; /* Adjust header height if needed */
+  
+  --input-bg-color: #f7f7f7; /* Grayish input background */
+  --button-bg-color: #FFBFBF; /* Pink button background */
+  --button-hover-color: #FF9E9E; /* Pink hover color */
+  --button-text-color: #ffffff; /* Button text/icon color */
+  
+  --assistant-bg-color: #ffffff; /* Assistant message background */
+  --user-bg-color: #FFBFBF; /* User message background */
+  --message-text-color: #000000; /* Message text color */
+  
+  --watermark-color: #888888; /* Gray color for watermark text */
+  
+  --border-radius: 12px; /* Rounded corners */
+  --padding: 12px; /* General padding */
+}
+
+/* Import Google Font Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+/* ====================
+   GLOBAL STYLES
+   ==================== */
+.vfrc,
+.vfrc * {
+  font-family: var(--font-family) !important;
+}
+
+/* ====================
+   CONTAINER / WIDGET
+   ==================== */
+/* Background image covering the chat container */
+.vfrc-chat-wrapper {
+  background-image: url('https://chhotoo14.github.io/test12.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: var(--border-radius);
+  overflow: hidden; /* Ensure rounded corners clip children */
+}
+
+/* ====================
+   HEADER
+   ==================== */
+.vfrc-chat-header {
+  background-color: var(--header-bg-color);
+  color: var(--header-text-color);
+  padding: var(--padding);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--header-height);
+  box-sizing: border-box;
+}
+
+/* Shop name (aligned left) */
+.vfrc-chat-header .vfrc-shop-name {
+  font-size: 1.2em;
+  font-weight: 600;
+  color: var(--header-text-color);
+}
+
+/* Assistant info (avatar and text on right) */
+.vfrc-chat-header .vfrc-assistant-info {
+  display: flex;
+  align-items: center;
+}
+
+/* Assistant avatar */
+.vfrc-chat-header .vfrc-assistant-info img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+/* Assistant name and description */
+.vfrc-chat-header .vfrc-assistant-info .vfrc-name {
+  font-size: 1em;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.vfrc-chat-header .vfrc-assistant-info .vfrc-description {
+  font-size: 0.85em;
+  opacity: 0.8;
+  line-height: 1.2;
+}
+
+/* ====================
+   CHAT BODY (Messages)
+   ==================== */
+.vfrc-chat-body {
+  padding: var(--padding);
+  background: transparent; /* Let background image show through */
+}
+
+/* Assistant (bot) messages */
+.vfrc-message--assistant {
+  background-color: var(--assistant-bg-color);
+  color: var(--message-text-color);
+  border-radius: var(--border-radius);
+  padding: 10px;
+  margin-bottom: 8px;
+  align-self: flex-start; /* Left side */
+}
+
+/* User messages */
+.vfrc-message--user {
+  background-color: var(--user-bg-color);
+  color: var(--message-text-color);
+  border-radius: var(--border-radius);
+  padding: 10px;
+  margin-bottom: 8px;
+  align-self: flex-end; /* Right side */
+}
+
+/* ====================
+   INPUT AREA
+   ==================== */
+.vfrc-input {
+  display: flex;
+  align-items: center;
+  padding: var(--padding);
+  background: transparent; /* Transparent to show container background */
+}
+
+/* Text input field */
+.vfrc-input textarea {
+  flex: 1;
+  background-color: var(--input-bg-color);
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 10px;
+  margin-right: 8px;
+  color: #000;
+  resize: none;
+}
+
+/* Send button (e.g., arrow icon button) */
+.vfrc-input button {
+  background-color: var(--button-bg-color);
+  color: var(--button-text-color);
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+/* Send button hover state */
+.vfrc-input button:hover {
+  background-color: var(--button-hover-color);
+}
+
+/* ====================
+   WATERMARK / FOOTER
+   ==================== */
+.vfrc-watermark {
+  text-align: center;
+  padding: 8px 0;
+  font-size: 0.85em;
+  color: var(--watermark-color);
+  background: transparent; /* Transparent background */
+}
+
+/* Clickable link styling */
+.vfrc-watermark a {
+  color: var(--watermark-color);
+  text-decoration: none;
+}
+
+.vfrc-watermark a:hover {
+  text-decoration: underline;
 }

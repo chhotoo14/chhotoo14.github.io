@@ -15,6 +15,6 @@
 
   /* Optional: Make footer background transparent so image is visible */
   .vfrc-footer {
-    background-color: transparent !important;
+    background-color: #000000 !important;
   }
 }

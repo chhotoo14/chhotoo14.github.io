@@ -1,182 +1,93 @@
-/* ====================
-   VARIABLES (Customizable)
-   ==================== */
-:root {
-  --font-family: 'Poppins', sans-serif;
-  --header-bg-color: #000000;
-  --header-text-color: #ffffff;
-  --header-height: 60px; /* Adjust header height if needed */
-  
-  --input-bg-color: #f7f7f7; /* Grayish input background */
-  --button-bg-color: #FFBFBF; /* Pink button background */
-  --button-hover-color: #FF9E9E; /* Pink hover color */
-  --button-text-color: #ffffff; /* Button text/icon color */
-  
-  --assistant-bg-color: #ffffff; /* Assistant message background */
-  --user-bg-color: #FFBFBF; /* User message background */
-  --message-text-color: #000000; /* Message text color */
-  
-  --watermark-color: #888888; /* Gray color for watermark text */
-  
-  --border-radius: 12px; /* Rounded corners */
-  --padding: 12px; /* General padding */
-}
+@layer vfrc-override {
+  /* ====================
+     VARIABLES (Customizable)
+     ==================== */
+  :root {
+    --font-family: 'Poppins', sans-serif;
+    --header-bg: #000000;
+    --header-text: #ffffff;
+    --input-bg: #f7f7f7;
+    --button-bg: #FFBFBF;
+    --button-hover: #FF9E9E;
+    --assistant-msg: #ffffff;
+    --user-msg: #FFBFBF;
+    --message-text: #000000;
+    --border-radius: 12px;
+  }
 
-/* Import Google Font Poppins */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
-/* ====================
-   GLOBAL STYLES
-   ==================== */
-.vfrc,
-.vfrc * {
-  font-family: var(--font-family) !important;
-}
+  /* ====================
+     GLOBAL OVERRIDES
+     ==================== */
+  .vfrc-widget * {
+    font-family: var(--font-family) !important;
+  }
 
-/* ====================
-   CONTAINER / WIDGET
-   ==================== */
-/* Background image covering the chat container */
-.vfrc-chat-wrapper {
-  background-image: url('https://chhotoo14.github.io/test12.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  border-radius: var(--border-radius);
-  overflow: hidden; /* Ensure rounded corners clip children */
-}
+  /* ====================
+     BACKGROUND IMAGE
+     ==================== */
+  .vfrc-chat {
+    background: url('https://chhotoo14.github.io/test12.jpg') center/cover !important;
+    position: relative !important;
+  }
 
-/* ====================
-   HEADER
-   ==================== */
-.vfrc-chat-header {
-  background-color: var(--header-bg-color);
-  color: var(--header-text-color);
-  padding: var(--padding);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: var(--header-height);
-  box-sizing: border-box;
-}
+  /* ====================
+     HEADER
+     ==================== */
+  .vfrc-header {
+    background: var(--header-bg) !important;
+    color: var(--header-text) !important;
+    padding: 12px !important;
+  }
 
-/* Shop name (aligned left) */
-.vfrc-chat-header .vfrc-shop-name {
-  font-size: 1.2em;
-  font-weight: 600;
-  color: var(--header-text-color);
-}
+  .vfrc-assistant-info--title {
+    font-size: 1.2rem !important;
+    font-weight: 600 !important;
+  }
 
-/* Assistant info (avatar and text on right) */
-.vfrc-chat-header .vfrc-assistant-info {
-  display: flex;
-  align-items: center;
-}
+  .vfrc-assistant-info--description {
+    opacity: 0.8 !important;
+    font-size: 0.9rem !important;
+  }
 
-/* Assistant avatar */
-.vfrc-chat-header .vfrc-assistant-info img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: 10px;
-  object-fit: cover;
-}
+  /* ====================
+     MESSAGES
+     ==================== */
+  .vfrc-system-response .vfrc-message {
+    background: var(--assistant-msg) !important;
+    color: var(--message-text) !important;
+    border-radius: var(--border-radius) !important;
+  }
 
-/* Assistant name and description */
-.vfrc-chat-header .vfrc-assistant-info .vfrc-name {
-  font-size: 1em;
-  font-weight: 600;
-  line-height: 1.2;
-}
+  .vfrc-user-response .vfrc-message {
+    background: var(--user-msg) !important;
+    color: var(--message-text) !important;
+    border-radius: var(--border-radius) !important;
+  }
 
-.vfrc-chat-header .vfrc-assistant-info .vfrc-description {
-  font-size: 0.85em;
-  opacity: 0.8;
-  line-height: 1.2;
-}
+  /* ====================
+     INPUT
+     ==================== */
+  .vfrc-input {
+    background: var(--input-bg) !important;
+    border-radius: var(--border-radius) !important;
+  }
 
-/* ====================
-   CHAT BODY (Messages)
-   ==================== */
-.vfrc-chat-body {
-  padding: var(--padding);
-  background: transparent; /* Let background image show through */
-}
+  .vfrc-chat-input--button {
+    background: var(--button-bg) !important;
+    color: white !important;
+    border-radius: var(--border-radius) !important;
+  }
 
-/* Assistant (bot) messages */
-.vfrc-message--assistant {
-  background-color: var(--assistant-bg-color);
-  color: var(--message-text-color);
-  border-radius: var(--border-radius);
-  padding: 10px;
-  margin-bottom: 8px;
-  align-self: flex-start; /* Left side */
-}
+  .vfrc-chat-input--button:hover {
+    background: var(--button-hover) !important;
+  }
 
-/* User messages */
-.vfrc-message--user {
-  background-color: var(--user-bg-color);
-  color: var(--message-text-color);
-  border-radius: var(--border-radius);
-  padding: 10px;
-  margin-bottom: 8px;
-  align-self: flex-end; /* Right side */
-}
-
-/* ====================
-   INPUT AREA
-   ==================== */
-.vfrc-input {
-  display: flex;
-  align-items: center;
-  padding: var(--padding);
-  background: transparent; /* Transparent to show container background */
-}
-
-/* Text input field */
-.vfrc-input textarea {
-  flex: 1;
-  background-color: var(--input-bg-color);
-  border: none;
-  border-radius: var(--border-radius);
-  padding: 10px;
-  margin-right: 8px;
-  color: #000;
-  resize: none;
-}
-
-/* Send button (e.g., arrow icon button) */
-.vfrc-input button {
-  background-color: var(--button-bg-color);
-  color: var(--button-text-color);
-  border: none;
-  border-radius: var(--border-radius);
-  padding: 10px 16px;
-  cursor: pointer;
-}
-
-/* Send button hover state */
-.vfrc-input button:hover {
-  background-color: var(--button-hover-color);
-}
-
-/* ====================
-   WATERMARK / FOOTER
-   ==================== */
-.vfrc-watermark {
-  text-align: center;
-  padding: 8px 0;
-  font-size: 0.85em;
-  color: var(--watermark-color);
-  background: transparent; /* Transparent background */
-}
-
-/* Clickable link styling */
-.vfrc-watermark a {
-  color: var(--watermark-color);
-  text-decoration: none;
-}
-
-.vfrc-watermark a:hover {
-  text-decoration: underline;
+  /* ====================
+     WATERMARK
+     ==================== */
+  .vfrc-footer--watermark {
+    color: #888888 !important;
+  }
 }

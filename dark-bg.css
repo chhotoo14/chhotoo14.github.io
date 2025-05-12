@@ -1,93 +1,68 @@
-@layer vfrc-override {
-  /* ====================
-     VARIABLES (Customizable)
-     ==================== */
-  :root {
-    --font-family: 'Poppins', sans-serif;
-    --header-bg: #000000;
-    --header-text: #ffffff;
-    --input-bg: #f7f7f7;
-    --button-bg: #FFBFBF;
-    --button-hover: #FF9E9E;
-    --assistant-msg: #ffffff;
-    --user-msg: #FFBFBF;
-    --message-text: #000000;
-    --border-radius: 12px;
-  }
+  @layer vfrc-override {
+    :root {
+      --font-family: 'Poppins', sans-serif;
+      --header-bg: #000000;
+      --header-text: #ffffff;
+      --input-bg: #f7f7f7;
+      --button-bg: #FFBFBF;
+      --button-hover: #FF9E9E;
+      --assistant-msg: #ffffff;
+      --user-msg: #FFBFBF;
+      --message-text: #000000;
+      --border-radius: 12px;
+    }
 
+    .vfrc-widget * {
+      font-family: var(--font-family) !important;
+    }
+
+    .vfrc-chat {
+      background: url('https://chhotoo14.github.io/test12.jpg') center/cover no-repeat !important;
+    }
+
+    .vfrc-header {
+      background: var(--header-bg) !important;
+      color: var(--header-text) !important;
+      padding: 12px !important;
+      border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+    }
+
+    .vfrc-system-response .vfrc-message {
+      background: var(--assistant-msg) !important;
+      color: var(--message-text) !important;
+      border-radius: var(--border-radius) !important;
+      margin: 8px 0 !important;
+    }
+
+    .vfrc-user-response .vfrc-message {
+      background: var(--user-msg) !important;
+      color: var(--message-text) !important;
+      border-radius: var(--border-radius) !important;
+      margin: 8px 0 !important;
+    }
+
+    .vfrc-chat-input {
+      background: var(--input-bg) !important;
+      border-radius: var(--border-radius) !important;
+      margin: 12px !important;
+    }
+
+    .vfrc-chat-input--button {
+      background: var(--button-bg) !important;
+      color: white !important;
+      border-radius: var(--border-radius) !important;
+      transition: background 0.3s ease !important;
+    }
+
+    .vfrc-chat-input--button:hover {
+      background: var(--button-hover) !important;
+    }
+
+    .vfrc-footer--watermark {
+      color: #888888 !important;
+      font-size: 0.8rem !important;
+    }
+  }
+  
+  /* Font import MUST be outside layer */
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
-
-  /* ====================
-     GLOBAL OVERRIDES
-     ==================== */
-  .vfrc-widget * {
-    font-family: var(--font-family) !important;
-  }
-
-  /* ====================
-     BACKGROUND IMAGE
-     ==================== */
-  .vfrc-chat {
-    background: url('https://chhotoo14.github.io/test12.jpg') center/cover !important;
-    position: relative !important;
-  }
-
-  /* ====================
-     HEADER
-     ==================== */
-  .vfrc-header {
-    background: var(--header-bg) !important;
-    color: var(--header-text) !important;
-    padding: 12px !important;
-  }
-
-  .vfrc-assistant-info--title {
-    font-size: 1.2rem !important;
-    font-weight: 600 !important;
-  }
-
-  .vfrc-assistant-info--description {
-    opacity: 0.8 !important;
-    font-size: 0.9rem !important;
-  }
-
-  /* ====================
-     MESSAGES
-     ==================== */
-  .vfrc-system-response .vfrc-message {
-    background: var(--assistant-msg) !important;
-    color: var(--message-text) !important;
-    border-radius: var(--border-radius) !important;
-  }
-
-  .vfrc-user-response .vfrc-message {
-    background: var(--user-msg) !important;
-    color: var(--message-text) !important;
-    border-radius: var(--border-radius) !important;
-  }
-
-  /* ====================
-     INPUT
-     ==================== */
-  .vfrc-input {
-    background: var(--input-bg) !important;
-    border-radius: var(--border-radius) !important;
-  }
-
-  .vfrc-chat-input--button {
-    background: var(--button-bg) !important;
-    color: white !important;
-    border-radius: var(--border-radius) !important;
-  }
-
-  .vfrc-chat-input--button:hover {
-    background: var(--button-hover) !important;
-  }
-
-  /* ====================
-     WATERMARK
-     ==================== */
-  .vfrc-footer--watermark {
-    color: #888888 !important;
-  }
-}

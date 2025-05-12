@@ -1,19 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 
-@layer vfrc-override {
-  /* Set font family for the entire chat widget */
-  .vfrc-chat {
-    font-family: 'Poppins', sans-serif;
-  }
-
-  /* Background image and container styling */
   .vfrc-chat {
     background-image: url('https://chhotoo14.github.io/test12.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border-radius: 10px; /* Curved edges for the chat widget */
   }

@@ -1,6 +1,3 @@
-@layer vfrc-override {
-  /* Full chat widget background */
-  .vfrc-chat {
-    background: url("https://chhotoo14.github.io/test12.jpg") no-repeat center/cover !important;
-  }
+.vfrc-chat {
+  background-image: url('https://chhotoo14.github.io/test12.jpg') !important;
 }

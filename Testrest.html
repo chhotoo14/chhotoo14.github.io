@@ -1,147 +1,49 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Restaurant Voice Chat</title>
+    <title>Restaurant Chat</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-      /* Existing styles remain the same */
-      /* Add header controls */
-      #header {
-        position: fixed;
-        top: 0;
-        width: 100%;
-        height: 60px;
-        background: white;
-        z-index: 10000;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        padding: 0 20px;
-      }
-
-      .voice-control {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 10px;
-        transition: all 0.3s;
-        position: relative;
-      }
-
-      .voice-control:hover {
-        transform: scale(1.1);
-      }
-
-      .pulse-ring {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border: 2px solid #3498db;
-        border-radius: 50%;
+      /* Original styles unchanged */
+      /* Add animation for existing button */
+      .voiceflow-chat header button:nth-child(2) { /* Target mute button */
         animation: pulse 2s infinite;
-        opacity: 0;
+        transition: all 0.3s;
       }
-
+      
       @keyframes pulse {
-        0% { transform: scale(0.9); opacity: 1; }
-        100% { transform: scale(1.5); opacity: 0; }
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
       }
 
-      .voice-prompt {
-        position: fixed;
-        top: 70px;
-        right: 20px;
-        background: #3498db;
-        color: white;
-        padding: 10px 15px;
-        border-radius: 8px;
-        animation: slideIn 0.5s ease-out;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-      }
-
-      @keyframes slideIn {
-        from { transform: translateY(-20px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
+      .voiceflow-chat header button:nth-child(2):hover {
+        transform: rotate(360deg) scale(1.2);
       }
     </style>
   </head>
   <body>
-    <div id="header">
-      <button class="voice-control" id="voiceToggle">
-        🔇 <!-- Muted icon -->
-        <div class="pulse-ring" id="pulse"></div>
-      </button>
-    </div>
-
-    <!-- Existing loading and container divs remain same -->
+    <!-- Original body content unchanged -->
 
     <script type="text/javascript">
       (function(d, t) {
+        var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
         const loading = document.getElementById('loading');
-        const voiceToggle = document.getElementById('voiceToggle');
-        const pulse = document.getElementById('pulse');
         let ttsEnabled = false;
-        let synth = window.speechSynthesis;
-        let voices = [];
+        const synth = window.speechSynthesis;
 
-        // Initialize voice synthesis
-        synth.onvoiceschanged = () => {
-          voices = synth.getVoices();
-        };
-
-        // Voice toggle handler
-        voiceToggle.addEventListener('click', () => {
-          ttsEnabled = !ttsEnabled;
-          
-          // Update UI
-          voiceToggle.innerHTML = ttsEnabled ? '🔊' : '🔇';
-          
-          if(ttsEnabled) {
-            // Show activation effects
-            pulse.style.opacity = '1';
-            
-            // Show temporary prompt
-            const prompt = document.createElement('div');
-            prompt.className = 'voice-prompt';
-            prompt.textContent = '🎤 Click mic icon to speak!';
-            document.body.appendChild(prompt);
-            
-            // Remove prompt after 3 seconds
-            setTimeout(() => prompt.remove(), 3000);
-            
-            // Play welcome message
-            if(window.voiceflow?.chat) {
-              const utter = new SpeechSynthesisUtterance('Voice mode activated! Ask me anything.');
-              utter.voice = voices.find(v => v.name === 'Google US English');
-              synth.speak(utter);
-            }
-          } else {
-            pulse.style.opacity = '0';
-            synth.cancel();
-          }
-        });
-
-        // Voiceflow initialization
-        const v = d.createElement(t), s = d.getElementsByTagName(t)[0];
-        
         v.onload = function() {
           window.voiceflow.chat.load({
             verify: { projectID: '682363a33e4da73e3a35af67' },
             url: 'https://general-runtime.voiceflow.com',
             versionID: 'production',
             voice: { 
-              url: "https://runtime-api.voiceflow.com",
-              enabled: true
+               url: "https://runtime-api.voiceflow.com" 
             },
             render: {
               mode: 'embedded',
               target: document.body,
-              launcher: {
-                visible: false // We'll use custom mic button
-              }
+              launcher: 'none'
             }
           });
 
@@ -149,32 +51,41 @@
             window.voiceflow.chat.open();
             loading.style.opacity = '0';
             setTimeout(() => loading.style.display = 'none', 300);
+
+            // Hook into existing header buttons
+            const header = document.querySelector('.voiceflow-chat header');
+            const buttons = header.querySelectorAll('button');
+            
+            // Add TTS functionality to second button (mute)
+            buttons[1].addEventListener('click', () => {
+              ttsEnabled = !ttsEnabled;
+              if(ttsEnabled) {
+                const msg = new SpeechSynthesisUtterance('Voice responses activated');
+                synth.speak(msg);
+              }
+            });
+
+            // Modify bot responses
+            window.voiceflow.chat.on('text', ({ text }) => {
+              if(ttsEnabled) {
+                const msg = new SpeechSynthesisUtterance(text);
+                synth.speak(msg);
+              }
+            });
           });
 
-          window.voiceflow.chat.on('text', ({ text }) => {
-            if (!ttsEnabled) return;
-            
-            if (synth.speaking) synth.cancel();
-            const utter = new SpeechSynthesisUtterance(text);
-            utter.voice = voices.find(v => v.name === 'Google US English') || voices[0];
-            synth.speak(utter);
-          });
-
-          // Add custom mic button handler
-          window.voiceflow.chat.on('ready', () => {
-            const micButton = document.createElement('button');
-            micButton.innerHTML = '🎤';
-            micButton.style.position = 'fixed';
-            micButton.style.bottom = '20px';
-            micButton.style.right = '20px';
-            micButton.style.fontSize = '24px';
-            micButton.onclick = () => window.voiceflow.chat.startRecording();
-            
-            document.body.appendChild(micButton);
+          window.voiceflow.chat.on('error', () => {
+            loading.innerHTML = 'Failed to load chat. Please refresh.';
           });
         };
 
-        // Rest of the initialization code remains same
+        v.onerror = function() {
+          loading.innerHTML = 'Failed to load chat. Please check connection.';
+        };
+
+        v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
+        v.type = "text/javascript";
+        s.parentNode.insertBefore(v, s);
       })(document, 'script');
     </script>
   </body>

@@ -68,72 +68,24 @@
     <div id="voiceflow-container"></div>
 
     <script type="text/javascript">
-      (function(d, t) {
-        var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
-        const loading = document.getElementById('loading');
-        
-        v.onload = function() {
-          window.voiceflow.chat.load({
-            verify: { projectID: '682363a33e4da73e3a35af67' },
-            url: 'https://general-runtime.voiceflow.com',
-            versionID: 'production',
-            voice: { 
-              url: "https://runtime-api.voiceflow.com",
-              enabled: true,  // ← Explicit voice activation
-              start: true,    // ← Auto-start voice interaction
-              stt: true,      // ← Enable speech-to-text
-              tts: {
-                provider: 'voiceflow',  // ← Specify TTS provider
-                voice: 'sara'           // ← Voice personality
-              }
-            },
-            render: {
-              mode: 'embedded',
-              target: document.getElementById('voiceflow-container'),
-              launcher: {
-                visible: false  // ← Custom launcher control
-              }
-            }
-          });
-
-          // Voice State Management
-          let isSpeaking = false;
-          
-          window.voiceflow.chat.on('speak-start', () => {
-            isSpeaking = true;
-            console.log('Voice started speaking');
-          });
-
-          window.voiceflow.chat.on('speak-end', () => {
-            isSpeaking = false;
-            console.log('Voice stopped speaking');
-          });
-
-          // Unified Loading Handler
-          const handleLoad = () => {
-            loading.style.opacity = '0';
-            setTimeout(() => {
-              loading.style.display = 'none';
-              // Start voice interaction after load
-              window.voiceflow.chat.speak('Welcome to our restaurant! How can I help you?');
-            }, 300);
-          };
-
-          window.voiceflow.chat.on('ready', handleLoad);
-          window.voiceflow.chat.on('error', (err) => {
-            console.error('Voiceflow Error:', err);
-            loading.innerHTML = 'System unavailable. Please try later.';
-          });
-        };
-
-        v.onerror = () => {
-          loading.innerHTML = 'Connection Error. Refresh to continue.';
-        };
-
-        v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
-        v.type = "text/javascript";
-        s.parentNode.insertBefore(v, s);
-      })(document, 'script');
-    </script>
+  (function(d, t) {
+      var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+      v.onload = function() {
+        window.voiceflow.chat.load({
+          verify: { projectID: '682363a33e4da73e3a35af67' },
+          url: 'https://general-runtime.voiceflow.com',
+          versionID: 'production',
+          voice: {
+            url: "https://runtime-api.voiceflow.com"
+          },
+          render: {
+            mode: 'embedded',
+            target: document.getElementById(...)
+          }
+        });
+      }
+      v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
+  })(document, 'script');
+</script>
   </body>
 </html>

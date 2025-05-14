@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Restaurant Chat</title>
+    <style>
+      /* Hide the body margins and Voiceflow header */
+      body { margin: 0; padding: 0; }
+      iframe { width: 100vw; height: 100vh; border: none; }
+    </style>
+  </head>
+  <body>
+    <script type="text/javascript">
+      (function(d, t) {
+        var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+        v.onload = function() {
+          window.voiceflow.chat.load({
+            verify: { projectID: '682363a33e4da73e3a35af67' }, <!-- Your Project ID -->
+            url: 'https://general-runtime.voiceflow.com',
+            versionID: 'production',
+            voice: { url: "https://runtime-api.voiceflow.com" }
+          });
+          // Automatically open the chat
+          window.voiceflow.chat.open();
+        };
+        v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
+        v.type = "text/javascript";
+        s.parentNode.insertBefore(v, s);
+      })(document, 'script');
+    </script>
+  </body>
+</html>

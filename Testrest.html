@@ -68,24 +68,51 @@
     <div id="voiceflow-container"></div>
 
     <script type="text/javascript">
-  (function(d, t) {
-      var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
-      v.onload = function() {
-        window.voiceflow.chat.load({
-          verify: { projectID: '682363a33e4da73e3a35af67' },
-          url: 'https://general-runtime.voiceflow.com',
-          versionID: 'production',
-          voice: {
-            url: "https://runtime-api.voiceflow.com"
-          },
-          render: {
-            mode: 'embedded',
-            target: document.getElementById(...)
-          }
-        });
-      }
-      v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
-  })(document, 'script');
-</script>
+      (function(d, t) {
+        var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+        
+        // Show spinner immediately
+        const loading = document.getElementById('loading');
+        
+        v.onload = function() {
+          window.voiceflow.chat.load({
+            verify: { projectID: '682363a33e4da73e3a35af67' },
+            url: 'https://general-runtime.voiceflow.com',
+            versionID: 'production',
+            voice: { 
+               url: "https://runtime-api.voiceflow.com" 
+            },
+            render: {
+              mode: 'embedded',
+              target: document.body,
+              launcher: 'none'
+            }
+          });
+
+          // Handle success
+          window.voiceflow.chat.on('ready', () => {
+            window.voiceflow.chat.open();
+            loading.style.opacity = '0';
+            setTimeout(() => {
+              loading.style.display = 'none';
+            }, 300);
+          });
+
+          // Handle errors
+          window.voiceflow.chat.on('error', () => {
+            loading.innerHTML = 'Failed to load chat. Please refresh.';
+          });
+        };
+
+        // Handle script load failure
+        v.onerror = function() {
+          loading.innerHTML = 'Failed to load chat. Please check connection.';
+        };
+
+        v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
+        v.type = "text/javascript";
+        s.parentNode.insertBefore(v, s);
+      })(document, 'script');
+    </script>
   </body>
 </html>

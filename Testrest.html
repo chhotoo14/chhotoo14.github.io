@@ -70,8 +70,6 @@
     <script type="text/javascript">
       (function(d, t) {
         var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
-        
-        // Show spinner immediately
         const loading = document.getElementById('loading');
         
         v.onload = function() {
@@ -80,33 +78,56 @@
             url: 'https://general-runtime.voiceflow.com',
             versionID: 'production',
             voice: { 
-              url: "https://runtime-api.voiceflow.com" 
+              url: "https://runtime-api.voiceflow.com",
+              enabled: true,  // ← Explicit voice activation
+              start: true,    // ← Auto-start voice interaction
+              stt: true,      // ← Enable speech-to-text
+              tts: {
+                provider: 'voiceflow',  // ← Specify TTS provider
+                voice: 'sara'           // ← Voice personality
+              }
             },
             render: {
               mode: 'embedded',
-              target: document.body,
-              launcher: 'none'
+              target: document.getElementById('voiceflow-container'),
+              launcher: {
+                visible: false  // ← Custom launcher control
+              }
             }
           });
 
-          // Handle success
-          window.voiceflow.chat.on('ready', () => {
-            window.voiceflow.chat.open();
+          // Voice State Management
+          let isSpeaking = false;
+          
+          window.voiceflow.chat.on('speak-start', () => {
+            isSpeaking = true;
+            console.log('Voice started speaking');
+          });
+
+          window.voiceflow.chat.on('speak-end', () => {
+            isSpeaking = false;
+            console.log('Voice stopped speaking');
+          });
+
+          // Unified Loading Handler
+          const handleLoad = () => {
             loading.style.opacity = '0';
             setTimeout(() => {
               loading.style.display = 'none';
+              // Start voice interaction after load
+              window.voiceflow.chat.speak('Welcome to our restaurant! How can I help you?');
             }, 300);
-          });
+          };
 
-          // Handle errors
-          window.voiceflow.chat.on('error', () => {
-            loading.innerHTML = 'Failed to load chat. Please refresh.';
+          window.voiceflow.chat.on('ready', handleLoad);
+          window.voiceflow.chat.on('error', (err) => {
+            console.error('Voiceflow Error:', err);
+            loading.innerHTML = 'System unavailable. Please try later.';
           });
         };
 
-        // Handle script load failure
-        v.onerror = function() {
-          loading.innerHTML = 'Failed to load chat. Please check connection.';
+        v.onerror = () => {
+          loading.innerHTML = 'Connection Error. Refresh to continue.';
         };
 
         v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";

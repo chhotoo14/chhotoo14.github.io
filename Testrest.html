@@ -2,45 +2,77 @@
 <html>
   <head>
     <title>Restaurant Chat</title>
-    <!-- Mobile Viewport Settings -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-      /* Lock body dimensions and hide overflow */
+      /* Full-screen lock */
       html, body {
         margin: 0;
         padding: 0;
-        width: 100vw;
-        height: 100vh;
+        width: 100%;
+        height: 100%;
         overflow: hidden;
-        touch-action: none; /* Disable pinch-zoom */
-        -webkit-overflow-scrolling: touch;
+        touch-action: none;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
       }
 
-      /* Full-screen Voiceflow container */
+      /* Loading spinner container */
+      #loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.3s;
+      }
+
+      /* Spinner animation */
+      .spinner {
+        width: 10vw;
+        height: 10vw;
+        min-width: 50px;
+        min-height: 50px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      /* Voiceflow container */
       #voiceflow-container {
         width: 100vw !important;
         height: 100vh !important;
         position: fixed;
         top: 0;
         left: 0;
-        overscroll-behavior: contain;
-      }
-
-      /* Hide scrollbars in Voiceflow iframe */
-      vf-chat iframe {
-        width: 100% !important;
-        height: 100% !important;
-        border: none !important;
-        overscroll-behavior: contain;
       }
     </style>
   </head>
   <body>
+    <div id="loading">
+      <div class="spinner"></div>
+    </div>
+
     <div id="voiceflow-container"></div>
 
     <script type="text/javascript">
       (function(d, t) {
         var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+        
+        // Show spinner immediately
+        const loading = document.getElementById('loading');
+        
         v.onload = function() {
           window.voiceflow.chat.load({
             verify: { projectID: '682363a33e4da73e3a35af67' },
@@ -50,33 +82,34 @@
             render: {
               mode: 'embedded',
               target: document.getElementById('voiceflow-container'),
-              launcher: 'none' // Hide default chat icon
+              launcher: 'none'
             }
           });
-          
-          // Auto-open immediately with small delay
-          setTimeout(() => {
+
+          // Handle success
+          window.voiceflow.chat.on('ready', () => {
             window.voiceflow.chat.open();
-          }, 300);
+            loading.style.opacity = '0';
+            setTimeout(() => {
+              loading.style.display = 'none';
+            }, 300);
+          });
+
+          // Handle errors
+          window.voiceflow.chat.on('error', () => {
+            loading.innerHTML = 'Failed to load chat. Please refresh.';
+          });
         };
+
+        // Handle script load failure
+        v.onerror = function() {
+          loading.innerHTML = 'Failed to load chat. Please check connection.';
+        };
+
         v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
         v.type = "text/javascript";
         s.parentNode.insertBefore(v, s);
       })(document, 'script');
     </script>
-    <div id="loading" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);">
-  <svg width="50" height="50" viewBox="0 0 50 50">
-    <circle cx="25" cy="25" r="20" fill="none" stroke="#000" stroke-width="4" stroke-dasharray="31.415, 31.415" stroke-linecap="round">
-      <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s" repeatCount="indefinite"/>
-    </circle>
-  </svg>
-</div>
-
-<script>
-  // Hide loader when chat opens
-  window.voiceflow.chat.on('open', () => {
-    document.getElementById('loading').style.display = 'none';
-  });
-</script>
   </body>
 </html>

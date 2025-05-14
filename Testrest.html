@@ -1,8 +1,7 @@
-
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Restaurant Chat</title>
+    <title>Restaurant Voice Chat</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
       /* Full-screen lock */
@@ -18,7 +17,7 @@
         user-select: none;
       }
 
-      /* Loading spinner container */
+      /* Loading spinner */
       #loading {
         position: fixed;
         top: 0;
@@ -33,7 +32,6 @@
         transition: opacity 0.3s;
       }
 
-      /* Spinner animation */
       .spinner {
         width: 10vw;
         height: 10vw;
@@ -45,22 +43,26 @@
         animation: spin 1s linear infinite;
       }
 
+      /* Start button */
+      #startButton {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 15px 30px;
+        font-size: 1.2em;
+        z-index: 10000;
+        cursor: pointer;
+      }
+
       @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
-
-      /* Voiceflow container */
-      #voiceflow-container {
-        width: 100vw !important;
-        height: 100vh !important;
-        position: fixed;
-        top: 0;
-        left: 0;
-      }
     </style>
   </head>
   <body>
+    <button id="startButton">Start Voice Chat</button>
     <div id="loading">
       <div class="spinner"></div>
     </div>
@@ -69,49 +71,91 @@
 
     <script type="text/javascript">
       (function(d, t) {
-        var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+        // Initialize speech synthesis
+        const synth = window.speechSynthesis;
+        let voices = [];
         
-        // Show spinner immediately
+        // Get browser voices (required for some browsers)
+        synth.onvoiceschanged = () => {
+          voices = synth.getVoices();
+        };
+
+        const startButton = document.getElementById('startButton');
         const loading = document.getElementById('loading');
-        
-        v.onload = function() {
-          window.voiceflow.chat.load({
-            verify: { projectID: '682363a33e4da73e3a35af67' },
-            url: 'https://general-runtime.voiceflow.com',
-            versionID: 'production',
-            voice: { 
-               url: "https://runtime-api.voiceflow.com" 
-            },
-            render: {
-              mode: 'embedded',
-              target: document.body,
-              launcher: 'none'
-            }
-          });
 
-          // Handle success
-          window.voiceflow.chat.on('ready', () => {
-            window.voiceflow.chat.open();
-            loading.style.opacity = '0';
-            setTimeout(() => {
-              loading.style.display = 'none';
-            }, 300);
-          });
+        startButton.addEventListener('click', async () => {
+          try {
+            // Remove start button and show loader
+            startButton.remove();
+            loading.style.display = 'flex';
+            
+            // Initialize Voiceflow Chat
+            const v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+            
+            v.onload = function() {
+              window.voiceflow.chat.load({
+                verify: { projectID: '682363a33e4da73e3a35af67' },
+                url: 'https://general-runtime.voiceflow.com',
+                versionID: 'production',
+                voice: { 
+                  url: "https://runtime-api.voiceflow.com",
+                  enabled: true
+                },
+                render: {
+                  mode: 'embedded',
+                  target: document.body,
+                  launcher: 'none'
+                }
+              });
 
-          // Handle errors
-          window.voiceflow.chat.on('error', () => {
-            loading.innerHTML = 'Failed to load chat. Please refresh.';
-          });
-        };
+              // When chat is ready
+              window.voiceflow.chat.on('ready', () => {
+                window.voiceflow.chat.open();
+                
+                // Handle TTS for bot responses
+                window.voiceflow.chat.on('text', ({ text }) => {
+                  if (synth.speaking) synth.cancel();
+                  
+                  const utterance = new SpeechSynthesisUtterance(text);
+                  utterance.voice = voices.find(v => v.name === 'Google US English') || voices[0];
+                  utterance.rate = 1.1;
+                  utterance.onerror = (err) => {
+                    console.error('TTS Error:', err);
+                  };
+                  synth.speak(utterance);
+                });
 
-        // Handle script load failure
-        v.onerror = function() {
-          loading.innerHTML = 'Failed to load chat. Please check connection.';
-        };
+                // Hide loading screen
+                loading.style.opacity = '0';
+                setTimeout(() => loading.style.display = 'none', 300);
+              });
 
-        v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
-        v.type = "text/javascript";
-        s.parentNode.insertBefore(v, s);
+              // Error handling
+              window.voiceflow.chat.on('error', (err) => {
+                console.error('Voiceflow Error:', err);
+                loading.innerHTML = 'Chat failed to load. Please refresh.';
+              });
+            };
+
+            v.onerror = () => {
+              loading.innerHTML = 'Failed to load chat system.';
+            };
+
+            v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
+            v.type = "text/javascript";
+            s.parentNode.insertBefore(v, s);
+            
+          } catch (err) {
+            console.error('Initialization Error:', err);
+            loading.innerHTML = 'System error. Please try again.';
+          }
+        });
+
+        // Handle browser compatibility
+        if (!window.speechSynthesis) {
+          startButton.disabled = true;
+          startButton.textContent = 'Browser not supported';
+        }
       })(document, 'script');
     </script>
   </body>

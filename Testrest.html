@@ -2,10 +2,11 @@
 <html>
   <head>
     <title>Restaurant Chat</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#ffffff">
     <style>
+      /* Previous styles remain the same */
       :root {
         overflow: hidden !important;
         height: 100% !important;
@@ -24,6 +25,17 @@
         font-family: Arial, sans-serif;
       }
 
+      /* Add keyboard-aware container */
+      #voiceflow-container {
+        width: 100vw !important;
+        height: calc(var(--vh, 1vh) * 100) !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        transition: height 0.3s ease;
+      }
+
+      /* Rest of previous styles remain unchanged */
       ::-webkit-scrollbar {
         display: none;
         width: 0 !important;
@@ -109,14 +121,6 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
-
-      #voiceflow-container {
-        width: 100vw !important;
-        height: 100vh !important;
-        position: fixed;
-        top: 0;
-        left: 0;
-      }
     </style>
   </head>
   <body>
@@ -132,7 +136,40 @@
     <div id="voiceflow-container"></div>
 
     <script type="text/javascript">
+      // Mobile viewport height correction
+      function updateViewportHeight() {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      }
+
+      // Prevent back button
+      function preventBackButton() {
+        history.pushState(null, null, location.href);
+        window.onpopstate = function(event) {
+          history.go(1);
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+          }
+        };
+      }
+
       document.addEventListener('DOMContentLoaded', function() {
+        // Initial viewport setup
+        updateViewportHeight();
+        window.addEventListener('resize', updateViewportHeight);
+        window.addEventListener('orientationchange', updateViewportHeight);
+        
+        // Visual viewport handler for mobile keyboards
+        if (window.visualViewport) {
+          window.visualViewport.addEventListener('resize', () => {
+            requestAnimationFrame(() => {
+              updateViewportHeight();
+              document.getElementById('voiceflow-container').scrollTop = 
+                document.getElementById('voiceflow-container').scrollHeight;
+            });
+          });
+        }
+
         // Prevent browser UI interactions
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('selectstart', e => e.preventDefault());
@@ -141,6 +178,9 @@
         document.body.addEventListener('touchmove', function(e) {
           e.preventDefault();
         }, { passive: false });
+
+        // Initialize back button prevention
+        preventBackButton();
       });
 
       function initializeChat(enableVoice) {
@@ -186,6 +226,15 @@
               setTimeout(() => {
                 loading.style.display = 'none';
               }, 300);
+
+              // Force focus and scroll after chat opens
+              setTimeout(() => {
+                const input = document.querySelector('input[type="text"]');
+                if (input) {
+                  input.focus({preventScroll: false});
+                  input.scrollIntoView({behavior: 'smooth', block: 'end'});
+                }
+              }, 500);
             });
 
             window.voiceflow.chat.on('error', () => {
@@ -203,9 +252,16 @@
         })(document, 'script');
       }
 
-      // Button handlers
-      document.getElementById('chat-btn').addEventListener('click', () => initializeChat(false));
-      document.getElementById('voice-chat-btn').addEventListener('click', () => initializeChat(true));
+      // Button handlers with fullscreen enforcement
+      document.getElementById('chat-btn').addEventListener('click', function() {
+        preventBackButton();
+        initializeChat(false);
+      });
+
+      document.getElementById('voice-chat-btn').addEventListener('click', function() {
+        preventBackButton();
+        initializeChat(true);
+      });
     </script>
   </body>
 </html>

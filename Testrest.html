@@ -4,7 +4,7 @@
     <title>Restaurant Chat</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-      /* Full-screen lock */
+      /* Full-screen lock and base styles */
       html, body {
         margin: 0;
         padding: 0;
@@ -15,9 +15,55 @@
         -webkit-touch-callout: none;
         -webkit-user-select: none;
         user-select: none;
+        font-family: Arial, sans-serif;
       }
 
-      /* Loading spinner container */
+      /* Mode selection container */
+      #mode-selection {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      /* Selection buttons */
+      .mode-btn {
+        width: 200px;
+        padding: 20px 30px;
+        margin: 15px;
+        border: none;
+        border-radius: 30px;
+        font-size: 1.2em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        transform: translateY(0);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      }
+
+      .mode-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      }
+
+      #chat-btn {
+        background: #3498db;
+        color: white;
+      }
+
+      #voice-chat-btn {
+        background: #2ecc71;
+        color: white;
+      }
+
+      /* Loading spinner styles */
       #loading {
         position: fixed;
         top: 0;
@@ -25,14 +71,14 @@
         width: 100%;
         height: 100%;
         background: rgba(255, 255, 255, 0.9);
-        display: flex;
+        display: none;
         align-items: center;
         justify-content: center;
         z-index: 9999;
+        opacity: 0;
         transition: opacity 0.3s;
       }
 
-      /* Spinner animation */
       .spinner {
         width: 10vw;
         height: 10vw;
@@ -42,6 +88,12 @@
         border-top: 4px solid #3498db;
         border-radius: 50%;
         animation: spin 1s linear infinite;
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
       }
 
       @keyframes spin {
@@ -60,6 +112,11 @@
     </style>
   </head>
   <body>
+    <div id="mode-selection">
+      <button class="mode-btn" id="chat-btn">Chat Only 💬</button>
+      <button class="mode-btn" id="voice-chat-btn">Voice + Chat 🎙️💬</button>
+    </div>
+
     <div id="loading">
       <div class="spinner"></div>
     </div>
@@ -67,51 +124,67 @@
     <div id="voiceflow-container"></div>
 
     <script type="text/javascript">
-      (function(d, t) {
-        var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
-        
-        // Show spinner immediately
+      let voiceEnabled = false;
+      
+      function initializeChat(enableVoice) {
+        voiceEnabled = enableVoice;
+        const modeSelection = document.getElementById('mode-selection');
         const loading = document.getElementById('loading');
         
-        v.onload = function() {
-          window.voiceflow.chat.load({
-            verify: { projectID: '682363a33e4da73e3a35af67' },
-            url: 'https://general-runtime.voiceflow.com',
-            versionID: 'production',
-            voice: { 
-               url: "https://runtime-api.voiceflow.com" 
-            },
-            render: {
-              mode: 'embedded',
-              target: document.body,
-              launcher: 'none'
+        modeSelection.style.display = 'none';
+        loading.style.display = 'flex';
+        loading.style.opacity = '1';
+
+        (function(d, t) {
+          var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+          
+          v.onload = function() {
+            const config = {
+              verify: { projectID: '682363a33e4da73e3a35af67' },
+              url: 'https://general-runtime.voiceflow.com',
+              versionID: 'production',
+              render: {
+                mode: 'embedded',
+                target: document.body,
+                launcher: 'none'
+              }
+            };
+
+            if(voiceEnabled) {
+              config.voice = { 
+                url: "https://runtime-api.voiceflow.com",
+                autoplay: true
+              };
             }
-          });
 
-          // Handle success
-          window.voiceflow.chat.on('ready', () => {
-            window.voiceflow.chat.open();
-            loading.style.opacity = '0';
-            setTimeout(() => {
-              loading.style.display = 'none';
-            }, 300);
-          });
+            window.voiceflow.chat.load(config);
 
-          // Handle errors
-          window.voiceflow.chat.on('error', () => {
-            loading.innerHTML = 'Failed to load chat. Please refresh.';
-          });
-        };
+            window.voiceflow.chat.on('ready', () => {
+              window.voiceflow.chat.open();
+              loading.style.opacity = '0';
+              setTimeout(() => {
+                loading.style.display = 'none';
+              }, 300);
+            });
 
-        // Handle script load failure
-        v.onerror = function() {
-          loading.innerHTML = 'Failed to load chat. Please check connection.';
-        };
+            window.voiceflow.chat.on('error', () => {
+              loading.innerHTML = 'Failed to load chat. Please refresh.';
+            });
+          };
 
-        v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
-        v.type = "text/javascript";
-        s.parentNode.insertBefore(v, s);
-      })(document, 'script');
+          v.onerror = function() {
+            loading.innerHTML = 'Failed to load chat. Please check connection.';
+          };
+
+          v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
+          v.type = "text/javascript";
+          s.parentNode.insertBefore(v, s);
+        })(document, 'script');
+      }
+
+      // Add event listeners to buttons
+      document.getElementById('chat-btn').addEventListener('click', () => initializeChat(false));
+      document.getElementById('voice-chat-btn').addEventListener('click', () => initializeChat(true));
     </script>
   </body>
 </html>

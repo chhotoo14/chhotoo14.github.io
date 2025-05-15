@@ -3,22 +3,34 @@
   <head>
     <title>Restaurant Chat</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#ffffff">
     <style>
-      /* Full-screen lock and base styles */
+      :root {
+        overflow: hidden !important;
+        height: 100% !important;
+      }
+
       html, body {
         margin: 0;
         padding: 0;
         width: 100%;
         height: 100%;
-        overflow: hidden;
-        touch-action: none;
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        user-select: none;
+        overflow: hidden !important;
+        touch-action: manipulation;
+        -webkit-overflow-scrolling: touch;
+        -webkit-tap-highlight-color: transparent;
+        overscroll-behavior: none;
         font-family: Arial, sans-serif;
       }
 
-      /* Mode selection container */
+      ::-webkit-scrollbar {
+        display: none;
+        width: 0 !important;
+        height: 0 !important;
+        background: transparent;
+      }
+
       #mode-selection {
         position: fixed;
         top: 0;
@@ -34,7 +46,6 @@
         animation: fadeIn 0.5s ease-out;
       }
 
-      /* Selection buttons */
       .mode-btn {
         width: 200px;
         padding: 20px 30px;
@@ -63,7 +74,6 @@
         color: white;
       }
 
-      /* Loading spinner styles */
       #loading {
         position: fixed;
         top: 0;
@@ -90,7 +100,6 @@
         animation: spin 1s linear infinite;
       }
 
-      /* Animations */
       @keyframes fadeIn {
         from { opacity: 0; }
         to { opacity: 1; }
@@ -101,7 +110,6 @@
         100% { transform: rotate(360deg); }
       }
 
-      /* Voiceflow container */
       #voiceflow-container {
         width: 100vw !important;
         height: 100vh !important;
@@ -124,10 +132,23 @@
     <div id="voiceflow-container"></div>
 
     <script type="text/javascript">
-      let voiceEnabled = false;
-      
+      document.addEventListener('DOMContentLoaded', function() {
+        // Prevent browser UI interactions
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('selectstart', e => e.preventDefault());
+        document.addEventListener('gesturestart', e => e.preventDefault());
+        
+        document.body.addEventListener('touchmove', function(e) {
+          e.preventDefault();
+        }, { passive: false });
+      });
+
       function initializeChat(enableVoice) {
-        voiceEnabled = enableVoice;
+        // Enter fullscreen
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+
         const modeSelection = document.getElementById('mode-selection');
         const loading = document.getElementById('loading');
         
@@ -150,7 +171,7 @@
               }
             };
 
-            if(voiceEnabled) {
+            if(enableVoice) {
               config.voice = { 
                 url: "https://runtime-api.voiceflow.com",
                 autoplay: true
@@ -182,7 +203,7 @@
         })(document, 'script');
       }
 
-      // Add event listeners to buttons
+      // Button handlers
       document.getElementById('chat-btn').addEventListener('click', () => initializeChat(false));
       document.getElementById('voice-chat-btn').addEventListener('click', () => initializeChat(true));
     </script>

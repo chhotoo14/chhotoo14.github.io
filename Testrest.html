@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Restaurant Voice Chat</title>
+    <title>Restaurant Chat</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-      /* Original styles */
+      /* Full-screen lock */
       html, body {
         margin: 0;
         padding: 0;
@@ -17,6 +17,7 @@
         user-select: none;
       }
 
+      /* Loading spinner container */
       #loading {
         position: fixed;
         top: 0;
@@ -31,6 +32,7 @@
         transition: opacity 0.3s;
       }
 
+      /* Spinner animation */
       .spinner {
         width: 10vw;
         height: 10vw;
@@ -47,42 +49,13 @@
         100% { transform: rotate(360deg); }
       }
 
+      /* Voiceflow container */
       #voiceflow-container {
         width: 100vw !important;
         height: 100vh !important;
         position: fixed;
         top: 0;
         left: 0;
-      }
-
-      /* Voice control additions */
-      @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.2); }
-        100% { transform: scale(1); }
-      }
-
-      .voice-prompt {
-        position: fixed;
-        top: 70px;
-        right: 20px;
-        background: #3498db;
-        color: white;
-        padding: 10px 15px;
-        border-radius: 8px;
-        animation: slideIn 0.5s ease-out;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-        z-index: 10000;
-      }
-
-      @keyframes slideIn {
-        from { transform: translateY(-20px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-      }
-
-      .vf-chat-header button:nth-child(2) {
-        animation: pulse 2s infinite;
-        transition: all 0.3s;
       }
     </style>
   </head>
@@ -96,25 +69,17 @@
     <script type="text/javascript">
       (function(d, t) {
         var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+        
+        // Show spinner immediately
         const loading = document.getElementById('loading');
-        let ttsEnabled = false;
-        const synth = window.speechSynthesis;
-        let voices = [];
-
-        // Initialize speech synthesis
-        if (synth) {
-          synth.onvoiceschanged = () => {
-            voices = synth.getVoices();
-          };
-        }
-
+        
         v.onload = function() {
           window.voiceflow.chat.load({
             verify: { projectID: '682363a33e4da73e3a35af67' },
             url: 'https://general-runtime.voiceflow.com',
             versionID: 'production',
             voice: { 
-              url: "https://runtime-api.voiceflow.com" 
+               url: "https://runtime-api.voiceflow.com" 
             },
             render: {
               mode: 'embedded',
@@ -123,61 +88,22 @@
             }
           });
 
+          // Handle success
           window.voiceflow.chat.on('ready', () => {
             window.voiceflow.chat.open();
             loading.style.opacity = '0';
-            setTimeout(() => loading.style.display = 'none', 300);
-
-            // Voice control setup
-            const header = document.querySelector('.vf-chat-header');
-            if (header) {
-              const muteButton = header.querySelectorAll('button')[1];
-              
-              // Configure mute button
-              muteButton.setAttribute('aria-label', 'Toggle voice');
-              muteButton.style.position = 'relative';
-
-              // Add pulse animation
-              muteButton.style.animation = 'pulse 2s infinite';
-
-              // Click handler
-              muteButton.addEventListener('click', () => {
-                ttsEnabled = !ttsEnabled;
-                
-                if (ttsEnabled && synth) {
-                  // Show voice prompt
-                  const prompt = document.createElement('div');
-                  prompt.className = 'voice-prompt';
-                  prompt.textContent = '🎧 Voice mode activated!';
-                  document.body.appendChild(prompt);
-                  setTimeout(() => prompt.remove(), 3000);
-
-                  // Speak welcome message
-                  const utter = new SpeechSynthesisUtterance("Welcome to our restaurant! How can I help you?");
-                  utter.voice = voices.find(v => v.default) || voices[0];
-                  synth.speak(utter);
-
-                  // Remove pulse animation
-                  muteButton.style.animation = 'none';
-                }
-              });
-
-              // Handle bot responses
-              window.voiceflow.chat.on('text', ({ text }) => {
-                if (ttsEnabled && synth) {
-                  const utter = new SpeechSynthesisUtterance(text);
-                  utter.voice = voices.find(v => v.default) || voices[0];
-                  synth.speak(utter);
-                }
-              });
-            }
+            setTimeout(() => {
+              loading.style.display = 'none';
+            }, 300);
           });
 
+          // Handle errors
           window.voiceflow.chat.on('error', () => {
             loading.innerHTML = 'Failed to load chat. Please refresh.';
           });
         };
 
+        // Handle script load failure
         v.onerror = function() {
           loading.innerHTML = 'Failed to load chat. Please check connection.';
         };
@@ -185,11 +111,6 @@
         v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
         v.type = "text/javascript";
         s.parentNode.insertBefore(v, s);
-
-        // Browser compatibility check
-        if (!('speechSynthesis' in window)) {
-          console.warn('Text-to-speech not supported');
-        }
       })(document, 'script');
     </script>
   </body>

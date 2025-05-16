@@ -1,267 +1,121 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Restaurant Chat</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#ffffff">
-    <style>
-      /* Previous styles remain the same */
-      :root {
-        overflow: hidden !important;
-        height: 100% !important;
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Voiceflow Chat</title>
+  <!-- Ensure full-screen on mobile, disable zoom -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <!-- Web app capable for mobile -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <style>
+    /* Ensure no scrolling and no text selection on page */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden; /* Prevent scrolling */
+      user-select: none; /* Disable text selection */
+      -webkit-user-select: none;
+      -webkit-touch-callout: none; /* Disable callout on iOS */
+      overscroll-behavior: none; /* Prevent pull-to-refresh or bounce */
+      background: #ffffff;
+    }
+    /* Full-screen chat container */
+    #voiceflow-chat {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      border: none !important;
+      z-index: 9999; /* Ensure chat is on top */
+    }
+  </style>
+</head>
+<body>
+  <!-- Global event listeners: disable context menu and selection -->
+  <script>
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+    document.addEventListener('selectstart', function(e) { e.preventDefault(); });
+    // Adjust body height to viewport to handle mobile address bar changes
+    window.addEventListener('load', function() {
+      function adjustHeight() {
+        document.body.style.height = window.innerHeight + 'px';
       }
+      adjustHeight();
+      window.addEventListener('resize', adjustHeight);
+    });
+  </script>
 
-      html, body {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden !important;
-        touch-action: manipulation;
-        -webkit-overflow-scrolling: touch;
-        -webkit-tap-highlight-color: transparent;
-        overscroll-behavior: none;
-        font-family: Arial, sans-serif;
-      }
+  <!-- Voiceflow Chat Widget -->
+  <script type="text/javascript">
+    (function(d, t) {
+      var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+      v.onload = function() {
+        // Initially mute voice output by setting widget cookie
+        document.cookie = "voiceflow-chat-widget:audio-output=false; path=/";
 
-      /* Add keyboard-aware container */
-      #voiceflow-container {
-        width: 100vw !important;
-        height: calc(var(--vh, 1vh) * 100) !important;
-        position: fixed;
-        top: 0;
-        left: 0;
-        transition: height 0.3s ease;
-      }
-
-      /* Rest of previous styles remain unchanged */
-      ::-webkit-scrollbar {
-        display: none;
-        width: 0 !important;
-        height: 0 !important;
-        background: transparent;
-      }
-
-      #mode-selection {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.95);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        z-index: 10000;
-        animation: fadeIn 0.5s ease-out;
-      }
-
-      .mode-btn {
-        width: 200px;
-        padding: 20px 30px;
-        margin: 15px;
-        border: none;
-        border-radius: 30px;
-        font-size: 1.2em;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        transform: translateY(0);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      }
-
-      .mode-btn:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-      }
-
-      #chat-btn {
-        background: #3498db;
-        color: white;
-      }
-
-      #voice-chat-btn {
-        background: #2ecc71;
-        color: white;
-      }
-
-      #loading {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.9);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        opacity: 0;
-        transition: opacity 0.3s;
-      }
-
-      .spinner {
-        width: 10vw;
-        height: 10vw;
-        min-width: 50px;
-        min-height: 50px;
-        border: 4px solid #f3f3f3;
-        border-top: 4px solid #3498db;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-
-      @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
-
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="mode-selection">
-      <button class="mode-btn" id="chat-btn">Chat Only 💬</button>
-      <button class="mode-btn" id="voice-chat-btn">Voice + Chat 🎙️💬</button>
-    </div>
-
-    <div id="loading">
-      <div class="spinner"></div>
-    </div>
-
-    <div id="voiceflow-container"></div>
-
-    <script type="text/javascript">
-      // Mobile viewport height correction
-      function updateViewportHeight() {
-        const vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
-      }
-
-      // Prevent back button
-      function preventBackButton() {
-        history.pushState(null, null, location.href);
-        window.onpopstate = function(event) {
-          history.go(1);
-          if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
+        // Load the Voiceflow chat agent with overlay (popover) mode
+        window.voiceflow.chat.load({
+          verify: { projectID: "YOUR_PROJECT_ID" },
+          url: "https://general-runtime.voiceflow.com",
+          versionID: "production",
+          assistant: {
+            // Use popover (full-screen overlay) mode for chat
+            renderMode: "popover"
           }
-        };
-      }
+        }).then(() => {
+          // Open the chat automatically on load
+          window.voiceflow.chat.open();
 
-      document.addEventListener('DOMContentLoaded', function() {
-        // Initial viewport setup
-        updateViewportHeight();
-        window.addEventListener('resize', updateViewportHeight);
-        window.addEventListener('orientationchange', updateViewportHeight);
-        
-        // Visual viewport handler for mobile keyboards
-        if (window.visualViewport) {
-          window.visualViewport.addEventListener('resize', () => {
-            requestAnimationFrame(() => {
-              updateViewportHeight();
-              document.getElementById('voiceflow-container').scrollTop = 
-                document.getElementById('voiceflow-container').scrollHeight;
-            });
-          });
-        }
+          // When user clicks anywhere on the page, enable voice output for future messages
+          function enableVoice() {
+            document.cookie = "voiceflow-chat-widget:audio-output=true; path=/";
+            window.removeEventListener('click', enableVoice);
+          }
+          window.addEventListener('click', enableVoice);
 
-        // Prevent browser UI interactions
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('selectstart', e => e.preventDefault());
-        document.addEventListener('gesturestart', e => e.preventDefault());
-        
-        document.body.addEventListener('touchmove', function(e) {
-          e.preventDefault();
-        }, { passive: false });
-
-        // Initialize back button prevention
-        preventBackButton();
-      });
-
-      function initializeChat(enableVoice) {
-        // Enter fullscreen
-        if (!document.fullscreenElement) {
-          document.documentElement.requestFullscreen().catch(() => {});
-        }
-
-        const modeSelection = document.getElementById('mode-selection');
-        const loading = document.getElementById('loading');
-        
-        modeSelection.style.display = 'none';
-        loading.style.display = 'flex';
-        loading.style.opacity = '1';
-
-        (function(d, t) {
-          var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
-          
-          v.onload = function() {
-            const config = {
-              verify: { projectID: '6826dfca2dd436eef1baea72' },
-              url: 'https://general-runtime.voiceflow.com',
-              versionID: 'production',
-              render: {
-                mode: 'embedded',
-                target: document.body,
-                launcher: 'none'
-              }
-            };
-
-            if(enableVoice) {
-              config.voice = { 
-                url: "https://runtime-api.voiceflow.com",
-                autoplay: true
-              };
-            }
-
-            window.voiceflow.chat.load(config);
-
-            window.voiceflow.chat.on('ready', () => {
-              window.voiceflow.chat.open();
-              loading.style.opacity = '0';
-              setTimeout(() => {
-                loading.style.display = 'none';
-              }, 300);
-
-              // Force focus and scroll after chat opens
-              setTimeout(() => {
-                const input = document.querySelector('input[type="text"]');
-                if (input) {
-                  input.focus({preventScroll: false});
-                  input.scrollIntoView({behavior: 'smooth', block: 'end'});
+          // Inject a mute/unmute toggle button into the chat header
+          const headerCheck = setInterval(() => {
+            const chatHost = document.getElementById("voiceflow-chat");
+            if (!chatHost || !chatHost.shadowRoot) return;
+            const header = chatHost.shadowRoot.querySelector(".vfrc-header");
+            if (header && !header.querySelector('.mute-toggle')) {
+              // Create toggle button
+              const btn = document.createElement('button');
+              btn.className = 'mute-toggle';
+              btn.textContent = 'Unmute'; // Initial state is muted
+              // Basic styling for the button
+              btn.style.position = 'absolute';
+              btn.style.right = '12px';
+              btn.style.top = '12px';
+              btn.style.background = 'transparent';
+              btn.style.border = 'none';
+              btn.style.color = 'inherit';
+              btn.style.fontSize = '14px';
+              btn.style.cursor = 'pointer';
+              // Append button to header
+              header.appendChild(btn);
+              // Toggle behavior
+              btn.addEventListener('click', function() {
+                if (btn.textContent === 'Unmute') {
+                  document.cookie = "voiceflow-chat-widget:audio-output=true; path=/";
+                  btn.textContent = 'Mute';
+                } else {
+                  document.cookie = "voiceflow-chat-widget:audio-output=false; path=/";
+                  btn.textContent = 'Unmute';
                 }
-              }, 500);
-            });
-
-            window.voiceflow.chat.on('error', () => {
-              loading.innerHTML = 'Failed to load chat. Please refresh.';
-            });
-          };
-
-          v.onerror = function() {
-            loading.innerHTML = 'Failed to load chat. Please check connection.';
-          };
-
-          v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
-          v.type = "text/javascript";
-          s.parentNode.insertBefore(v, s);
-        })(document, 'script');
-      }
-
-      // Button handlers with fullscreen enforcement
-      document.getElementById('chat-btn').addEventListener('click', function() {
-        preventBackButton();
-        initializeChat(false);
-      });
-
-      document.getElementById('voice-chat-btn').addEventListener('click', function() {
-        preventBackButton();
-        initializeChat(true);
-      });
-    </script>
-  </body>
+              });
+              clearInterval(headerCheck);
+            }
+          }, 500);
+        });
+      };
+      v.src = "https://cdn.voiceflow.com/widget/bundle.mjs";
+      v.type = "text/javascript";
+      s.parentNode.insertBefore(v, s);
+    })(document, 'script');
+  </script>
+</body>
 </html>

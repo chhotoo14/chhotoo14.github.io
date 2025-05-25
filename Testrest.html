@@ -74,6 +74,19 @@
         animation: pulse 2s infinite;
       }
 
+      .table-number {
+        position: fixed;
+        top: 15px;
+        right: 15px;
+        background: #3498db;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        z-index: 10001;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      }
+
       @keyframes pulse {
         0% { transform: scale(1); opacity: 1; }
         50% { transform: scale(1.05); opacity: 0.8; }
@@ -96,6 +109,14 @@
     <script type="text/javascript">
       let chatInitialized = false;
       const synth = window.speechSynthesis;
+      const urlParams = new URLSearchParams(window.location.search);
+      const tableNumber = urlParams.get('table');
+
+      // Validate table number
+      if (!tableNumber || isNaN(tableNumber)) {
+        document.querySelector('.start-instruction').innerHTML = 
+          '⚠️ Invalid table QR code<br><small>Please scan the code on your table</small>';
+      }
 
       function updateViewportHeight() {
         document.documentElement.style.setProperty('--vh', window.innerHeight * 0.01 + 'px');
@@ -107,6 +128,12 @@
         
         document.querySelector('.start-instruction').style.display = 'none';
         
+        // Show table number
+        const tableDisplay = document.createElement('div');
+        tableDisplay.className = 'table-number';
+        tableDisplay.textContent = `Table ${tableNumber}`;
+        document.body.appendChild(tableDisplay);
+
         const loading = document.getElementById('loading');
         loading.style.display = 'flex';
         setTimeout(() => loading.style.opacity = '1', 10);
@@ -119,6 +146,13 @@
             verify: { projectID: '6832111f0307aee0c811367c' },
             url: 'https://general-runtime.voiceflow.com',
             versionID: 'production',
+            session: { 
+              user: {
+                variables: { 
+                  tableNumber: parseInt(tableNumber) 
+                }
+              }
+            },
             render: {
               mode: 'embedded',
               target: document.body,
@@ -139,8 +173,9 @@
                   if (node.classList?.contains('vfrc-message--bot')) {
                     const text = node.querySelector('.vfrc-message-content')?.textContent;
                     if (text) {
-                      // Trigger TTS after short delay
-                      setTimeout(() => synth.speak(new SpeechSynthesisUtterance(text)), 300);
+                      const utterance = new SpeechSynthesisUtterance(text);
+                      utterance.rate = 1.1;
+                      synth.speak(utterance);
                     }
                   }
                 });
@@ -168,9 +203,8 @@
         updateViewportHeight();
         window.addEventListener('resize', updateViewportHeight);
         
-        // Start on any click
         document.body.addEventListener('click', () => {
-          if (!chatInitialized) {
+          if (!chatInitialized && tableNumber) {
             initializeChat();
           }
         }, { once: true });

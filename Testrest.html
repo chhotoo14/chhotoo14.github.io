@@ -2,36 +2,68 @@
 <html>
   <head>
     <title>Restaurant Chat</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-      :root {
-        overflow: hidden !important;
-        height: 100% !important;
-      }
-
+      /* Full-screen lock and base styles */
       html, body {
         margin: 0;
         padding: 0;
         width: 100%;
         height: 100%;
-        overflow: hidden !important;
-        touch-action: manipulation;
-        -webkit-overflow-scrolling: touch;
-        -webkit-tap-highlight-color: transparent;
-        overscroll-behavior: none;
+        overflow: hidden;
+        touch-action: none;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
         font-family: Arial, sans-serif;
       }
 
-      #voiceflow-container {
-        width: 100vw !important;
-        height: 100vh !important;
+      /* Mode selection container */
+      #mode-selection {
         position: fixed;
         top: 0;
         left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        animation: fadeIn 0.5s ease-out;
       }
 
+      /* Selection buttons */
+      .mode-btn {
+        width: 200px;
+        padding: 20px 30px;
+        margin: 15px;
+        border: none;
+        border-radius: 30px;
+        font-size: 1.2em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        transform: translateY(0);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      }
+
+      .mode-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      }
+
+      #chat-btn {
+        background: #3498db;
+        color: white;
+      }
+
+      #voice-chat-btn {
+        background: #2ecc71;
+        color: white;
+      }
+
+      /* Loading spinner styles */
       #loading {
         position: fixed;
         top: 0;
@@ -45,480 +77,114 @@
         z-index: 9999;
         opacity: 0;
         transition: opacity 0.3s;
-        flex-direction: column;
       }
 
       .spinner {
-        width: 50px;
-        height: 50px;
+        width: 10vw;
+        height: 10vw;
+        min-width: 50px;
+        min-height: 50px;
         border: 4px solid #f3f3f3;
         border-top: 4px solid #3498db;
         border-radius: 50%;
         animation: spin 1s linear infinite;
-        margin-bottom: 20px;
       }
 
-      .loading-text {
-        color: #2c3e50;
-        font-size: 16px;
-        text-align: center;
-        max-width: 300px;
-        line-height: 1.4;
-      }
-
-      .start-instruction {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.95);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5em;
-        color: #2c3e50;
-        text-align: center;
-        cursor: pointer;
-        z-index: 10000;
-        animation: pulse 2s infinite;
-      }
-
-      .table-number {
-        position: fixed;
-        top: 15px;
-        right: 15px;
-        background: #3498db;
-        color: white;
-        padding: 8px 15px;
-        border-radius: 20px;
-        font-weight: bold;
-        z-index: 10001;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      }
-
-      .error-container {
-        text-align: center;
-        padding: 20px;
-        color: #e74c3c;
-      }
-
-      .retry-btn {
-        background: #3498db;
-        color: white;
-        border: none;
-        padding: 12px 24px;
-        border-radius: 6px;
-        font-size: 16px;
-        cursor: pointer;
-        margin: 10px;
-        transition: background 0.3s;
-      }
-
-      .retry-btn:hover {
-        background: #2980b9;
-      }
-
-      .debug-info {
-        position: fixed;
-        bottom: 10px;
-        left: 10px;
-        background: rgba(0,0,0,0.8);
-        color: white;
-        padding: 5px 10px;
-        border-radius: 5px;
-        font-size: 12px;
-        z-index: 10002;
-        max-width: 200px;
-        word-wrap: break-word;
-      }
-
-      @keyframes pulse {
-        0% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.05); opacity: 0.8; }
-        100% { transform: scale(1); opacity: 1; }
+      /* Animations */
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
       }
 
       @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
+
+      /* Voiceflow container */
+      #voiceflow-container {
+        width: 100vw !important;
+        height: 100vh !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+      }
     </style>
   </head>
   <body>
-    <div class="start-instruction">Tap anywhere to start ordering 🍔</div>
+    <div id="mode-selection">
+      <button class="mode-btn" id="chat-btn">Chat Only 💬</button>
+      <button class="mode-btn" id="voice-chat-btn">Voice + Chat 🎙️💬</button>
+    </div>
+
     <div id="loading">
       <div class="spinner"></div>
-      <div class="loading-text">Loading chat system...</div>
     </div>
+
     <div id="voiceflow-container"></div>
-    <div class="debug-info" id="debug-info" style="display: none;"></div>
 
     <script type="text/javascript">
-      let chatInitialized = false;
-      let voiceflowChat = null;
-      let retryCount = 0;
-      const maxRetries = 3;
-      const synth = window.speechSynthesis;
-      const urlParams = new URLSearchParams(window.location.search);
-      const tableNumber = urlParams.get('table') || '1';
-
-      // Debug function
-      function debugLog(message) {
-        console.log('[Restaurant Chat]', message);
-        const debugElement = document.getElementById('debug-info');
-        if (debugElement) {
-          debugElement.textContent = message;
-          debugElement.style.display = 'block';
-          setTimeout(() => {
-            debugElement.style.display = 'none';
-          }, 5000);
-        }
-      }
-
-      // Check network connectivity
-      function checkNetworkConnectivity() {
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.onload = () => resolve(true);
-          img.onerror = () => resolve(false);
-          img.src = 'https://www.google.com/favicon.ico?' + Date.now();
-        });
-      }
-
-      // Alternative script loading methods
-      const voiceflowScriptUrls = [
-        'https://cdn.voiceflow.com/widget-next/bundle.mjs',
-        'https://cdn.voiceflow.com/widget/bundle.mjs',
-        'https://widget.voiceflow.com/bundle.mjs'
-      ];
-
-      // Load script with multiple fallback URLs
-      function loadVoiceflowScript(urlIndex = 0) {
-        return new Promise((resolve, reject) => {
-          if (urlIndex >= voiceflowScriptUrls.length) {
-            reject(new Error('All script URLs failed'));
-            return;
-          }
-
-          const script = document.createElement('script');
-          const url = voiceflowScriptUrls[urlIndex];
-          
-          debugLog(`Trying script URL ${urlIndex + 1}/${voiceflowScriptUrls.length}: ${url}`);
-          
-          script.onload = () => {
-            debugLog(`Script loaded successfully from: ${url}`);
-            resolve(script);
-          };
-          
-          script.onerror = () => {
-            debugLog(`Failed to load script from: ${url}`);
-            document.head.removeChild(script);
-            // Try next URL
-            loadVoiceflowScript(urlIndex + 1).then(resolve).catch(reject);
-          };
-          
-          // Set script attributes
-          if (url.endsWith('.mjs')) {
-            script.type = 'module';
-          }
-          script.src = url;
-          script.crossOrigin = 'anonymous';
-          
-          document.head.appendChild(script);
-        });
-      }
-
-      // Enhanced error display
-      function showError(title, message, showRetry = true) {
+      let voiceEnabled = false;
+      
+      function initializeChat(enableVoice) {
+        voiceEnabled = enableVoice;
+        const modeSelection = document.getElementById('mode-selection');
         const loading = document.getElementById('loading');
-        loading.innerHTML = `
-          <div class="error-container">
-            <h3>${title}</h3>
-            <p>${message}</p>
-            ${showRetry ? `
-              <button class="retry-btn" onclick="retryInitialization()">
-                Retry (${retryCount}/${maxRetries})
-              </button>
-              <br>
-              <button class="retry-btn" onclick="location.reload()" style="background: #95a5a6;">
-                Refresh Page
-              </button>
-            ` : `
-              <button class="retry-btn" onclick="location.reload()">
-                Refresh Page
-              </button>
-            `}
-          </div>
-        `;
+        
+        modeSelection.style.display = 'none';
         loading.style.display = 'flex';
         loading.style.opacity = '1';
-      }
 
-      // Retry initialization
-      function retryInitialization() {
-        if (retryCount < maxRetries) {
-          retryCount++;
-          debugLog(`Retry attempt ${retryCount}/${maxRetries}`);
+        (function(d, t) {
+          var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
           
-          // Reset loading state
-          const loading = document.getElementById('loading');
-          loading.innerHTML = `
-            <div class="spinner"></div>
-            <div class="loading-text">Retrying... (${retryCount}/${maxRetries})</div>
-          `;
-          
-          setTimeout(() => {
-            initializeChat(true);
-          }, 1000);
-        } else {
-          showError(
-            'Maximum Retries Reached',
-            'Unable to load the chat system after multiple attempts. Please refresh the page or contact support.',
-            false
-          );
-        }
-      }
-
-      // Validate table number
-      if (!tableNumber || isNaN(tableNumber)) {
-        document.querySelector('.start-instruction').innerHTML = 
-          '⚠️ Invalid table QR code<br><small>Please scan the code on your table</small>';
-      }
-
-      function updateViewportHeight() {
-        document.documentElement.style.setProperty('--vh', window.innerHeight * 0.01 + 'px');
-      }
-
-      // Speech synthesis with error handling
-      function speakText(text) {
-        try {
-          if (synth.speaking) {
-            synth.cancel();
-          }
-          
-          const cleanText = text.replace(/[^\w\s.,!?]/g, '').trim();
-          if (cleanText.length > 0) {
-            const utterance = new SpeechSynthesisUtterance(cleanText);
-            utterance.rate = 1.0;
-            utterance.volume = 0.8;
-            utterance.pitch = 1.0;
-            
-            utterance.onerror = (event) => {
-              debugLog('Speech error: ' + event.error);
-            };
-            
-            synth.speak(utterance);
-          }
-        } catch (error) {
-          debugLog('Speech synthesis error: ' + error.message);
-        }
-      }
-
-      // Enhanced chat initialization
-      async function initializeChat(isRetry = false) {
-        if (chatInitialized && !isRetry) return;
-        
-        if (!isRetry) {
-          chatInitialized = true;
-          document.querySelector('.start-instruction').style.display = 'none';
-          
-          // Show table number
-          const tableDisplay = document.createElement('div');
-          tableDisplay.className = 'table-number';
-          tableDisplay.textContent = `Table ${tableNumber}`;
-          document.body.appendChild(tableDisplay);
-        }
-
-        const loading = document.getElementById('loading');
-        loading.style.display = 'flex';
-        setTimeout(() => loading.style.opacity = '1', 10);
-
-        try {
-          // Check network connectivity first
-          debugLog('Checking network connectivity...');
-          const isOnline = await checkNetworkConnectivity();
-          
-          if (!isOnline) {
-            throw new Error('No internet connection detected');
-          }
-
-          debugLog('Network is available, loading Voiceflow script...');
-          
-          // Load Voiceflow script with fallbacks  
-          await loadVoiceflowScript();
-          
-          // Wait for window.voiceflow to be available
-          let attempts = 0;
-          while (!window.voiceflow && attempts < 50) {
-            await new Promise(resolve => setTimeout(resolve, 100));
-            attempts++;
-          }
-          
-          if (!window.voiceflow) {
-            throw new Error('Voiceflow object not available after script load');
-          }
-
-          debugLog('Voiceflow object available, initializing chat...');
-          
-          // Enhanced configuration
-          const config = {
-            verify: { 
-              projectID: '6832111f0307aee0c811367c' 
-            },
-            url: 'https://general-runtime.voiceflow.com',
-            versionID: 'production',
-            session: {
-              userID: `table_${tableNumber}_${Date.now()}`,
-              user: {
-                name: `Table ${tableNumber}`,
-                variables: { 
-                  tableNumber: parseInt(tableNumber),
-                  sessionStartTime: new Date().toISOString()
-                }
+          v.onload = function() {
+            const config = {
+              verify: { projectID: '6832111f0307aee0c811367c' },
+              url: 'https://general-runtime.voiceflow.com',
+              versionID: 'production',
+              render: {
+                mode: 'embedded',
+                target: document.body,
+                launcher: 'none'
               }
-            },
-            render: {
-              mode: 'embedded',
-              target: document.getElementById('voiceflow-container') || document.body,
-              launcher: 'none'
-            },
-            autostart: true
+            };
+
+            if(voiceEnabled) {
+              config.voice = { 
+                url: "https://runtime-api.voiceflow.com",
+                autoplay: true
+              };
+            }
+
+            window.voiceflow.chat.load(config);
+
+            window.voiceflow.chat.on('ready', () => {
+              window.voiceflow.chat.open();
+              loading.style.opacity = '0';
+              setTimeout(() => {
+                loading.style.display = 'none';
+              }, 300);
+            });
+
+            window.voiceflow.chat.on('error', () => {
+              loading.innerHTML = 'Failed to load chat. Please refresh.';
+            });
           };
 
-          voiceflowChat = await window.voiceflow.chat.load(config);
-          debugLog('Chat loaded successfully');
-          
-          // Open the chat
-          await window.voiceflow.chat.open();
-          debugLog('Chat opened');
-          
-          // Send initial interaction
-          setTimeout(() => {
-            try {
-              window.voiceflow.chat.interact({
-                type: 'launch'
-              });
-            } catch (e) {
-              debugLog('Launch interaction failed: ' + e.message);
-            }
-          }, 1000);
+          v.onerror = function() {
+            loading.innerHTML = 'Failed to load chat. Please check connection.';
+          };
 
-          // Focus input
-          setTimeout(() => {
-            const input = document.querySelector('input[type="text"], textarea, [contenteditable="true"]');
-            if (input) {
-              input.focus();
-              debugLog('Input focused');
-            }
-          }, 1500);
-
-          // Message observer
-          const observer = new MutationObserver((mutations) => {
-            try {
-              mutations.forEach(({ addedNodes }) => {
-                addedNodes.forEach((node) => {
-                  if (node.nodeType === 1) {
-                    const botMessage = node.querySelector?.('.vfrc-message--bot') || 
-                                     (node.classList?.contains('vfrc-message--bot') ? node : null);
-                    
-                    if (botMessage) {
-                      const textContent = botMessage.querySelector('.vfrc-message-content, .vfrc-text')?.textContent ||
-                                        botMessage.textContent;
-                      
-                      if (textContent && textContent.trim().length > 0) {
-                        debugLog('Bot message: ' + textContent.substring(0, 50) + '...');
-                        setTimeout(() => speakText(textContent), 500);
-                      }
-                    }
-                  }
-                });
-              });
-            } catch (error) {
-              debugLog('Observer error: ' + error.message);
-            }
-          });
-
-          observer.observe(document.body, {
-            childList: true,
-            subtree: true
-          });
-
-          // Hide loading
-          loading.style.opacity = '0';
-          setTimeout(() => loading.style.display = 'none', 300);
-          
-          // Reset retry count on success
-          retryCount = 0;
-          debugLog('Chat initialization completed successfully');
-          
-        } catch (error) {
-          debugLog('Initialization failed: ' + error.message);
-          
-          if (retryCount < maxRetries) {
-            showError(
-              'Loading Failed',
-              `Failed to load chat system: ${error.message}`,
-              true
-            );
-          } else {
-            showError(
-              'Chat Unavailable',
-              'The chat system is currently unavailable. Please refresh the page or contact support.',
-              false
-            );
-          }
-        }
+          v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
+          v.type = "text/javascript";
+          s.parentNode.insertBefore(v, s);
+        })(document, 'script');
       }
 
-      // Event listeners
-      document.addEventListener('DOMContentLoaded', function() {
-        debugLog('Page loaded');
-        updateViewportHeight();
-        
-        window.addEventListener('resize', updateViewportHeight);
-        window.addEventListener('orientationchange', () => {
-          setTimeout(updateViewportHeight, 100);
-        });
-        
-        // Handle online/offline events
-        window.addEventListener('online', () => {
-          debugLog('Connection restored');
-          if (!voiceflowChat && retryCount < maxRetries) {
-            setTimeout(() => retryInitialization(), 1000);
-          }
-        });
-        
-        window.addEventListener('offline', () => {
-          debugLog('Connection lost');
-        });
-        
-        // Click to initialize
-        document.body.addEventListener('click', (event) => {
-          if (!chatInitialized && tableNumber && !isNaN(tableNumber)) {
-            event.preventDefault();
-            initializeChat();
-          }
-        }, { once: true });
-
-        // Debug toggle (Ctrl+D)
-        document.addEventListener('keydown', (event) => {
-          if (event.ctrlKey && event.key === 'd') {
-            event.preventDefault();
-            const debugElement = document.getElementById('debug-info');
-            debugElement.style.display = debugElement.style.display === 'none' ? 'block' : 'none';
-          }
-        });
-      });
-
-      // Global error handlers
-      window.addEventListener('error', (event) => {
-        debugLog('Global error: ' + event.message);
-      });
-
-      window.addEventListener('unhandledrejection', (event) => {
-        debugLog('Unhandled promise rejection: ' + event.reason);
-      });
+      // Add event listeners to buttons
+      document.getElementById('chat-btn').addEventListener('click', () => initializeChat(false));
+      document.getElementById('voice-chat-btn').addEventListener('click', () => initializeChat(true));
     </script>
   </body>
 </html>

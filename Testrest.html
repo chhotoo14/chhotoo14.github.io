@@ -1,553 +1,524 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#1a73e8">
-  <title>Restaurant Order Assistant</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --primary: #1a73e8;
-      --primary-dark: #0d5cb6;
-      --secondary: #fbbc04;
-      --text: #202124;
-      --text-light: #5f6368;
-      --background: #ffffff;
-      --surface: #f8f9fa;
-      --border: #dadce0;
-      --success: #34a853;
-      --error: #ea4335;
-      --shadow: 0 2px 10px rgba(0,0,0,0.1);
-      --radius: 16px;
-      --radius-small: 8px;
-    }
-
-    body {
-      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
-      color: var(--text);
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      padding: 0;
-      margin: 0;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .container {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      width: 100%;
-      max-width: 500px;
-      margin: 0 auto;
-      background: var(--background);
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .header {
-      background: var(--primary);
-      color: white;
-      padding: 20px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      z-index: 10;
-    }
-
-    .header-info {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .restaurant-name {
-      font-size: 1.4rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .table-number {
-      background: rgba(255,255,255,0.2);
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.85rem;
-      color: rgba(255,255,255,0.9);
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--success);
-    }
-
-    .chat-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      background: var(--surface);
-      position: relative;
-    }
-
-    .welcome-message {
-      text-align: center;
-      padding: 32px 16px;
-      animation: fadeIn 0.5s ease-out;
-    }
-
-    .welcome-message h2 {
-      font-size: 1.8rem;
-      margin-bottom: 12px;
-      color: var(--primary);
-    }
-
-    .welcome-message p {
-      font-size: 1.1rem;
-      color: var(--text-light);
-      margin-bottom: 24px;
-      line-height: 1.5;
-    }
-
-    .start-button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 14px 28px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      border-radius: 50px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin: 0 auto;
-    }
-
-    .start-button:hover {
-      background: var(--primary-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(26, 115, 232, 0.4);
-    }
-
-    .start-button:active {
-      transform: translateY(1px);
-    }
-
-    .chat-message {
-      max-width: 80%;
-      padding: 12px 16px;
-      border-radius: var(--radius);
-      position: relative;
-      animation: fadeIn 0.3s ease-out;
-    }
-
-    .bot-message {
-      background: white;
-      border: 1px solid var(--border);
-      border-bottom-left-radius: 4px;
-      align-self: flex-start;
-      box-shadow: var(--shadow);
-    }
-
-    .user-message {
-      background: var(--primary);
-      color: white;
-      align-self: flex-end;
-      border-bottom-right-radius: 4px;
-    }
-
-    .message-time {
-      font-size: 0.7rem;
-      color: var(--text-light);
-      margin-top: 4px;
-      text-align: right;
-    }
-
-    .input-container {
-      padding: 16px;
-      background: white;
-      border-top: 1px solid var(--border);
-      display: flex;
-      gap: 12px;
-    }
-
-    .message-input {
-      flex: 1;
-      padding: 14px 18px;
-      border: 1px solid var(--border);
-      border-radius: 30px;
-      font-size: 1rem;
-      outline: none;
-      transition: border 0.3s;
-    }
-
-    .message-input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
-    }
-
-    .send-button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .send-button:hover {
-      background: var(--primary-dark);
-      transform: scale(1.05);
-    }
-
-    .send-button:active {
-      transform: scale(0.95);
-    }
-
-    .loading {
-      display: flex;
-      gap: 8px;
-      padding: 12px 18px;
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      align-self: flex-start;
-      box-shadow: var(--shadow);
-      max-width: 120px;
-    }
-
-    .loading-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--primary);
-      border-radius: 50%;
-      animation: bounce 1.4s infinite ease-in-out both;
-    }
-
-    .loading-dot:nth-child(1) {
-      animation-delay: -0.32s;
-    }
-
-    .loading-dot:nth-child(2) {
-      animation-delay: -0.16s;
-    }
-
-    @keyframes bounce {
-      0%, 80%, 100% { transform: scale(0); }
-      40% { transform: scale(1); }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .notification {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--error);
-      color: white;
-      padding: 12px 24px;
-      border-radius: var(--radius);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      animation: slideUp 0.3s ease-out;
-    }
-
-    @keyframes slideUp {
-      from { bottom: -50px; opacity: 0; }
-      to { bottom: 20px; opacity: 1; }
-    }
-
-    .error {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .error-icon {
-      font-size: 3rem;
-      color: var(--error);
-      margin-bottom: 20px;
-    }
-
-    .error h2 {
-      margin-bottom: 12px;
-      color: var(--text);
-    }
-
-    .error p {
-      color: var(--text-light);
-      margin-bottom: 24px;
-      max-width: 350px;
-    }
-
-    .try-again {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 30px;
-      font-size: 1rem;
-      font-weight: 500;
-      cursor: pointer;
-    }
-
-    @media (max-width: 480px) {
-      .container {
-        max-width: 100%;
+<html>
+  <head>
+    <title>Restaurant Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#ffffff">
+    <style>
+      :root {
+        overflow: hidden !important;
+        height: 100% !important;
       }
-      
-      .header {
-        padding: 16px;
+
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden !important;
+        touch-action: manipulation;
+        -webkit-overflow-scrolling: touch;
+        -webkit-tap-highlight-color: transparent;
+        overscroll-behavior: none;
+        font-family: Arial, sans-serif;
       }
-      
-      .restaurant-name {
-        font-size: 1.2rem;
+
+      #voiceflow-container {
+        width: 100vw !important;
+        height: 100vh !important;
+        position: fixed;
+        top: 0;
+        left: 0;
       }
-      
-      .chat-message {
-        max-width: 90%;
+
+      #loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.9);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        opacity: 0;
+        transition: opacity 0.3s;
+        flex-direction: column;
       }
-      
-      .message-input {
-        padding: 12px 16px;
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
       }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <div class="header-info">
-        <div class="restaurant-name">
-          <i class="fas fa-utensils"></i>
-          Gourmet Bistro
-        </div>
-        <div class="status">
-          <span class="status-dot"></span>
-          <span>Online</span>
-        </div>
-      </div>
-      <div class="table-number">
-        <i class="fas fa-table"></i>
-        Table 5
-      </div>
+
+      .loading-text {
+        color: #2c3e50;
+        font-size: 16px;
+        text-align: center;
+        max-width: 300px;
+        line-height: 1.4;
+      }
+
+      .start-instruction {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5em;
+        color: #2c3e50;
+        text-align: center;
+        cursor: pointer;
+        z-index: 10000;
+        animation: pulse 2s infinite;
+      }
+
+      .table-number {
+        position: fixed;
+        top: 15px;
+        right: 15px;
+        background: #3498db;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        z-index: 10001;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      }
+
+      .error-container {
+        text-align: center;
+        padding: 20px;
+        color: #e74c3c;
+      }
+
+      .retry-btn {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+        margin: 10px;
+        transition: background 0.3s;
+      }
+
+      .retry-btn:hover {
+        background: #2980b9;
+      }
+
+      .debug-info {
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        background: rgba(0,0,0,0.8);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 12px;
+        z-index: 10002;
+        max-width: 200px;
+        word-wrap: break-word;
+      }
+
+      @keyframes pulse {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.8; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="start-instruction">Tap anywhere to start ordering 🍔</div>
+    <div id="loading">
+      <div class="spinner"></div>
+      <div class="loading-text">Loading chat system...</div>
     </div>
-    
-    <div class="chat-container" id="chatContainer">
-      <div class="welcome-message">
-        <h2>Welcome to Gourmet Bistro!</h2>
-        <p>I'm your digital assistant. I can help you with ordering food, answering questions, or calling service staff.</p>
-        <button class="start-button" id="startButton">
-          <i class="fas fa-comments"></i>
-          Start Ordering
-        </button>
-      </div>
-      
-      <!-- Chat messages will be dynamically added here -->
-    </div>
-    
-    <div class="input-container" id="inputContainer" style="display: none;">
-      <input 
-        type="text" 
-        class="message-input" 
-        id="messageInput" 
-        placeholder="Type your message here..."
-        autocomplete="off"
-      >
-      <button class="send-button" id="sendButton">
-        <i class="fas fa-paper-plane"></i>
-      </button>
-    </div>
-  </div>
+    <div id="voiceflow-container"></div>
+    <div class="debug-info" id="debug-info" style="display: none;"></div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const chatContainer = document.getElementById('chatContainer');
-      const messageInput = document.getElementById('messageInput');
-      const sendButton = document.getElementById('sendButton');
-      const inputContainer = document.getElementById('inputContainer');
-      const startButton = document.getElementById('startButton');
-      
-      let chatHistory = [];
-      let isChatActive = false;
-      
-      // Initialize the chat
-      startButton.addEventListener('click', startChat);
-      
-      // Send message when button is clicked
-      sendButton.addEventListener('click', sendMessage);
-      
-      // Send message when Enter is pressed
-      messageInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && messageInput.value.trim() !== '') {
-          sendMessage();
+    <script type="text/javascript">
+      let chatInitialized = false;
+      let voiceflowChat = null;
+      let retryCount = 0;
+      const maxRetries = 3;
+      const synth = window.speechSynthesis;
+      const urlParams = new URLSearchParams(window.location.search);
+      const tableNumber = urlParams.get('table') || '1';
+
+      // Debug function
+      function debugLog(message) {
+        console.log('[Restaurant Chat]', message);
+        const debugElement = document.getElementById('debug-info');
+        if (debugElement) {
+          debugElement.textContent = message;
+          debugElement.style.display = 'block';
+          setTimeout(() => {
+            debugElement.style.display = 'none';
+          }, 5000);
         }
-      });
-      
-      function startChat() {
-        isChatActive = true;
-        
-        // Hide welcome message and show input
-        document.querySelector('.welcome-message').style.display = 'none';
-        inputContainer.style.display = 'flex';
-        
-        // Focus input field
-        setTimeout(() => {
-          messageInput.focus();
-        }, 300);
-        
-        // Add initial bot message
-        setTimeout(() => {
-          addMessage('bot', "Hi there! I'm your order assistant. What can I help you with today?");
-        }, 500);
       }
-      
-      function sendMessage() {
-        const message = messageInput.value.trim();
-        if (message === '') return;
-        
-        // Add user message to chat
-        addMessage('user', message);
-        
-        // Clear input and maintain focus
-        messageInput.value = '';
-        messageInput.focus();
-        
-        // Show loading indicator
-        const loading = document.createElement('div');
-        loading.className = 'loading';
+
+      // Check network connectivity
+      function checkNetworkConnectivity() {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve(true);
+          img.onerror = () => resolve(false);
+          img.src = 'https://www.google.com/favicon.ico?' + Date.now();
+        });
+      }
+
+      // Alternative script loading methods
+      const voiceflowScriptUrls = [
+        'https://cdn.voiceflow.com/widget-next/bundle.mjs',
+        'https://cdn.voiceflow.com/widget/bundle.mjs',
+        'https://widget.voiceflow.com/bundle.mjs'
+      ];
+
+      // Load script with multiple fallback URLs
+      function loadVoiceflowScript(urlIndex = 0) {
+        return new Promise((resolve, reject) => {
+          if (urlIndex >= voiceflowScriptUrls.length) {
+            reject(new Error('All script URLs failed'));
+            return;
+          }
+
+          const script = document.createElement('script');
+          const url = voiceflowScriptUrls[urlIndex];
+          
+          debugLog(`Trying script URL ${urlIndex + 1}/${voiceflowScriptUrls.length}: ${url}`);
+          
+          script.onload = () => {
+            debugLog(`Script loaded successfully from: ${url}`);
+            resolve(script);
+          };
+          
+          script.onerror = () => {
+            debugLog(`Failed to load script from: ${url}`);
+            document.head.removeChild(script);
+            // Try next URL
+            loadVoiceflowScript(urlIndex + 1).then(resolve).catch(reject);
+          };
+          
+          // Set script attributes
+          if (url.endsWith('.mjs')) {
+            script.type = 'module';
+          }
+          script.src = url;
+          script.crossOrigin = 'anonymous';
+          
+          document.head.appendChild(script);
+        });
+      }
+
+      // Enhanced error display
+      function showError(title, message, showRetry = true) {
+        const loading = document.getElementById('loading');
         loading.innerHTML = `
-          <div class="loading-dot"></div>
-          <div class="loading-dot"></div>
-          <div class="loading-dot"></div>
+          <div class="error-container">
+            <h3>${title}</h3>
+            <p>${message}</p>
+            ${showRetry ? `
+              <button class="retry-btn" onclick="retryInitialization()">
+                Retry (${retryCount}/${maxRetries})
+              </button>
+              <br>
+              <button class="retry-btn" onclick="location.reload()" style="background: #95a5a6;">
+                Refresh Page
+              </button>
+            ` : `
+              <button class="retry-btn" onclick="location.reload()">
+                Refresh Page
+              </button>
+            `}
+          </div>
         `;
-        chatContainer.appendChild(loading);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-        
-        // Simulate bot response (in a real app, this would be an API call)
-        setTimeout(() => {
-          loading.remove();
+        loading.style.display = 'flex';
+        loading.style.opacity = '1';
+      }
+
+      // Retry initialization
+      function retryInitialization() {
+        if (retryCount < maxRetries) {
+          retryCount++;
+          debugLog(`Retry attempt ${retryCount}/${maxRetries}`);
           
-          // Generate relevant bot response
-          const botResponse = generateBotResponse(message);
-          addMessage('bot', botResponse);
+          // Reset loading state
+          const loading = document.getElementById('loading');
+          loading.innerHTML = `
+            <div class="spinner"></div>
+            <div class="loading-text">Retrying... (${retryCount}/${maxRetries})</div>
+          `;
           
-          // Keep input focused after response
-          messageInput.focus();
-        }, 1500);
-      }
-      
-      function addMessage(sender, text) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `chat-message ${sender}-message`;
-        
-        // Add message content
-        const messageContent = document.createElement('div');
-        messageContent.className = 'message-content';
-        messageContent.textContent = text;
-        messageDiv.appendChild(messageContent);
-        
-        // Add timestamp
-        const now = new Date();
-        const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        const timeDiv = document.createElement('div');
-        timeDiv.className = 'message-time';
-        timeDiv.textContent = timeString;
-        messageDiv.appendChild(timeDiv);
-        
-        chatContainer.appendChild(messageDiv);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-        
-        // Add to history
-        chatHistory.push({sender, text, time: timeString});
-      }
-      
-      function generateBotResponse(message) {
-        const lowerMsg = message.toLowerCase();
-        
-        if (lowerMsg.includes('menu') || lowerMsg.includes('special')) {
-          return "Today's specials include grilled salmon with lemon butter sauce, truffle pasta, and our famous chocolate lava cake. Would you like to see the full menu?";
-        }
-        else if (lowerMsg.includes('order') || lowerMsg.includes('food')) {
-          return "Great! What would you like to order? You can say items like 'burger', 'pizza', or 'salad'.";
-        }
-        else if (lowerMsg.includes('burger')) {
-          return "We have three burger options: Classic Cheeseburger ($12), BBQ Bacon Burger ($14), and Veggie Burger ($13). Which would you prefer?";
-        }
-        else if (lowerMsg.includes('drink') || lowerMsg.includes('beverage')) {
-          return "Our drink menu includes soft drinks, fresh juices, wine, and beer. We also have specialty cocktails. What would you like?";
-        }
-        else if (lowerMsg.includes('allergy') || lowerMsg.includes('gluten')) {
-          return "We take allergies seriously. Many dishes can be modified. Please let me know your dietary restrictions and I'll suggest suitable options.";
-        }
-        else if (lowerMsg.includes('bill') || lowerMsg.includes('check')) {
-          return "I can bring your check whenever you're ready. Would you like it now?";
-        }
-        else if (lowerMsg.includes('help') || lowerMsg.includes('service')) {
-          return "I'll notify our staff to come to your table. Is there anything specific you need assistance with?";
-        }
-        else if (lowerMsg.includes('thank')) {
-          return "You're very welcome! Is there anything else I can assist you with?";
-        }
-        else {
-          return "Thanks for your message! I can help you place an order, answer questions about our menu, or call a server to your table. What would you like to do?";
+          setTimeout(() => {
+            initializeChat(true);
+          }, 1000);
+        } else {
+          showError(
+            'Maximum Retries Reached',
+            'Unable to load the chat system after multiple attempts. Please refresh the page or contact support.',
+            false
+          );
         }
       }
-      
-      // Initialize input focus management
-      setInterval(() => {
-        if (isChatActive && document.activeElement !== messageInput) {
-          messageInput.focus();
+
+      // Validate table number
+      if (!tableNumber || isNaN(tableNumber)) {
+        document.querySelector('.start-instruction').innerHTML = 
+          '⚠️ Invalid table QR code<br><small>Please scan the code on your table</small>';
+      }
+
+      function updateViewportHeight() {
+        document.documentElement.style.setProperty('--vh', window.innerHeight * 0.01 + 'px');
+      }
+
+      // Speech synthesis with error handling
+      function speakText(text) {
+        try {
+          if (synth.speaking) {
+            synth.cancel();
+          }
+          
+          const cleanText = text.replace(/[^\w\s.,!?]/g, '').trim();
+          if (cleanText.length > 0) {
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.rate = 1.0;
+            utterance.volume = 0.8;
+            utterance.pitch = 1.0;
+            
+            utterance.onerror = (event) => {
+              debugLog('Speech error: ' + event.error);
+            };
+            
+            synth.speak(utterance);
+          }
+        } catch (error) {
+          debugLog('Speech synthesis error: ' + error.message);
         }
-      }, 1000);
-    });
-  </script>
-</body>
+      }
+
+      // Enhanced chat initialization
+      async function initializeChat(isRetry = false) {
+        if (chatInitialized && !isRetry) return;
+        
+        if (!isRetry) {
+          chatInitialized = true;
+          document.querySelector('.start-instruction').style.display = 'none';
+          
+          // Show table number
+          const tableDisplay = document.createElement('div');
+          tableDisplay.className = 'table-number';
+          tableDisplay.textContent = `Table ${tableNumber}`;
+          document.body.appendChild(tableDisplay);
+        }
+
+        const loading = document.getElementById('loading');
+        loading.style.display = 'flex';
+        setTimeout(() => loading.style.opacity = '1', 10);
+
+        try {
+          // Check network connectivity first
+          debugLog('Checking network connectivity...');
+          const isOnline = await checkNetworkConnectivity();
+          
+          if (!isOnline) {
+            throw new Error('No internet connection detected');
+          }
+
+          debugLog('Network is available, loading Voiceflow script...');
+          
+          // Load Voiceflow script with fallbacks  
+          await loadVoiceflowScript();
+          
+          // Wait for window.voiceflow to be available
+          let attempts = 0;
+          while (!window.voiceflow && attempts < 50) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+          }
+          
+          if (!window.voiceflow) {
+            throw new Error('Voiceflow object not available after script load');
+          }
+
+          debugLog('Voiceflow object available, initializing chat...');
+          
+          // Enhanced configuration
+          const config = {
+            verify: { 
+              projectID: '6832111f0307aee0c811367c' 
+            },
+            url: 'https://general-runtime.voiceflow.com',
+            versionID: 'production',
+            session: {
+              userID: `table_${tableNumber}_${Date.now()}`,
+              user: {
+                name: `Table ${tableNumber}`,
+                variables: { 
+                  tableNumber: parseInt(tableNumber),
+                  sessionStartTime: new Date().toISOString()
+                }
+              }
+            },
+            render: {
+              mode: 'embedded',
+              target: document.getElementById('voiceflow-container') || document.body,
+              launcher: 'none'
+            },
+            autostart: true
+          };
+
+          voiceflowChat = await window.voiceflow.chat.load(config);
+          debugLog('Chat loaded successfully');
+          
+          // Open the chat
+          await window.voiceflow.chat.open();
+          debugLog('Chat opened');
+          
+          // Send initial interaction
+          setTimeout(() => {
+            try {
+              window.voiceflow.chat.interact({
+                type: 'launch'
+              });
+            } catch (e) {
+              debugLog('Launch interaction failed: ' + e.message);
+            }
+          }, 1000);
+
+          // Focus input
+          setTimeout(() => {
+            const input = document.querySelector('input[type="text"], textarea, [contenteditable="true"]');
+            if (input) {
+              input.focus();
+              debugLog('Input focused');
+            }
+          }, 1500);
+
+          // Message observer
+          const observer = new MutationObserver((mutations) => {
+            try {
+              mutations.forEach(({ addedNodes }) => {
+                addedNodes.forEach((node) => {
+                  if (node.nodeType === 1) {
+                    const botMessage = node.querySelector?.('.vfrc-message--bot') || 
+                                     (node.classList?.contains('vfrc-message--bot') ? node : null);
+                    
+                    if (botMessage) {
+                      const textContent = botMessage.querySelector('.vfrc-message-content, .vfrc-text')?.textContent ||
+                                        botMessage.textContent;
+                      
+                      if (textContent && textContent.trim().length > 0) {
+                        debugLog('Bot message: ' + textContent.substring(0, 50) + '...');
+                        setTimeout(() => speakText(textContent), 500);
+                      }
+                    }
+                  }
+                });
+              });
+            } catch (error) {
+              debugLog('Observer error: ' + error.message);
+            }
+          });
+
+          observer.observe(document.body, {
+            childList: true,
+            subtree: true
+          });
+
+          // Hide loading
+          loading.style.opacity = '0';
+          setTimeout(() => loading.style.display = 'none', 300);
+          
+          // Reset retry count on success
+          retryCount = 0;
+          debugLog('Chat initialization completed successfully');
+          
+        } catch (error) {
+          debugLog('Initialization failed: ' + error.message);
+          
+          if (retryCount < maxRetries) {
+            showError(
+              'Loading Failed',
+              `Failed to load chat system: ${error.message}`,
+              true
+            );
+          } else {
+            showError(
+              'Chat Unavailable',
+              'The chat system is currently unavailable. Please refresh the page or contact support.',
+              false
+            );
+          }
+        }
+      }
+
+      // Event listeners
+      document.addEventListener('DOMContentLoaded', function() {
+        debugLog('Page loaded');
+        updateViewportHeight();
+        
+        window.addEventListener('resize', updateViewportHeight);
+        window.addEventListener('orientationchange', () => {
+          setTimeout(updateViewportHeight, 100);
+        });
+        
+        // Handle online/offline events
+        window.addEventListener('online', () => {
+          debugLog('Connection restored');
+          if (!voiceflowChat && retryCount < maxRetries) {
+            setTimeout(() => retryInitialization(), 1000);
+          }
+        });
+        
+        window.addEventListener('offline', () => {
+          debugLog('Connection lost');
+        });
+        
+        // Click to initialize
+        document.body.addEventListener('click', (event) => {
+          if (!chatInitialized && tableNumber && !isNaN(tableNumber)) {
+            event.preventDefault();
+            initializeChat();
+          }
+        }, { once: true });
+
+        // Debug toggle (Ctrl+D)
+        document.addEventListener('keydown', (event) => {
+          if (event.ctrlKey && event.key === 'd') {
+            event.preventDefault();
+            const debugElement = document.getElementById('debug-info');
+            debugElement.style.display = debugElement.style.display === 'none' ? 'block' : 'none';
+          }
+        });
+      });
+
+      // Global error handlers
+      window.addEventListener('error', (event) => {
+        debugLog('Global error: ' + event.message);
+      });
+
+      window.addEventListener('unhandledrejection', (event) => {
+        debugLog('Unhandled promise rejection: ' + event.reason);
+      });
+    </script>
+  </body>
 </html>

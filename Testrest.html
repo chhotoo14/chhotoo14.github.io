@@ -141,23 +141,25 @@
         const script = document.createElement('script');
         script.src = 'https://cdn.voiceflow.com/widget-next/bundle.mjs';
         
-        script.onload = () => {
-          window.voiceflow.chat.load({
-            verify: { projectID: '6832111f0307aee0c811367c' },
-            url: 'https://general-runtime.voiceflow.com',
-            versionID: 'production',
-            session: { 
-              user: {
-                variables: { 
-                  tableNumber: parseInt(tableNumber) 
-                }
-              }
-            },
-            render: {
-              mode: 'embedded',
-              target: document.body,
-              launcher: 'none'
+     script.onload = () => {
+      window.voiceflow.chat.load({
+        verify: { projectID: '6832111f0307aee0c811367c' },
+        url: 'https://general-runtime.voiceflow.com',
+        versionID: 'production',
+        // CORRECTED SECTION: Use launch event to pass variables
+        launch: {
+          event: {
+            type: 'launch',
+            payload: {
+              tableNumber: parseInt(tableNumber)
             }
+          }
+        },
+        render: {
+          mode: 'embedded',
+          target: document.body,
+          launcher: 'none'
+        }
           }).then(() => {
             window.voiceflow.chat.open();
             

@@ -9,6 +9,9 @@
       :root {
         overflow: hidden !important;
         height: 100% !important;
+        --primary: #e74c3c;
+        --secondary: #3498db;
+        --dark: #2c3e50;
       }
 
       html, body {
@@ -21,7 +24,8 @@
         -webkit-overflow-scrolling: touch;
         -webkit-tap-highlight-color: transparent;
         overscroll-behavior: none;
-        font-family: Arial, sans-serif;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
       }
 
       #voiceflow-container {
@@ -38,22 +42,30 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.95);
         display: none;
         align-items: center;
         justify-content: center;
         z-index: 9999;
         opacity: 0;
         transition: opacity 0.3s;
+        flex-direction: column;
       }
 
       .spinner {
         width: 50px;
         height: 50px;
-        border: 4px solid #f3f3f3;
-        border-top: 4px solid #3498db;
+        border: 4px solid rgba(52, 152, 219, 0.2);
+        border-top: 4px solid var(--secondary);
         border-radius: 50%;
         animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+      }
+
+      .loading-text {
+        font-size: 1.2em;
+        color: var(--dark);
+        font-weight: 500;
       }
 
       .start-instruction {
@@ -64,32 +76,60 @@
         height: 100%;
         background: rgba(255, 255, 255, 0.95);
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        font-size: 1.5em;
-        color: #2c3e50;
+        font-size: 1.8em;
+        color: var(--dark);
         text-align: center;
         cursor: pointer;
         z-index: 10000;
         animation: pulse 2s infinite;
+        padding: 20px;
+      }
+
+      .start-instruction h1 {
+        color: #e74c3c;
+        margin-bottom: 20px;
+        font-size: 2.5rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+
+      .start-instruction p {
+        max-width: 500px;
+        margin-bottom: 30px;
+        font-size: 1.2rem;
+        line-height: 1.6;
       }
 
       .table-number {
         position: fixed;
         top: 15px;
         right: 15px;
-        background: #3498db;
+        background: var(--primary);
         color: white;
-        padding: 8px 15px;
-        border-radius: 20px;
+        padding: 10px 20px;
+        border-radius: 30px;
         font-weight: bold;
         z-index: 10001;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        font-size: 1.1em;
+      }
+
+      .restaurant-logo {
+        position: fixed;
+        top: 15px;
+        left: 20px;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: white;
+        z-index: 10001;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
       }
 
       @keyframes pulse {
         0% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.05); opacity: 0.8; }
+        50% { transform: scale(1.02); opacity: 0.95; }
         100% { transform: scale(1); opacity: 1; }
       }
 
@@ -100,22 +140,37 @@
     </style>
   </head>
   <body>
-    <div class="start-instruction">Tap anywhere to start ordering 🍔</div>
+    <div class="restaurant-logo">🍽️ Gourmet Bistro</div>
+    <div class="start-instruction">
+      <h1>Welcome to Gourmet Bistro</h1>
+      <p>Tap anywhere to start your dining experience and place your order</p>
+      <div>👇</div>
+    </div>
     <div id="loading">
       <div class="spinner"></div>
+      <div class="loading-text">Loading restaurant assistant...</div>
     </div>
     <div id="voiceflow-container"></div>
 
-    <script type="text/javascript">
+    <script type="module">
+      // Import the LoadingAnimation extension
+      import LoadingAnimation from 'https://chhotoo14.github.io/LoadingAnimation.js';
+      
       let chatInitialized = false;
       const synth = window.speechSynthesis;
       const urlParams = new URLSearchParams(window.location.search);
       const tableNumber = urlParams.get('table');
+      const loading = document.getElementById('loading');
 
       // Validate table number
       if (!tableNumber || isNaN(tableNumber)) {
-        document.querySelector('.start-instruction').innerHTML = 
-          '⚠️ Invalid table QR code<br><small>Please scan the code on your table</small>';
+        document.querySelector('.start-instruction').innerHTML = `
+          <h1 style="color: #e74c3c;">⚠️ Invalid Table QR Code</h1>
+          <p>Please scan the QR code on your table to access the ordering system</p>
+          <div style="margin-top: 20px; background: #e74c3c; color: white; padding: 10px 20px; border-radius: 5px;">
+            Table number not detected
+          </div>
+        `;
       }
 
       function updateViewportHeight() {
@@ -134,53 +189,66 @@
         tableDisplay.textContent = `Table ${tableNumber}`;
         document.body.appendChild(tableDisplay);
 
-        const loading = document.getElementById('loading');
         loading.style.display = 'flex';
         setTimeout(() => loading.style.opacity = '1', 10);
 
+        // Create Voiceflow script
         const script = document.createElement('script');
         script.src = 'https://cdn.voiceflow.com/widget-next/bundle.mjs';
+        script.type = 'text/javascript';
         
-     script.onload = () => {
-      window.voiceflow.chat.load({
-        verify: { projectID: '6849cc61894655c0d602c27d' },
-        url: 'https://general-runtime.voiceflow.com',
-        versionID: 'production',
-        allowDangerousHTML: true,
-        // CORRECTED SECTION: Use launch event to pass variables
-        launch: {
-          event: {
-            type: 'launch',
-            payload: {
-              tableNumber: parseInt(tableNumber)
+        script.onload = () => {
+          window.voiceflow.chat.load({
+            verify: { projectID: '6849cc61894655c0d602c27d' },
+            url: 'https://general-runtime.voiceflow.com',
+            versionID: 'production',
+            allowDangerousHTML: true,
+            // Pass table number as a variable
+            launch: {
+              event: {
+                type: 'launch',
+                payload: {
+                  tableNumber: parseInt(tableNumber)
+                }
+              }
+            },
+            render: {
+              mode: 'embedded',
+              target: document.body,
+              launcher: 'none'
+            },
+            // Add the LoadingAnimation extension
+            assistant: {
+              extensions: [LoadingAnimation],
+              persistence: 'localStorage'
             }
-          }
-        },
-        render: {
-          mode: 'embedded',
-          target: document.body,
-          launcher: 'none'
-        },
-        assistant: {
-          extensions: [LoadingAnimation]
-        }
           }).then(() => {
             window.voiceflow.chat.open();
+            
+            // Clear any previous proactive messages
+            window.voiceflow.chat.proactive.clear();
+            
+            // Push the new proactive messages
+            window.voiceflow.chat.proactive.push(
+              { type: 'text', payload: { message: 'Welcome to Gourmet Bistro! How can I assist you today?' } }
+            );
             
             // Auto-focus input
             setTimeout(() => {
               document.querySelector('input[type="text"]')?.focus();
             }, 500);
 
-            // Handle bot messages
+            // Handle bot messages with text-to-speech
             const observer = new MutationObserver(mutations => {
               mutations.forEach(({ addedNodes }) => {
                 addedNodes.forEach(node => {
                   if (node.classList?.contains('vfrc-message--bot')) {
                     const text = node.querySelector('.vfrc-message-content')?.textContent;
-                    if (text) {
+                    if (text && synth) {
+                      synth.cancel(); // Cancel any ongoing speech
                       const utterance = new SpeechSynthesisUtterance(text);
                       utterance.rate = 1.1;
+                      utterance.pitch = 1.0;
                       synth.speak(utterance);
                     }
                   }
@@ -193,13 +261,35 @@
               subtree: true
             });
 
+            // Hide loading overlay
             loading.style.opacity = '0';
             setTimeout(() => loading.style.display = 'none', 300);
+          }).catch(error => {
+            console.error('Voiceflow initialization error:', error);
+            loading.innerHTML = `
+              <div style="text-align: center; padding: 20px;">
+                <div style="font-size: 3rem; margin-bottom: 20px;">❌</div>
+                <h2>Failed to Load Assistant</h2>
+                <p>Please check your connection and try again</p>
+                <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                  Retry
+                </button>
+              </div>
+            `;
           });
         };
 
         script.onerror = () => {
-          loading.innerHTML = 'Failed to load chat. Please check connection.';
+          loading.innerHTML = `
+            <div style="text-align: center; padding: 20px;">
+              <div style="font-size: 3rem; margin-bottom: 20px;">❌</div>
+              <h2>Connection Error</h2>
+              <p>Failed to load chat service. Please check your internet connection.</p>
+              <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Retry
+              </button>
+            </div>
+          `;
         };
 
         document.body.appendChild(script);
@@ -210,7 +300,7 @@
         window.addEventListener('resize', updateViewportHeight);
         
         document.body.addEventListener('click', () => {
-          if (!chatInitialized && tableNumber) {
+          if (!chatInitialized && tableNumber && !isNaN(tableNumber)) {
             initializeChat();
           }
         }, { once: true });

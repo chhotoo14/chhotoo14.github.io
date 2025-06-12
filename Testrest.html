@@ -146,6 +146,7 @@
         verify: { projectID: '6849cc61894655c0d602c27d' },
         url: 'https://general-runtime.voiceflow.com',
         versionID: 'production',
+        allowDangerousHTML: true,
         // CORRECTED SECTION: Use launch event to pass variables
         launch: {
           event: {
@@ -159,6 +160,9 @@
           mode: 'embedded',
           target: document.body,
           launcher: 'none'
+        },
+        assistant: {
+          extensions: [LoadingAnimation]
         }
           }).then(() => {
             window.voiceflow.chat.open();

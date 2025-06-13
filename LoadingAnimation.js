@@ -4,67 +4,67 @@ export const LoadingAnimation = {
     match: ({ trace }) => 
         trace.type === 'loading_screen' || (trace.payload && trace.payload.name === 'loading_screen'),
     render: ({ element }) => {
-        // Create container for our animation
+        // Create container
         const container = document.createElement('div');
         container.classList.add('vf-loading-container');
         
+        // Create the animation HTML
         container.innerHTML = `
             <style>
+                /* Container styling */
                 .vf-loading-container {
                     display: flex;
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
-                    padding: 25px;
-                    background: rgba(0, 0, 0, 0.7) !important;
-                    border-radius: 20px;
+                    padding: 20px;
+                    background: transparent !important;
                     position: relative;
-                    min-height: 120px;
-                    min-width: 200px;
-                    backdrop-filter: blur(5px);
+                    min-height: 80px;
                 }
                 
-                .pulse-loader {
+                /* Minimalist spinner */
+                .minimal-spinner {
                     position: relative;
-                    width: 60px;
-                    height: 60px;
-                    margin-bottom: 25px;
+                    width: 40px;
+                    height: 40px;
+                    margin-bottom: 15px;
                 }
                 
-                .pulse-dot {
+                .minimal-spinner:before {
+                    content: "";
                     position: absolute;
-                    width: 20px;
-                    height: 20px;
-                    background: #ff8c00;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    border: 2px solid rgba(255, 255, 255, 0.3);
+                    border-top-color: rgba(255, 255, 255, 0.9);
                     border-radius: 50%;
-                    box-shadow: 0 0 15px rgba(255, 140, 0, 0.8);
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    animation: pulse 1.5s infinite ease-in-out;
+                    animation: spin 1s linear infinite;
                 }
                 
-                @keyframes pulse {
-                    0%, 100% { 
-                        transform: translate(-50%, -50%) scale(1);
-                        opacity: 1;
-                    }
-                    50% { 
-                        transform: translate(-50%, -50%) scale(1.5);
-                        opacity: 0.7;
-                    }
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
                 }
                 
+                /* Text animation */
                 .loading-text {
-                    font-size: 18px;
-                    font-weight: 500;
-                    color: white;
-                    letter-spacing: 1px;
-                    text-transform: uppercase;
-                    text-shadow: 0 0 10px rgba(255, 140, 0, 0.7);
+                    font-size: 16px;
+                    font-weight: 400;
+                    color: rgba(255, 255, 255, 0.85);
+                    letter-spacing: 0.5px;
+                    animation: textFade 3s infinite ease-in-out;
+                    opacity: 0;
                 }
                 
-                /* FIX: Auto-remove loading animation after response */
+                @keyframes textFade {
+                    0%, 100% { opacity: 0; transform: translateY(5px); }
+                    30%, 70% { opacity: 1; transform: translateY(0); }
+                }
+                
+                /* Auto-remove animation */
                 .vfrc-assistant-trace:has(.vf-loading-container) {
                     animation: fadeOut 0.5s forwards;
                     animation-delay: 0.5s;
@@ -81,15 +81,14 @@ export const LoadingAnimation = {
                 }
             </style>
             
-            <div class="pulse-loader">
-                <div class="pulse-dot"></div>
-            </div>
+            <div class="minimal-spinner"></div>
             <div class="loading-text">Just a moment</div>
         `;
 
+        // Add to the element
         element.appendChild(container);
         
-        // FIX: Auto-remove after 3 seconds (safety)
+        // Auto-remove after 3 seconds as a safety measure
         setTimeout(() => {
             if (container.parentNode) {
                 container.style.opacity = '0';

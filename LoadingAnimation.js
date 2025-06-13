@@ -5,11 +5,9 @@ export const LoadingAnimationExtension = {
         trace.type === 'ext_loading_animation' || 
         (trace.payload && trace.payload.name === 'ext_loading_animation'),
     render: ({ element }) => {
-        // Create container for our animation
         const container = document.createElement('div');
         container.classList.add('loading-animation-container');
         
-        // Create the animation with fade in/out effect
         container.innerHTML = `
             <style>
                 .loading-animation-container {
@@ -17,79 +15,114 @@ export const LoadingAnimationExtension = {
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
-                    padding: 15px;
+                    padding: 25px 15px;
+                    min-height: 120px;
                     background: transparent !important;
-                    min-height: 80px;
+                }
+                
+                .spinner {
+                    position: relative;
+                    width: 56px;
+                    height: 56px;
+                    margin-bottom: 16px;
+                }
+                
+                .spinner-inner {
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 50%;
+                    background: conic-gradient(transparent, #6e44ff, #b892ff, #ff7ed0);
+                    mask: radial-gradient(white 55%, transparent 56%);
+                    -webkit-mask: radial-gradient(white 55%, transparent 56%);
+                    animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+                }
+                
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
                 }
                 
                 .text-container {
                     position: relative;
-                    height: 24px;
-                    width: 160px;
-                    text-align: center;
+                    height: 28px;
+                    overflow: hidden;
+                }
+                
+                .text-slider {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    animation: slide 6s cubic-bezier(0.645, 0.045, 0.355, 1) infinite;
+                }
+                
+                @keyframes slide {
+                    0%, 25% { transform: translateY(0); }
+                    33%, 58% { transform: translateY(-28px); }
+                    66%, 100% { transform: translateY(-56px); }
                 }
                 
                 .loading-text {
-                    position: absolute;
-                    width: 100%;
-                    font-size: 16px;
+                    height: 28px;
+                    font-size: 15px;
                     font-weight: 500;
-                    color: rgba(255, 255, 255, 0.9);
-                    letter-spacing: 0.5px;
-                    opacity: 0;
-                    animation: textFade 6s infinite;
-                    text-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+                    letter-spacing: 0.3px;
+                    background: linear-gradient(90deg, #e0d1ff, #ffc2eb, #b5deff);
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                    opacity: 0.9;
+                    transition: opacity 0.4s;
                 }
                 
-                .text-1 { animation-delay: 0s; }
-                .text-2 { animation-delay: 3s; }
+                .loading-text:nth-child(2) {
+                    animation: pulse 1.5s ease-in-out infinite;
+                }
                 
-                @keyframes textFade {
-                    0% { opacity: 0; transform: translateY(5px); }
-                    20% { opacity: 1; transform: translateY(0); }
-                    50% { opacity: 1; transform: translateY(0); }
-                    70% { opacity: 0; transform: translateY(-5px); }
-                    100% { opacity: 0; }
+                @keyframes pulse {
+                    0%, 100% { opacity: 0.7; }
+                    50% { opacity: 1; }
                 }
                 
                 /* Auto-remove when AI responds */
                 .vfrc-assistant-trace:has(.loading-animation-container) {
-                    animation: fadeOut 0.5s forwards;
-                }
-                
-                @keyframes fadeOut {
-                    to { opacity: 0; height: 0; padding: 0; margin: 0; }
+                    transition: opacity 0.4s, height 0.4s, padding 0.4s;
                 }
             </style>
             
+            <div class="spinner">
+                <div class="spinner-inner"></div>
+            </div>
+            
             <div class="text-container">
-                <div class="loading-text text-1">Just a moment</div>
-                <div class="loading-text text-2">Almost there</div>
+                <div class="text-slider">
+                    <div class="loading-text">Processing your request</div>
+                    <div class="loading-text">Generating response</div>
+                    <div class="loading-text">Almost there</div>
+                </div>
             </div>
         `;
 
-        // Add to the element
         element.appendChild(container);
         
         // Auto-removal when AI responds
         const observer = new MutationObserver(() => {
             const aiMessages = document.querySelectorAll('.vfrc-message--chat, .vfrc-message--assistant');
             if (aiMessages.length > 0) {
-                // Start fade out animation
                 container.style.opacity = '0';
-                container.style.transition = 'opacity 0.5s ease';
+                container.style.transform = 'scale(0.95)';
+                container.style.transition = 'all 0.4s ease';
                 
-                // Remove after animation completes
                 setTimeout(() => {
                     if (container.parentNode) {
                         container.parentNode.removeChild(container);
                     }
                     observer.disconnect();
-                }, 500);
+                }, 400);
             }
         });
         
-        // Start observing the chat container
         const chatContainer = document.querySelector('.vfrc-chat');
         if (chatContainer) {
             observer.observe(chatContainer, { 
@@ -98,12 +131,12 @@ export const LoadingAnimationExtension = {
             });
         }
         
-        // Fallback removal after 10 seconds
+        // Fallback removal after 15 seconds
         setTimeout(() => {
             if (container.parentNode) {
                 container.parentNode.removeChild(container);
                 observer.disconnect();
             }
-        }, 10000);
+        }, 15000);
     }
 };

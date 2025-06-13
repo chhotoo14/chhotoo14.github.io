@@ -15,32 +15,69 @@ export const LoadingAnimationExtension = {
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
-                    padding: 25px 15px;
-                    min-height: 120px;
+                    min-height: 140px;
                     background: transparent !important;
+                    position: relative;
+                    overflow: hidden;
                 }
                 
                 .spinner {
                     position: relative;
-                    width: 56px;
-                    height: 56px;
-                    margin-bottom: 16px;
+                    width: 48px;
+                    height: 48px;
+                    margin-bottom: 20px;
                 }
                 
-                .spinner-inner {
+                .spinner-dot {
                     position: absolute;
-                    width: 100%;
-                    height: 100%;
+                    width: 12px;
+                    height: 12px;
+                    background: linear-gradient(45deg, #8a2be2, #5d3fd3, #1e90ff);
                     border-radius: 50%;
-                    background: conic-gradient(transparent, #6e44ff, #b892ff, #ff7ed0);
-                    mask: radial-gradient(white 55%, transparent 56%);
-                    -webkit-mask: radial-gradient(white 55%, transparent 56%);
-                    animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+                    transform: translate(-50%, -50%);
+                    opacity: 0.7;
+                    filter: drop-shadow(0 0 4px rgba(138, 43, 226, 0.6));
                 }
                 
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
+                .spinner-dot:nth-child(1) {
+                    top: 0;
+                    left: 50%;
+                    animation: pulse 1.2s ease-in-out infinite;
+                }
+                
+                .spinner-dot:nth-child(2) {
+                    top: 15px;
+                    right: 8px;
+                    animation: pulse 1.2s ease-in-out 0.2s infinite;
+                }
+                
+                .spinner-dot:nth-child(3) {
+                    bottom: 8px;
+                    right: 15px;
+                    animation: pulse 1.2s ease-in-out 0.4s infinite;
+                }
+                
+                .spinner-dot:nth-child(4) {
+                    bottom: 0;
+                    left: 50%;
+                    animation: pulse 1.2s ease-in-out 0.6s infinite;
+                }
+                
+                .spinner-dot:nth-child(5) {
+                    bottom: 8px;
+                    left: 15px;
+                    animation: pulse 1.2s ease-in-out 0.8s infinite;
+                }
+                
+                .spinner-dot:nth-child(6) {
+                    top: 15px;
+                    left: 8px;
+                    animation: pulse 1.2s ease-in-out 1.0s infinite;
+                }
+                
+                @keyframes pulse {
+                    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+                    50% { transform: translate(-50%, -50%) scale(1.8); opacity: 1; }
                 }
                 
                 .text-container {
@@ -64,25 +101,13 @@ export const LoadingAnimationExtension = {
                 
                 .loading-text {
                     height: 28px;
-                    font-size: 15px;
+                    font-size: 16px;
                     font-weight: 500;
                     letter-spacing: 0.3px;
-                    background: linear-gradient(90deg, #e0d1ff, #ffc2eb, #b5deff);
-                    -webkit-background-clip: text;
-                    background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                    color: rgba(255, 255, 255, 0.92);
+                    text-shadow: 0 1px 4px rgba(0,0,0,0.2);
                     opacity: 0.9;
                     transition: opacity 0.4s;
-                }
-                
-                .loading-text:nth-child(2) {
-                    animation: pulse 1.5s ease-in-out infinite;
-                }
-                
-                @keyframes pulse {
-                    0%, 100% { opacity: 0.7; }
-                    50% { opacity: 1; }
                 }
                 
                 /* Auto-remove when AI responds */
@@ -92,7 +117,12 @@ export const LoadingAnimationExtension = {
             </style>
             
             <div class="spinner">
-                <div class="spinner-inner"></div>
+                <div class="spinner-dot"></div>
+                <div class="spinner-dot"></div>
+                <div class="spinner-dot"></div>
+                <div class="spinner-dot"></div>
+                <div class="spinner-dot"></div>
+                <div class="spinner-dot"></div>
             </div>
             
             <div class="text-container">
@@ -111,7 +141,7 @@ export const LoadingAnimationExtension = {
             const aiMessages = document.querySelectorAll('.vfrc-message--chat, .vfrc-message--assistant');
             if (aiMessages.length > 0) {
                 container.style.opacity = '0';
-                container.style.transform = 'scale(0.95)';
+                container.style.transform = 'scale(0.9)';
                 container.style.transition = 'all 0.4s ease';
                 
                 setTimeout(() => {

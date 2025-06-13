@@ -7,6 +7,7 @@ export const LoadingAnimation = {
         // Create container
         const container = document.createElement('div');
         container.classList.add('vf-loading-container');
+        container.id = 'vf-loading-animation'; // Add ID for easy selection
         
         // Create the animation HTML
         container.innerHTML = `
@@ -63,22 +64,6 @@ export const LoadingAnimation = {
                     0%, 100% { opacity: 0; transform: translateY(5px); }
                     30%, 70% { opacity: 1; transform: translateY(0); }
                 }
-                
-                /* Auto-remove animation */
-                .vfrc-assistant-trace:has(.vf-loading-container) {
-                    animation: fadeOut 0.5s forwards;
-                    animation-delay: 0.5s;
-                }
-                
-                @keyframes fadeOut {
-                    to { 
-                        opacity: 0; 
-                        height: 0; 
-                        padding: 0; 
-                        margin: 0;
-                        display: none;
-                    }
-                }
             </style>
             
             <div class="minimal-spinner"></div>
@@ -88,17 +73,40 @@ export const LoadingAnimation = {
         // Add to the element
         element.appendChild(container);
         
-        // Auto-remove after 3 seconds as a safety measure
-        setTimeout(() => {
-            if (container.parentNode) {
-                container.style.opacity = '0';
-                container.style.transform = 'scale(0.8)';
-                setTimeout(() => {
-                    if (container.parentNode) {
-                        container.parentNode.removeChild(container);
+        // Add MutationObserver
+        const chatMessages = document.querySelector('.vf-chat-messages'); // Adjust selector if needed
+        if (chatMessages) {
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                        const addedNode = mutation.addedNodes[0];
+                        if (addedNode.classList.contains('vf-assistant-message')) { // Adjust class if needed
+                            const loadingContainer = document.getElementById('vf-loading-animation');
+                            if (loadingContainer) {
+                                loadingContainer.style.opacity = '0';
+                                setTimeout(() => {
+                                    if (loadingContainer.parentNode) {
+                                        loadingContainer.parentNode.removeChild(loadingContainer);
+                                    }
+                                }, 300);
+                            }
+                            observer.disconnect();
+                        }
                     }
+                });
+            });
+            observer.observe(chatMessages, { childList: true });
+        }
+        
+        // Fallback timeout
+        setTimeout(() => {
+            const loadingContainer = document.getElementById('vf-loading-animation');
+            if (loadingContainer && loadingContainer.parentNode) {
+                loadingContainer.style.opacity = '0';
+                setTimeout(() => {
+                    loadingContainer.parentNode.removeChild(loadingContainer);
                 }, 300);
             }
-        }, 3000);
+        }, 10000); // 10 seconds fallback
     }
 };

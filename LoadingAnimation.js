@@ -9,27 +9,22 @@ export const LoadingAnimation = {
         
         container.innerHTML = `
             <style>
+                /* Container styling */
                 .vf-loading-container {
                     display: flex;
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
-                    padding: 20px;
-                    background: transparent !important;
+                    padding: 25px;
+                    background: rgba(0, 0, 0, 0.7) !important;
+                    border-radius: 20px;
                     position: relative;
                     min-height: 120px;
+                    min-width: 200px;
+                    backdrop-filter: blur(5px);
                 }
                 
-                .loading-content {
-                    position: relative;
-                    width: 100%;
-                    height: 100%;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                }
-                
+                /* Orbital loader */
                 .orbital-loader {
                     position: relative;
                     width: 60px;
@@ -44,7 +39,7 @@ export const LoadingAnimation = {
                     background: #ff8c00;
                     border-radius: 50%;
                     box-shadow: 0 0 10px rgba(255, 140, 0, 0.8);
-                    animation: orbitalRotate 2.5s infinite cubic-bezier(0.55, 0, 0.1, 1);
+                    animation: orbitalRotate 2s infinite cubic-bezier(0.55, 0, 0.1, 1);
                     transform-origin: 30px 30px;
                 }
                 
@@ -89,6 +84,7 @@ export const LoadingAnimation = {
                     }
                 }
                 
+                /* Text animation */
                 .loading-text {
                     font-size: 18px;
                     font-weight: 500;
@@ -96,37 +92,54 @@ export const LoadingAnimation = {
                     letter-spacing: 1px;
                     text-transform: uppercase;
                     animation: textFade 3.5s infinite ease-in-out;
-                    text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+                    text-shadow: 0 0 10px rgba(255, 140, 0, 0.7);
                     opacity: 0;
                 }
                 
                 @keyframes textFade {
-                    0%, 100% { opacity: 0; transform: translateY(10px); }
-                    30%, 70% { opacity: 1; transform: translateY(0); }
+                    0%, 100% { 
+                        opacity: 0; 
+                        transform: translateY(10px);
+                    }
+                    30%, 70% { 
+                        opacity: 1; 
+                        transform: translateY(0);
+                    }
                 }
                 
-                /* Solution to stop extension before AI responds */
+                /* SOLUTION TO STOP EXTENSION */
                 .vfrc-assistant-trace:has(.vf-loading-container) {
                     animation: fadeOut 0.5s forwards;
-                    animation-delay: 1.5s;
+                    animation-delay: 0.5s; /* Start fading after 0.5 seconds */
                 }
                 
                 @keyframes fadeOut {
-                    to { opacity: 0; height: 0; padding: 0; margin: 0; }
+                    to { 
+                        opacity: 0; 
+                        height: 0; 
+                        padding: 0; 
+                        margin: 0;
+                        display: none;
+                    }
                 }
             </style>
             
-            <div class="loading-content">
-                <div class="orbital-loader">
-                    <div class="orbital-dot"></div>
-                    <div class="orbital-dot"></div>
-                    <div class="orbital-dot"></div>
-                    <div class="orbital-dot"></div>
-                </div>
-                <div class="loading-text">Just a moment</div>
+            <div class="orbital-loader">
+                <div class="orbital-dot"></div>
+                <div class="orbital-dot"></div>
+                <div class="orbital-dot"></div>
+                <div class="orbital-dot"></div>
             </div>
+            <div class="loading-text">Just a moment</div>
         `;
 
         element.appendChild(container);
+        
+        // Auto-remove after 3 seconds as a safety measure
+        setTimeout(() => {
+            if (container.parentNode) {
+                container.parentNode.removeChild(container);
+            }
+        }, 3000);
     }
 };

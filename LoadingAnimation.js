@@ -1,117 +1,185 @@
 export const LoadingAnimation = {
     name: 'LoadingAnimation',
     type: 'response',
-    match: ({ trace }) =>
-        trace.type === 'ext_loading_animation' || (trace.payload && trace.payload.name === 'ext_loading_animation'),
+    match: ({ trace }) => 
+        trace.type === 'loading_screen' || (trace.payload && trace.payload.name === 'loading_screen'),
     render: ({ element }) => {
-        // Create container
         const container = document.createElement('div');
-        container.style.display = 'flex';
-        container.style.flexDirection = 'column';
-        container.style.alignItems = 'center';
-        container.style.justifyContent = 'center';
-        container.style.height = '200px';
-        container.style.padding = '20px';
-
-        // Create animated dots
-        const dotsContainer = document.createElement('div');
-        dotsContainer.style.display = 'flex';
-        dotsContainer.style.gap = '10px';
-        dotsContainer.style.marginBottom = '30px';
-
-        const dots = [];
-        for (let i = 0; i < 3; i++) {
-            const dot = document.createElement('div');
-            dot.style.width = '20px';
-            dot.style.height = '20px';
-            dot.style.borderRadius = '50%';
-            dot.style.backgroundColor = '#447f76';
-            dot.style.opacity = i === 0 ? '1' : '0.3';
-            dot.style.transition = 'all 0.4s ease';
-            dot.style.boxShadow = '0 0 10px rgba(68, 127, 118, 0.5)';
-            dots.push(dot);
-            dotsContainer.appendChild(dot);
-        }
-
-        // Create text element
-        const textElement = document.createElement('div');
-        textElement.textContent = 'Please wait a minute';
-        textElement.style.fontSize = '18px';
-        textElement.style.fontWeight = '500';
-        textElement.style.color = '#333';
-        textElement.style.transition = 'all 0.5s ease';
-        textElement.style.opacity = '1';
-        textElement.style.textAlign = 'center';
-        textElement.style.minHeight = '25px';
-
-        // Create progress bar
-        const progressBar = document.createElement('div');
-        progressBar.style.width = '100%';
-        progressBar.style.height = '6px';
-        progressBar.style.backgroundColor = '#eee';
-        progressBar.style.borderRadius = '3px';
-        progressBar.style.marginTop = '20px';
-        progressBar.style.overflow = 'hidden';
-        progressBar.style.boxShadow = 'inset 0 1px 2px rgba(0,0,0,0.1)';
-
-        const progressFill = document.createElement('div');
-        progressFill.style.width = '0%';
-        progressFill.style.height = '100%';
-        progressFill.style.backgroundColor = '#447f76';
-        progressFill.style.borderRadius = '3px';
-        progressFill.style.transition = 'width 4s linear';
-        progressFill.style.boxShadow = '0 0 10px rgba(68, 127, 118, 0.5)';
-        progressBar.appendChild(progressFill);
-
-        // Assemble container
-        container.appendChild(dotsContainer);
-        container.appendChild(textElement);
-        container.appendChild(progressBar);
-        element.appendChild(container);
-
-        // Animation sequence
-        const messages = [
-            'Please wait a minute',
-            'Placing your order',
-            'Almost there'
-        ];
-
-        // Start dot animation
-        let currentDot = 0;
-        const dotInterval = setInterval(() => {
-            dots.forEach((dot, index) => {
-                dot.style.opacity = index === currentDot ? '1' : '0.3';
-                dot.style.transform = index === currentDot ? 'scale(1.2)' : 'scale(1)';
-            });
-            currentDot = (currentDot + 1) % 3;
-        }, 500);
-
-        // Start progress animation
-        setTimeout(() => {
-            progressFill.style.width = '100%';
-        }, 100);
-
-        // Change text every 4 seconds
-        let currentIndex = 0;
-        const textInterval = setInterval(() => {
-            textElement.style.opacity = '0';
-            setTimeout(() => {
-                currentIndex++;
-                if (currentIndex < messages.length) {
-                    textElement.textContent = messages[currentIndex];
-                    textElement.style.opacity = '1';
+        container.classList.add('vf-loading-container');
+        
+        container.innerHTML = `
+            <style>
+                .vf-loading-container {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 30px 20px;
+                    border-radius: 16px;
+                    background: linear-gradient(135deg, #2c3e50, #1a1a2e);
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+                    max-width: 320px;
+                    margin: 0 auto;
+                    color: white;
+                    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                    position: relative;
+                    overflow: hidden;
                 }
-            }, 300);
-        }, 4000);
+                
+                .vf-loading-container::before {
+                    content: "";
+                    position: absolute;
+                    top: -50%;
+                    left: -50%;
+                    width: 200%;
+                    height: 200%;
+                    background: conic-gradient(
+                        transparent,
+                        rgba(68, 127, 118, 0.8),
+                        transparent 70%
+                    );
+                    animation: rotate 3s linear infinite;
+                    z-index: 0;
+                }
+                
+                @keyframes rotate {
+                    100% {
+                        transform: rotate(360deg);
+                    }
+                }
+                
+                .loading-content {
+                    position: relative;
+                    z-index: 1;
+                    text-align: center;
+                    width: 100%;
+                }
+                
+                .loading-spinner {
+                    position: relative;
+                    width: 80px;
+                    height: 80px;
+                    margin: 0 auto 20px;
+                }
+                
+                .spinner-circle {
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 50%;
+                    border: 4px solid transparent;
+                    mix-blend-mode: overlay;
+                }
+                
+                .circle-1 {
+                    border-top-color: #447f76;
+                    animation: spin 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+                }
+                
+                .circle-2 {
+                    border-left-color: #5da399;
+                    animation: spin 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+                }
+                
+                .circle-3 {
+                    border-right-color: #76c7bc;
+                    animation: spin 2.1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+                }
+                
+                @keyframes spin {
+                    100% {
+                        transform: rotate(360deg);
+                    }
+                }
+                
+                .loading-text {
+                    font-size: 18px;
+                    font-weight: 500;
+                    margin: 15px 0;
+                    height: 30px;
+                    position: relative;
+                    overflow: hidden;
+                }
+                
+                .text-slider {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    animation: textCycle 9s infinite ease-in-out;
+                }
+                
+                .text-slider span {
+                    display: block;
+                    line-height: 30px;
+                    opacity: 0;
+                    animation: textFade 3s infinite;
+                }
+                
+                .text-slider span:nth-child(1) {
+                    animation-delay: 0s;
+                }
+                
+                .text-slider span:nth-child(2) {
+                    animation-delay: 3s;
+                }
+                
+                .text-slider span:nth-child(3) {
+                    animation-delay: 6s;
+                }
+                
+                @keyframes textFade {
+                    0%, 100% { opacity: 0; transform: translateY(10px); }
+                    10%, 90% { opacity: 1; transform: translateY(0); }
+                }
+                
+                .progress-bar {
+                    width: 100%;
+                    height: 6px;
+                    background: rgba(255, 255, 255, 0.1);
+                    border-radius: 3px;
+                    overflow: hidden;
+                    margin-top: 20px;
+                }
+                
+                .progress-fill {
+                    height: 100%;
+                    width: 0%;
+                    background: linear-gradient(90deg, #447f76, #5da399, #76c7bc);
+                    border-radius: 3px;
+                    animation: progressLoad 9s infinite cubic-bezier(0.4, 0, 0.2, 1);
+                }
+                
+                @keyframes progressLoad {
+                    0% { width: 0%; }
+                    30% { width: 30%; }
+                    60% { width: 70%; }
+                    90% { width: 95%; }
+                    100% { width: 100%; }
+                }
+            </style>
+            
+            <div class="loading-content">
+                <div class="loading-spinner">
+                    <div class="spinner-circle circle-1"></div>
+                    <div class="spinner-circle circle-2"></div>
+                    <div class="spinner-circle circle-3"></div>
+                </div>
+                
+                <div class="loading-text">
+                    <div class="text-slider">
+                        <span>Placing your order...</span>
+                        <span>Just a min...</span>
+                        <span>Almost there...</span>
+                    </div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        `;
 
-        // Clean up after 12 seconds
-        setTimeout(() => {
-            clearInterval(dotInterval);
-            clearInterval(textInterval);
-            window.voiceflow.chat.interact({
-                type: 'complete',
-                payload: {}
-            });
-        }, 12000);
+        element.appendChild(container);
     }
 };

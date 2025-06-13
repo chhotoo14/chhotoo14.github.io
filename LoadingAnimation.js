@@ -1,27 +1,25 @@
-export const LoadingAnimation = {
-    name: 'LoadingAnimation',
+export const LoadingAnimationExtension = {
+    name: 'LoadingAnimationExtension',
     type: 'response',
-    match: ({ trace }) => 
-        trace.type === 'loading_screen' || (trace.payload?.name === 'loading_screen'),
+    match: ({ trace }) =>
+        trace.type === 'ext_loading_animation' || 
+        (trace.payload && trace.payload.name === 'ext_loading_animation'),
     render: ({ element }) => {
-        // Create transparent container
+        // Create container for our animation
         const container = document.createElement('div');
-        container.className = 'vf-loading-container';
-        container.style.opacity = '0.9'; // Slightly visible but transparent
+        container.classList.add('loading-animation-container');
         
-        // Animation with two text states
+        // Create the animation with fade in/out effect
         container.innerHTML = `
             <style>
-                .vf-loading-container {
+                .loading-animation-container {
                     display: flex;
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
-                    padding: 12px 20px;
+                    padding: 15px;
                     background: transparent !important;
-                    border-radius: 16px;
-                    min-height: 60px;
-                    transition: opacity 0.5s ease;
+                    min-height: 80px;
                 }
                 
                 .text-container {
@@ -35,11 +33,12 @@ export const LoadingAnimation = {
                     position: absolute;
                     width: 100%;
                     font-size: 16px;
-                    font-weight: 400;
-                    color: rgba(255, 255, 255, 0.85);
+                    font-weight: 500;
+                    color: rgba(255, 255, 255, 0.9);
                     letter-spacing: 0.5px;
                     opacity: 0;
                     animation: textFade 6s infinite;
+                    text-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
                 }
                 
                 .text-1 { animation-delay: 0s; }
@@ -52,6 +51,15 @@ export const LoadingAnimation = {
                     70% { opacity: 0; transform: translateY(-5px); }
                     100% { opacity: 0; }
                 }
+                
+                /* Auto-remove when AI responds */
+                .vfrc-assistant-trace:has(.loading-animation-container) {
+                    animation: fadeOut 0.5s forwards;
+                }
+                
+                @keyframes fadeOut {
+                    to { opacity: 0; height: 0; padding: 0; margin: 0; }
+                }
             </style>
             
             <div class="text-container">
@@ -60,26 +68,24 @@ export const LoadingAnimation = {
             </div>
         `;
 
+        // Add to the element
         element.appendChild(container);
         
         // Auto-removal when AI responds
-        const observer = new MutationObserver((mutations) => {
-            for (const mutation of mutations) {
-                for (const node of mutation.addedNodes) {
-                    // Check for Voiceflow response containers
-                    if (node.classList?.contains('vfrc-message--chat') || 
-                        node.classList?.contains('vfrc-message--assistant')) {
-                        // Fade out animation before removal
-                        container.style.opacity = '0';
-                        setTimeout(() => {
-                            if (container.parentNode) {
-                                container.parentNode.removeChild(container);
-                            }
-                            observer.disconnect();
-                        }, 500);
-                        return;
+        const observer = new MutationObserver(() => {
+            const aiMessages = document.querySelectorAll('.vfrc-message--chat, .vfrc-message--assistant');
+            if (aiMessages.length > 0) {
+                // Start fade out animation
+                container.style.opacity = '0';
+                container.style.transition = 'opacity 0.5s ease';
+                
+                // Remove after animation completes
+                setTimeout(() => {
+                    if (container.parentNode) {
+                        container.parentNode.removeChild(container);
                     }
-                }
+                    observer.disconnect();
+                }, 500);
             }
         });
         
@@ -95,10 +101,7 @@ export const LoadingAnimation = {
         // Fallback removal after 10 seconds
         setTimeout(() => {
             if (container.parentNode) {
-                container.style.opacity = '0';
-                setTimeout(() => {
-                    container.parentNode.removeChild(container);
-                }, 500);
+                container.parentNode.removeChild(container);
                 observer.disconnect();
             }
         }, 10000);

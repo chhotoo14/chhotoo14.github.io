@@ -15,28 +15,30 @@ export const LoadingAnimationExtension = {
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
-                    min-height: 80px;
+                    min-height: 100px;
                     background: transparent !important;
-                    position: relative;
+                    padding: 20px 0;
                 }
                 
                 .text-container {
                     position: relative;
-                    height: 24px;
-                    width: 100%;
+                    height: 28px;
+                    width: 220px;
                     text-align: center;
+                    margin-bottom: 15px;
                 }
                 
                 .loading-text {
                     position: absolute;
                     width: 100%;
-                    font-size: 15px;
+                    left: 0;
+                    font-size: 16px;
                     font-weight: 500;
-                    color: rgba(255, 255, 255, 0.9);
+                    color: #333;
                     letter-spacing: 0.3px;
                     opacity: 0;
-                    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
                     animation: textFade 13.5s infinite;
+                    text-align: center;
                 }
                 
                 .text-1 { animation-delay: 0s; }
@@ -44,40 +46,44 @@ export const LoadingAnimationExtension = {
                 .text-3 { animation-delay: 9s; }
                 
                 @keyframes textFade {
-                    0% { opacity: 0; transform: translateY(5px); }
-                    8% { opacity: 1; transform: translateY(0); }
-                    32% { opacity: 1; transform: translateY(0); }
-                    40% { opacity: 0; transform: translateY(-5px); }
+                    0% { opacity: 0; transform: translateY(8px); }
+                    10% { opacity: 1; transform: translateY(0); }
+                    30% { opacity: 1; transform: translateY(0); }
+                    40% { opacity: 0; transform: translateY(-8px); }
                     100% { opacity: 0; }
                 }
                 
-                .dot-pulse {
+                .dot-wave {
                     display: flex;
                     justify-content: center;
-                    gap: 5px;
-                    margin-top: 15px;
+                    align-items: center;
+                    gap: 6px;
+                    height: 20px;
                 }
                 
                 .dot {
-                    width: 6px;
-                    height: 6px;
-                    background: rgba(255, 255, 255, 0.8);
+                    width: 8px;
+                    height: 8px;
+                    background: #555;
                     border-radius: 50%;
-                    animation: dotPulse 1.5s infinite;
+                    animation: wave 1.8s ease-in-out infinite;
                 }
                 
                 .dot:nth-child(1) { animation-delay: 0s; }
-                .dot:nth-child(2) { animation-delay: 0.2s; }
-                .dot:nth-child(3) { animation-delay: 0.4s; }
+                .dot:nth-child(2) { animation-delay: 0.3s; }
+                .dot:nth-child(3) { animation-delay: 0.6s; }
+                .dot:nth-child(4) { animation-delay: 0.9s; }
+                .dot:nth-child(5) { animation-delay: 1.2s; }
                 
-                @keyframes dotPulse {
-                    0%, 100% { transform: scale(1); opacity: 0.7; }
-                    50% { transform: scale(1.2); opacity: 1; }
-                }
-                
-                /* Auto-remove when AI responds */
-                .vfrc-assistant-trace:has(.loading-animation-container) {
-                    transition: opacity 0.4s;
+                @keyframes wave {
+                    0%, 60%, 100% { 
+                        transform: translateY(0);
+                        background: #555;
+                    }
+                    30% { 
+                        transform: translateY(-10px);
+                        background: #222;
+                    }
                 }
             </style>
             
@@ -86,7 +92,10 @@ export const LoadingAnimationExtension = {
                 <div class="loading-text text-2">Generating response</div>
                 <div class="loading-text text-3">Almost there</div>
             </div>
-            <div class="dot-pulse">
+            
+            <div class="dot-wave">
+                <div class="dot"></div>
+                <div class="dot"></div>
                 <div class="dot"></div>
                 <div class="dot"></div>
                 <div class="dot"></div>
@@ -101,14 +110,14 @@ export const LoadingAnimationExtension = {
             if (aiMessages.length > 0) {
                 container.style.opacity = '0';
                 container.style.transform = 'scale(0.95)';
-                container.style.transition = 'all 0.4s ease';
+                container.style.transition = 'all 0.3s ease';
                 
                 setTimeout(() => {
                     if (container.parentNode) {
                         container.parentNode.removeChild(container);
                     }
                     observer.disconnect();
-                }, 400);
+                }, 300);
             }
         });
         

@@ -4,15 +4,14 @@ export const LoadingAnimation = {
     match: ({ trace }) => 
         trace.type === 'loading_screen' || (trace.payload && trace.payload.name === 'loading_screen'),
     render: ({ element }) => {
-        // Create container
+        // Create container with unique ID
         const container = document.createElement('div');
         container.classList.add('vf-loading-container');
-        container.id = 'vf-loading-animation'; // Add ID for easy selection
+        container.id = 'vf-custom-loading-animation';
         
-        // Create the animation HTML
+        // Create the animation with enhanced effects
         container.innerHTML = `
             <style>
-                /* Container styling */
                 .vf-loading-container {
                     display: flex;
                     flex-direction: column;
@@ -20,43 +19,63 @@ export const LoadingAnimation = {
                     justify-content: center;
                     padding: 20px;
                     background: transparent !important;
-                    position: relative;
-                    min-height: 80px;
+                    min-height: 100px;
                 }
                 
-                /* Minimalist spinner */
-                .minimal-spinner {
+                .quantum-loader {
                     position: relative;
-                    width: 40px;
-                    height: 40px;
+                    width: 50px;
+                    height: 50px;
                     margin-bottom: 15px;
                 }
                 
-                .minimal-spinner:before {
-                    content: "";
+                .quantum-dot {
                     position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    border: 2px solid rgba(255, 255, 255, 0.3);
-                    border-top-color: rgba(255, 255, 255, 0.9);
+                    width: 12px;
+                    height: 12px;
+                    background: #ff8c00;
                     border-radius: 50%;
-                    animation: spin 1s linear infinite;
+                    box-shadow: 0 0 10px rgba(255, 140, 0, 0.8);
+                    animation: quantumOrbit 2s infinite cubic-bezier(0.55, 0, 0.1, 1);
+                    transform-origin: 25px 25px;
+                    opacity: 0.9;
                 }
                 
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
+                .quantum-dot:nth-child(1) {
+                    animation-delay: 0.15s;
+                    transform: translate(25px, 0);
                 }
                 
-                /* Text animation */
+                .quantum-dot:nth-child(2) {
+                    animation-delay: 0.3s;
+                    transform: translate(50px, 25px);
+                }
+                
+                .quantum-dot:nth-child(3) {
+                    animation-delay: 0.45s;
+                    transform: translate(25px, 50px);
+                }
+                
+                .quantum-dot:nth-child(4) {
+                    animation-delay: 0.6s;
+                    transform: translate(0, 25px);
+                }
+                
+                @keyframes quantumOrbit {
+                    0% { transform: rotate(0deg) translate(25px) rotate(0deg); opacity: 1; }
+                    25% { background: #ffb142; }
+                    50% { background: #ff793f; opacity: 0.7; }
+                    75% { background: #ff5252; }
+                    100% { transform: rotate(360deg) translate(25px) rotate(-360deg); opacity: 1; }
+                }
+                
                 .loading-text {
                     font-size: 16px;
-                    font-weight: 400;
-                    color: rgba(255, 255, 255, 0.85);
+                    font-weight: 500;
+                    color: rgba(255, 255, 255, 0.9);
                     letter-spacing: 0.5px;
-                    animation: textFade 3s infinite ease-in-out;
+                    animation: textFade 3.5s infinite ease-in-out;
+                    text-shadow: 0 0 8px rgba(255, 140, 0, 0.5);
                     opacity: 0;
                 }
                 
@@ -66,47 +85,64 @@ export const LoadingAnimation = {
                 }
             </style>
             
-            <div class="minimal-spinner"></div>
+            <div class="quantum-loader">
+                <div class="quantum-dot"></div>
+                <div class="quantum-dot"></div>
+                <div class="quantum-dot"></div>
+                <div class="quantum-dot"></div>
+            </div>
             <div class="loading-text">Just a moment</div>
         `;
 
-        // Add to the element
+        // Add to Voiceflow element
         element.appendChild(container);
         
-        // Add MutationObserver
-        const chatMessages = document.querySelector('.vf-chat-messages'); // Adjust selector if needed
-        if (chatMessages) {
+        // Reliable removal when AI responds
+        const removeWhenAIResponds = () => {
+            // Find parent chat container
+            const chatContainer = element.closest('.vfrc-chat');
+            if (!chatContainer) return;
+            
+            // Observer to detect new AI messages
             const observer = new MutationObserver((mutations) => {
-                mutations.forEach((mutation) => {
-                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                        const addedNode = mutation.addedNodes[0];
-                        if (addedNode.classList.contains('vf-assistant-message')) { // Adjust class if needed
-                            const loadingContainer = document.getElementById('vf-loading-animation');
-                            if (loadingContainer) {
-                                loadingContainer.style.opacity = '0';
-                                setTimeout(() => {
-                                    if (loadingContainer.parentNode) {
-                                        loadingContainer.parentNode.removeChild(loadingContainer);
-                                    }
-                                }, 300);
-                            }
-                            observer.disconnect();
+                for (const mutation of mutations) {
+                    for (const node of mutation.addedNodes) {
+                        // Check for both possible AI message classes
+                        if (node.classList?.contains('vfrc-message--chat') || 
+                            node.classList?.contains('vfrc-message--assistant')) {
+                            
+                            // Fade out and remove our animation
+                            container.style.opacity = '0';
+                            container.style.transition = 'opacity 0.5s ease';
+                            
+                            setTimeout(() => {
+                                if (container.parentNode) {
+                                    container.parentNode.removeChild(container);
+                                }
+                                observer.disconnect();
+                            }, 500);
+                            return;
                         }
                     }
-                });
+                }
             });
-            observer.observe(chatMessages, { childList: true });
-        }
+            
+            // Start observing the chat container
+            observer.observe(chatContainer, { 
+                childList: true, 
+                subtree: true 
+            });
+            
+            // Fallback timeout (safety measure)
+            setTimeout(() => {
+                if (container.parentNode) {
+                    container.parentNode.removeChild(container);
+                }
+                observer.disconnect();
+            }, 10000); // 10 seconds max
+        };
         
-        // Fallback timeout
-        setTimeout(() => {
-            const loadingContainer = document.getElementById('vf-loading-animation');
-            if (loadingContainer && loadingContainer.parentNode) {
-                loadingContainer.style.opacity = '0';
-                setTimeout(() => {
-                    loadingContainer.parentNode.removeChild(loadingContainer);
-                }, 300);
-            }
-        }, 10000); // 10 seconds fallback
+        // Initialize the removal observer
+        setTimeout(removeWhenAIResponds, 100);
     }
 };

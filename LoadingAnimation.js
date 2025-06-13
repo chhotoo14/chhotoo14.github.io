@@ -14,16 +14,17 @@ export const LoadingAnimation = {
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
-                    padding: 30px 20px;
-                    border-radius: 16px;
-                    background: linear-gradient(135deg, #2c3e50, #1a1a2e);
-                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-                    max-width: 320px;
+                    padding: 30px;
+                    border-radius: 24px;
+                    background: linear-gradient(135deg, #1e1e2e, #2c2c3e);
+                    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+                    max-width: 300px;
                     margin: 0 auto;
                     color: white;
                     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
                     position: relative;
                     overflow: hidden;
+                    border: 1px solid rgba(255,255,255,0.1);
                 }
                 
                 .vf-loading-container::before {
@@ -35,7 +36,7 @@ export const LoadingAnimation = {
                     height: 200%;
                     background: conic-gradient(
                         transparent,
-                        rgba(68, 127, 118, 0.8),
+                        rgba(255, 140, 0, 0.6),
                         transparent 70%
                     );
                     animation: rotate 3s linear infinite;
@@ -55,128 +56,126 @@ export const LoadingAnimation = {
                     width: 100%;
                 }
                 
-                .loading-spinner {
+                .quantum-loader {
                     position: relative;
                     width: 80px;
                     height: 80px;
-                    margin: 0 auto 20px;
+                    margin: 0 auto 25px;
                 }
                 
-                .spinner-circle {
+                .quantum-dot {
                     position: absolute;
-                    width: 100%;
-                    height: 100%;
+                    width: 16px;
+                    height: 16px;
+                    background: #ff8c00;
                     border-radius: 50%;
-                    border: 4px solid transparent;
-                    mix-blend-mode: overlay;
+                    animation: quantumOrbit 3s infinite cubic-bezier(0.5, 0, 0.5, 1);
+                    box-shadow: 0 0 10px rgba(255, 140, 0, 0.7);
                 }
                 
-                .circle-1 {
-                    border-top-color: #447f76;
-                    animation: spin 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+                .quantum-dot:nth-child(1) {
+                    animation-delay: 0s;
+                    top: 0;
+                    left: 50%;
+                    transform: translateX(-50%);
                 }
                 
-                .circle-2 {
-                    border-left-color: #5da399;
-                    animation: spin 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+                .quantum-dot:nth-child(2) {
+                    animation-delay: -0.5s;
+                    top: 50%;
+                    right: 0;
+                    transform: translateY(-50%);
                 }
                 
-                .circle-3 {
-                    border-right-color: #76c7bc;
-                    animation: spin 2.1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+                .quantum-dot:nth-child(3) {
+                    animation-delay: -1s;
+                    bottom: 0;
+                    left: 50%;
+                    transform: translateX(-50%);
                 }
                 
-                @keyframes spin {
+                .quantum-dot:nth-child(4) {
+                    animation-delay: -1.5s;
+                    top: 50%;
+                    left: 0;
+                    transform: translateY(-50%);
+                }
+                
+                @keyframes quantumOrbit {
+                    0% {
+                        transform: rotate(0deg) translate(40px) rotate(0deg);
+                    }
+                    25% {
+                        background: #ffb142;
+                    }
+                    50% {
+                        background: #ff793f;
+                    }
+                    75% {
+                        background: #ff5252;
+                    }
                     100% {
-                        transform: rotate(360deg);
+                        transform: rotate(360deg) translate(40px) rotate(-360deg);
                     }
                 }
                 
                 .loading-text {
-                    font-size: 18px;
+                    font-size: 22px;
                     font-weight: 500;
-                    margin: 15px 0;
-                    height: 30px;
+                    margin: 25px 0 15px;
                     position: relative;
-                    overflow: hidden;
+                    display: inline-block;
+                    background: linear-gradient(90deg, #ff8c00, #ffb142, #ff793f);
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    color: transparent;
+                    text-transform: uppercase;
+                    letter-spacing: 2px;
                 }
                 
-                .text-slider {
+                .loading-text::after {
+                    content: "";
                     position: absolute;
-                    top: 0;
+                    bottom: -8px;
                     left: 0;
                     width: 100%;
-                    animation: textCycle 9s infinite ease-in-out;
+                    height: 3px;
+                    background: linear-gradient(90deg, #ff8c00, #ffb142, #ff793f);
+                    border-radius: 2px;
+                    animation: textUnderline 2s infinite;
                 }
                 
-                .text-slider span {
-                    display: block;
-                    line-height: 30px;
-                    opacity: 0;
-                    animation: textFade 3s infinite;
+                @keyframes textUnderline {
+                    0% { transform: scaleX(0); transform-origin: left; }
+                    50% { transform: scaleX(1); transform-origin: left; }
+                    51% { transform: scaleX(1); transform-origin: right; }
+                    100% { transform: scaleX(0); transform-origin: right; }
                 }
                 
-                .text-slider span:nth-child(1) {
-                    animation-delay: 0s;
+                .loading-subtext {
+                    font-size: 14px;
+                    color: rgba(255, 255, 255, 0.7);
+                    letter-spacing: 1px;
+                    margin-top: 10px;
+                    animation: fadePulse 3s infinite;
                 }
                 
-                .text-slider span:nth-child(2) {
-                    animation-delay: 3s;
-                }
-                
-                .text-slider span:nth-child(3) {
-                    animation-delay: 6s;
-                }
-                
-                @keyframes textFade {
-                    0%, 100% { opacity: 0; transform: translateY(10px); }
-                    10%, 90% { opacity: 1; transform: translateY(0); }
-                }
-                
-                .progress-bar {
-                    width: 100%;
-                    height: 6px;
-                    background: rgba(255, 255, 255, 0.1);
-                    border-radius: 3px;
-                    overflow: hidden;
-                    margin-top: 20px;
-                }
-                
-                .progress-fill {
-                    height: 100%;
-                    width: 0%;
-                    background: linear-gradient(90deg, #447f76, #5da399, #76c7bc);
-                    border-radius: 3px;
-                    animation: progressLoad 9s infinite cubic-bezier(0.4, 0, 0.2, 1);
-                }
-                
-                @keyframes progressLoad {
-                    0% { width: 0%; }
-                    30% { width: 30%; }
-                    60% { width: 70%; }
-                    90% { width: 95%; }
-                    100% { width: 100%; }
+                @keyframes fadePulse {
+                    0%, 100% { opacity: 0.6; }
+                    50% { opacity: 1; }
                 }
             </style>
             
             <div class="loading-content">
-                <div class="loading-spinner">
-                    <div class="spinner-circle circle-1"></div>
-                    <div class="spinner-circle circle-2"></div>
-                    <div class="spinner-circle circle-3"></div>
+                <div class="quantum-loader">
+                    <div class="quantum-dot"></div>
+                    <div class="quantum-dot"></div>
+                    <div class="quantum-dot"></div>
+                    <div class="quantum-dot"></div>
                 </div>
                 
-                <div class="loading-text">
-                    <div class="text-slider">
-                        <span>Placing your order...</span>
-                        <span>Just a min...</span>
-                        <span>Almost there...</span>
-                    </div>
-                </div>
-                
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                </div>
+                <div class="loading-text">just a moment</div>
+                <div class="loading-subtext">Preparing your experience</div>
             </div>
         `;
 

@@ -15,167 +15,98 @@ export const LoadingAnimation = {
                     align-items: center;
                     justify-content: center;
                     padding: 30px;
-                    border-radius: 24px;
-                    background: linear-gradient(135deg, #1e1e2e, #2c2c3e);
-                    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-                    max-width: 300px;
-                    margin: 0 auto;
-                    color: white;
-                    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                    background: transparent !important;
                     position: relative;
-                    overflow: hidden;
-                    border: 1px solid rgba(255,255,255,0.1);
-                }
-                
-                .vf-loading-container::before {
-                    content: "";
-                    position: absolute;
-                    top: -50%;
-                    left: -50%;
-                    width: 200%;
-                    height: 200%;
-                    background: conic-gradient(
-                        transparent,
-                        rgba(255, 140, 0, 0.6),
-                        transparent 70%
-                    );
-                    animation: rotate 3s linear infinite;
-                    z-index: 0;
-                }
-                
-                @keyframes rotate {
-                    100% {
-                        transform: rotate(360deg);
-                    }
                 }
                 
                 .loading-content {
-                    position: relative;
-                    z-index: 1;
                     text-align: center;
-                    width: 100%;
                 }
                 
-                .quantum-loader {
-                    position: relative;
-                    width: 80px;
-                    height: 80px;
-                    margin: 0 auto 25px;
-                }
-                
-                .quantum-dot {
-                    position: absolute;
-                    width: 16px;
-                    height: 16px;
-                    background: #ff8c00;
-                    border-radius: 50%;
-                    animation: quantumOrbit 3s infinite cubic-bezier(0.5, 0, 0.5, 1);
-                    box-shadow: 0 0 10px rgba(255, 140, 0, 0.7);
-                }
-                
-                .quantum-dot:nth-child(1) {
-                    animation-delay: 0s;
-                    top: 0;
-                    left: 50%;
-                    transform: translateX(-50%);
-                }
-                
-                .quantum-dot:nth-child(2) {
-                    animation-delay: -0.5s;
-                    top: 50%;
-                    right: 0;
-                    transform: translateY(-50%);
-                }
-                
-                .quantum-dot:nth-child(3) {
-                    animation-delay: -1s;
-                    bottom: 0;
-                    left: 50%;
-                    transform: translateX(-50%);
-                }
-                
-                .quantum-dot:nth-child(4) {
-                    animation-delay: -1.5s;
-                    top: 50%;
-                    left: 0;
-                    transform: translateY(-50%);
-                }
-                
-                @keyframes quantumOrbit {
-                    0% {
-                        transform: rotate(0deg) translate(40px) rotate(0deg);
-                    }
-                    25% {
-                        background: #ffb142;
-                    }
-                    50% {
-                        background: #ff793f;
-                    }
-                    75% {
-                        background: #ff5252;
-                    }
-                    100% {
-                        transform: rotate(360deg) translate(40px) rotate(-360deg);
-                    }
-                }
-                
-                .loading-text {
-                    font-size: 22px;
+                .text-loader {
+                    font-size: 24px;
                     font-weight: 500;
-                    margin: 25px 0 15px;
+                    color: #ffffff;
+                    letter-spacing: 1px;
+                    text-transform: uppercase;
                     position: relative;
                     display: inline-block;
-                    background: linear-gradient(90deg, #ff8c00, #ffb142, #ff793f);
-                    -webkit-background-clip: text;
-                    background-clip: text;
-                    color: transparent;
-                    text-transform: uppercase;
-                    letter-spacing: 2px;
                 }
                 
-                .loading-text::after {
+                .text-loader::after {
                     content: "";
                     position: absolute;
-                    bottom: -8px;
+                    bottom: -10px;
                     left: 0;
                     width: 100%;
                     height: 3px;
-                    background: linear-gradient(90deg, #ff8c00, #ffb142, #ff793f);
+                    background: rgba(255, 255, 255, 0.3);
                     border-radius: 2px;
-                    animation: textUnderline 2s infinite;
+                    overflow: hidden;
                 }
                 
-                @keyframes textUnderline {
-                    0% { transform: scaleX(0); transform-origin: left; }
-                    50% { transform: scaleX(1); transform-origin: left; }
-                    51% { transform: scaleX(1); transform-origin: right; }
-                    100% { transform: scaleX(0); transform-origin: right; }
+                .text-loader::before {
+                    content: "";
+                    position: absolute;
+                    bottom: -10px;
+                    left: 0;
+                    width: 40%;
+                    height: 3px;
+                    background: #ffffff;
+                    border-radius: 2px;
+                    animation: loadingLine 2s infinite ease-in-out;
+                    box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
                 }
                 
-                .loading-subtext {
-                    font-size: 14px;
-                    color: rgba(255, 255, 255, 0.7);
-                    letter-spacing: 1px;
-                    margin-top: 10px;
-                    animation: fadePulse 3s infinite;
+                @keyframes loadingLine {
+                    0% { transform: translateX(-100%); }
+                    50% { transform: translateX(250%); }
+                    100% { transform: translateX(250%); }
                 }
                 
-                @keyframes fadePulse {
-                    0%, 100% { opacity: 0.6; }
-                    50% { opacity: 1; }
+                .pulse-dots {
+                    display: flex;
+                    margin-top: 30px;
+                    justify-content: center;
+                }
+                
+                .dot {
+                    width: 12px;
+                    height: 12px;
+                    background: rgba(255, 255, 255, 0.8);
+                    border-radius: 50%;
+                    margin: 0 6px;
+                    animation: pulse 1.5s infinite ease-in-out;
+                    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+                }
+                
+                .dot:nth-child(1) { animation-delay: 0s; }
+                .dot:nth-child(2) { animation-delay: 0.2s; }
+                .dot:nth-child(3) { animation-delay: 0.4s; }
+                
+                @keyframes pulse {
+                    0%, 100% { 
+                        transform: scale(1);
+                        opacity: 0.7;
+                    }
+                    50% { 
+                        transform: scale(1.4);
+                        opacity: 1;
+                    }
+                }
+                
+                .glow-text {
+                    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
                 }
             </style>
             
             <div class="loading-content">
-                <div class="quantum-loader">
-                    <div class="quantum-dot"></div>
-                    <div class="quantum-dot"></div>
-                    <div class="quantum-dot"></div>
-                    <div class="quantum-dot"></div>
+                <div class="text-loader glow-text">Just a moment</div>
+                <div class="pulse-dots">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
                 </div>
-                
-                <div class="loading-text">just a moment</div>
-                <div class="loading-subtext">Preparing your experience</div>
             </div>
         `;
 

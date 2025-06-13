@@ -39,7 +39,7 @@
             overscroll-behavior: none;
         }
 
-        /* Initial Loading Screen */
+        /* New Initial Loading Screen */
         #initial-loading {
             position: fixed;
             top: 0;
@@ -50,17 +50,27 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23ff8c00" opacity="0.3"/></svg>');
-            background-size: 200px 200px;
-            background-position: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             z-index: 1000;
             overflow: hidden;
         }
 
+        #initial-loading::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,140,0,0.1) 0%, transparent 70%);
+            animation: pulse 4s infinite alternate;
+            z-index: -1;
+        }
+
         .logo-container {
             text-align: center;
-            margin-bottom: 40px;
-            animation: float 3s ease-in-out infinite;
+            margin-bottom: 30px;
+            animation: fadeIn 1.5s ease-out;
         }
 
         .logo {
@@ -68,19 +78,37 @@
             font-size: 4.5rem;
             font-weight: 800;
             color: white;
-            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 0 15px rgba(255, 140, 0, 0.7);
             letter-spacing: 2px;
+            position: relative;
+            margin-bottom: 15px;
         }
 
         .logo span {
             color: var(--primary);
+            position: relative;
+        }
+
+        .logo::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            border-radius: 50%;
+            filter: blur(1px);
         }
 
         .tagline {
             font-size: 1.2rem;
             color: rgba(255, 255, 255, 0.85);
-            margin-top: 10px;
+            margin-top: 15px;
             letter-spacing: 1px;
+            animation: fadeIn 1.5s ease-out 0.3s forwards;
+            opacity: 0;
         }
 
         .loading-message {
@@ -90,42 +118,104 @@
             text-align: center;
             max-width: 90%;
             font-weight: 500;
+            animation: fadeIn 1.5s ease-out 0.6s forwards;
+            opacity: 0;
         }
 
-        .burger-container {
+        .burger-assembly {
             position: relative;
-            width: 200px;
-            height: 150px;
+            width: 220px;
+            height: 180px;
             margin: 20px auto 40px;
+            perspective: 800px;
         }
 
-        .burger {
+        .burger-layer {
             position: absolute;
             width: 100%;
-            height: 100%;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="25" r="20" fill="%23f1c40f"/><circle cx="50" cy="50" r="25" fill="%23e67e22"/><circle cx="50" cy="80" r="18" fill="%23795548"/><rect x="25" y="20" width="50" height="10" rx="5" fill="%23e74c3c"/><rect x="30" y="40" width="40" height="10" rx="5" fill="%232ecc71"/></svg>');
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: contain;
-            animation: burgerFloat 2s ease-in-out infinite;
+            height: 30px;
+            border-radius: 50px;
+            left: 0;
+            transform-style: preserve-3d;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .bun-top {
+            background: linear-gradient(to bottom, #e67e22, #d35400);
+            top: 0;
+            height: 40px;
+            border-radius: 100px 100px 20px 20px;
+            animation: bunDrop 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            transform: translateY(-200%) rotateX(90deg);
+            z-index: 6;
+        }
+
+        .lettuce {
+            background: linear-gradient(to bottom, #27ae60, #2ecc71);
+            top: 40px;
+            animation: layerDrop 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s forwards;
+            transform: translateY(-200%) rotateX(90deg);
+            z-index: 5;
+        }
+
+        .cheese {
+            background: linear-gradient(to bottom, #f1c40f, #f39c12);
+            top: 70px;
+            animation: layerDrop 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.6s forwards;
+            transform: translateY(-200%) rotateX(90deg);
+            z-index: 4;
+        }
+
+        .patty {
+            background: linear-gradient(to bottom, #7f3608, #6e2c0e);
+            top: 100px;
+            height: 35px;
+            animation: layerDrop 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.9s forwards;
+            transform: translateY(-200%) rotateX(90deg);
+            z-index: 3;
+        }
+
+        .bun-bottom {
+            background: linear-gradient(to bottom, #e67e22, #d35400);
+            top: 135px;
+            height: 45px;
+            border-radius: 20px 20px 100px 100px;
+            animation: bunDrop 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.2s forwards;
+            transform: translateY(-200%) rotateX(90deg);
+            z-index: 2;
         }
 
         .progress-container {
             width: 80%;
             max-width: 300px;
-            height: 10px;
-            background: rgba(255, 255, 255, 0.2);
+            height: 12px;
+            background: rgba(255, 255, 255, 0.15);
             border-radius: 10px;
             overflow: hidden;
             margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            position: relative;
         }
 
         .progress-bar {
             height: 100%;
             width: 0%;
-            background: var(--primary);
+            background: linear-gradient(90deg, var(--primary), #ffb142, var(--primary));
             border-radius: 10px;
             transition: width 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: progressGlow 1.5s infinite;
         }
 
         /* Countdown */
@@ -135,6 +225,8 @@
             margin-top: 20px;
             font-weight: 500;
             text-align: center;
+            animation: fadeIn 1.5s ease-out 0.9s forwards;
+            opacity: 0;
         }
 
         /* Voiceflow Container */
@@ -177,48 +269,38 @@
             animation: spin 1s linear infinite;
         }
 
-        /* Table Number */
-        .table-number {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            background: var(--primary);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            z-index: 10001;
-            box-shadow: var(--shadow);
-            font-size: 1.1rem;
-        }
-
         /* Animations */
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-
-        @keyframes burgerFloat {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-10px) rotate(5deg); }
-            50% { transform: translateY(0) rotate(0deg); }
-            75% { transform: translateY(-10px) rotate(-5deg); }
-        }
-
         @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% { opacity: 0.3; }
+            100% { opacity: 0.6; }
         }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bunDrop {
+            to { transform: translateY(0) rotateX(0); }
+        }
+
+        @keyframes layerDrop {
+            to { transform: translateY(0) rotateX(0); }
+        }
+
+        @keyframes progressGlow {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(300%); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* Responsive */
@@ -231,9 +313,9 @@
                 font-size: 1.2rem;
             }
             
-            .burger-container {
-                width: 150px;
-                height: 120px;
+            .burger-assembly {
+                width: 180px;
+                height: 150px;
             }
         }
 
@@ -249,19 +331,28 @@
             .loading-message {
                 font-size: 1.1rem;
             }
+            
+            .burger-assembly {
+                width: 150px;
+                height: 130px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Initial Loading Screen -->
+    <!-- New Initial Loading Screen -->
     <div id="initial-loading">
         <div class="logo-container">
             <div class="logo">CRUNCH<span>CRAFT</span></div>
             <div class="tagline">Gourmet Burgers & More</div>
         </div>
         
-        <div class="burger-container">
-            <div class="burger"></div>
+        <div class="burger-assembly">
+            <div class="burger-layer bun-top"></div>
+            <div class="burger-layer lettuce"></div>
+            <div class="burger-layer cheese"></div>
+            <div class="burger-layer patty"></div>
+            <div class="burger-layer bun-bottom"></div>
         </div>
         
         <div class="loading-message">
@@ -282,9 +373,6 @@
     
     <!-- Voiceflow Container -->
     <div id="voiceflow-container"></div>
-    
-    <!-- Table Number Display -->
-    <div class="table-number" id="table-number"></div>
     
     <script type="text/javascript">
         // Voiceflow Loading Animation Extension
@@ -498,15 +586,6 @@
             const loading = document.getElementById('loading');
             loading.style.display = 'flex';
             setTimeout(() => loading.style.opacity = '1', 10);
-            
-            // Show table number
-            const tableDisplay = document.getElementById('table-number');
-            if (tableNumber && !isNaN(tableNumber)) {
-                tableDisplay.textContent = `Table ${tableNumber}`;
-                tableDisplay.style.display = 'block';
-            } else {
-                tableDisplay.style.display = 'none';
-            }
 
             // Load Voiceflow script
             const script = document.createElement('script');
@@ -612,7 +691,6 @@
             
             // Validate table number
             const initialLoading = document.getElementById('initial-loading');
-            const countdownElement = document.getElementById('countdown');
             
             if (!tableNumber || isNaN(tableNumber)) {
                 initialLoading.innerHTML = `

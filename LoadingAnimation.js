@@ -15,15 +15,17 @@ export const LoadingAnimationExtension = {
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
-                    min-height: 60px;
+                    min-height: 40px;
                     background: transparent !important;
-                    padding: 10px 0;
+                    padding: 8px 0;
+                    transform: scale(0.85);
+                    opacity: 0.9;
                 }
                 
                 .text-container {
                     position: relative;
-                    height: 24px;
-                    width: 180px;
+                    height: 22px;
+                    width: 160px;
                     text-align: center;
                 }
                 
@@ -31,48 +33,68 @@ export const LoadingAnimationExtension = {
                     position: absolute;
                     width: 100%;
                     left: 0;
-                    font-size: 14px;
+                    font-size: 13px;
                     font-weight: 500;
                     color: #000;
                     letter-spacing: 0.2px;
                     opacity: 0;
-                    animation: waveFade 13.5s infinite;
                     text-align: center;
+                    animation: textFlow 13.5s infinite;
                 }
                 
                 .text-1 { animation-delay: 0s; }
                 .text-2 { animation-delay: 4.5s; }
                 .text-3 { animation-delay: 9s; }
                 
-                @keyframes waveFade {
+                @keyframes textFlow {
                     0% { 
-                        opacity: 0; 
-                        transform: translateY(5px) scale(0.95);
-                        filter: blur(1px);
+                        opacity: 0;
+                        transform: translateY(6px) scale(0.96);
+                        filter: blur(1.5px);
                     }
-                    10% { 
-                        opacity: 1; 
+                    8% { 
+                        opacity: 1;
                         transform: translateY(0) scale(1);
                         filter: blur(0);
                     }
-                    30% { 
-                        opacity: 1; 
-                        transform: translateY(0) scale(1);
-                        filter: blur(0);
+                    28% { 
+                        opacity: 1;
+                        transform: translateY(0) scale(1.02);
                     }
-                    40% { 
-                        opacity: 0; 
-                        transform: translateY(-5px) scale(0.95);
+                    36% { 
+                        opacity: 0;
+                        transform: translateY(-4px) scale(0.98);
                         filter: blur(1px);
                     }
                     100% { opacity: 0; }
                 }
+
+                /* Modern gradient wave effect */
+                .loading-text::after {
+                    content: attr(data-text);
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(150,150,150,0.3), transparent);
+                    background-size: 200% 100%;
+                    background-clip: text;
+                    -webkit-background-clip: text;
+                    color: transparent;
+                    animation: waveMove 2.2s linear infinite;
+                    opacity: 0.7;
+                }
+                
+                @keyframes waveMove {
+                    0% { background-position: 200% 0; }
+                    100% { background-position: -200% 0; }
+                }
             </style>
             
             <div class="text-container">
-                <div class="loading-text text-1">Processing your request</div>
-                <div class="loading-text text-2">Generating response</div>
-                <div class="loading-text text-3">Almost there</div>
+                <div class="loading-text text-1" data-text="Processing your request">Processing your request</div>
+                <div class="loading-text text-2" data-text="Generating response">Generating response</div>
+                <div class="loading-text text-3" data-text="Almost there">Almost there</div>
             </div>
         `;
 
@@ -83,7 +105,7 @@ export const LoadingAnimationExtension = {
             const aiMessages = document.querySelectorAll('.vfrc-message--chat, .vfrc-message--assistant');
             if (aiMessages.length > 0) {
                 container.style.opacity = '0';
-                container.style.transform = 'scale(0.95)';
+                container.style.transform = 'scale(0.85)';
                 container.style.transition = 'all 0.3s ease';
                 
                 setTimeout(() => {

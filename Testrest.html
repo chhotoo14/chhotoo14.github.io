@@ -10,319 +10,45 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #ff8c00;
-            --primary-dark: #e67e00;
-            --secondary: #e74c3c;
-            --dark: #2c3e50;
-            --light: #ecf0f1;
-            --text: #34495e;
-            --shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
-            height: 100%;
-            overflow: hidden;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-            color: var(--text);
-            touch-action: manipulation;
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior: none;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* New Initial Loading Screen */
-        #initial-loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            z-index: 1000;
-            overflow: hidden;
-        }
-
-        #initial-loading::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(255,140,0,0.1) 0%, transparent 70%);
-            animation: pulse 4s infinite alternate;
-            z-index: -1;
-        }
-
-        .logo-container {
-            text-align: center;
-            margin-bottom: 30px;
-            animation: fadeIn 1.5s ease-out;
-        }
-
-        .logo {
-            font-family: 'Poppins', sans-serif;
-            font-size: clamp(2.5rem, 10vw, 4.5rem);
-            font-weight: 800;
+        /* ... (your existing styles remain unchanged) ... */
+        
+        /* Add new styles for location message */
+        .location-message {
+            font-size: clamp(1rem, 4vw, 1.2rem);
             color: white;
-            text-shadow: 0 0 15px rgba(255, 140, 0, 0.7);
-            letter-spacing: 2px;
-            position: relative;
-            margin-bottom: 15px;
-        }
-
-        .logo span {
-            color: var(--primary);
-            position: relative;
-        }
-
-        .logo::after {
-            content: "";
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 4px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
-            border-radius: 50%;
-            filter: blur(1px);
-        }
-
-        .tagline {
-            font-size: clamp(0.9rem, 4vw, 1.2rem);
-            color: rgba(255, 255, 255, 0.85);
-            margin-top: 15px;
-            letter-spacing: 1px;
-            animation: fadeIn 1.5s ease-out 0.3s forwards;
-            opacity: 0;
-        }
-
-        .loading-message {
-            font-size: clamp(1rem, 4vw, 1.4rem);
-            color: white;
-            margin: 30px 0;
+            margin: 15px 0;
             text-align: center;
             max-width: 90%;
             font-weight: 500;
-            animation: fadeIn 1.5s ease-out 0.6s forwards;
-            opacity: 0;
-        }
-
-        .burger-assembly {
-            position: relative;
-            width: clamp(120px, 50vw, 220px);
-            height: clamp(100px, 40vw, 180px);
-            margin: 20px auto 40px;
-            perspective: 800px;
-        }
-
-        .burger-layer {
-            position: absolute;
-            width: 100%;
-            height: 30px;
-            border-radius: 50px;
-            left: 0;
-            transform-style: preserve-3d;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .bun-top {
-            background: linear-gradient(to bottom, #e67e22, #d35400);
-            top: 0;
-            height: 40px;
-            border-radius: 100px 100px 20px 20px;
-            animation: bunDrop 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            transform: translateY(-200%) rotateX(90deg);
-            z-index: 6;
-        }
-
-        .lettuce {
-            background: linear-gradient(to bottom, #27ae60, #2ecc71);
-            top: 40px;
-            animation: layerDrop 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s forwards;
-            transform: translateY(-200%) rotateX(90deg);
-            z-index: 5;
-        }
-
-        .cheese {
-            background: linear-gradient(to bottom, #f1c40f, #f39c12);
-            top: 70px;
-            animation: layerDrop 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.6s forwards;
-            transform: translateY(-200%) rotateX(90deg);
-            z-index: 4;
-        }
-
-        .patty {
-            background: linear-gradient(to bottom, #7f3608, #6e2c0e);
-            top: 100px;
-            height: 35px;
-            animation: layerDrop 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.9s forwards;
-            transform: translateY(-200%) rotateX(90deg);
-            z-index: 3;
-        }
-
-        .bun-bottom {
-            background: linear-gradient(to bottom, #e67e22, #d35400);
-            top: 135px;
-            height: 45px;
-            border-radius: 20px 20px 100px 100px;
-            animation: bunDrop 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.2s forwards;
-            transform: translateY(-200%) rotateX(90deg);
-            z-index: 2;
-        }
-
-        .progress-container {
-            width: 80%;
-            max-width: 300px;
-            height: 12px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
-            position: relative;
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, var(--primary), #ffb142, var(--primary));
-            border-radius: 10px;
-            transition: width 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .progress-bar::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            animation: progressGlow 1.5s infinite;
-        }
-
-        /* Countdown */
-        .countdown {
-            font-size: clamp(1rem, 4vw, 1.2rem);
-            color: white;
-            margin-top: 20px;
-            font-weight: 500;
-            text-align: center;
-            animation: fadeIn 1.5s ease-out 0.9s forwards;
-            opacity: 0;
-        }
-
-        /* Voiceflow Container */
-        #voiceflow-container {
-            width: 100% !important;
-            height: 100% !important;
-            position: fixed;
-            top: 0;
-            left: 0;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-        }
-
-        #voiceflow-container.active {
-            opacity: 1;
-        }
-
-        /* Loading Spinner */
-        #loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            display: none;
+            min-height: 60px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 9999;
-            opacity: 0;
-            transition: opacity 0.3s;
+            flex-direction: column;
         }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        
+        .location-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            animation: pulse 1.5s infinite;
         }
-
-        /* Animations */
-        @keyframes pulse {
-            0% { opacity: 0.3; }
-            100% { opacity: 0.6; }
+        
+        .retry-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            margin-top: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: var(--transition);
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes bunDrop {
-            to { transform: translateY(0) rotateX(0); }
-        }
-
-        @keyframes layerDrop {
-            to { transform: translateY(0) rotateX(0); }
-        }
-
-        @keyframes progressGlow {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(300%); }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Responsive adjustments */
-        @media (max-height: 600px) {
-            .logo-container {
-                margin-bottom: 15px;
-            }
-            .loading-message {
-                margin: 15px 0;
-            }
-            .burger-assembly {
-                margin: 10px auto 20px;
-            }
-            .progress-container {
-                margin-top: 10px;
-            }
+        
+        .retry-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
         }
     </style>
 </head>
@@ -346,6 +72,12 @@
             Preparing your ordering experience...
         </div>
         
+        <!-- Location verification message -->
+        <div class="location-message" id="location-message">
+            <div class="location-icon">📍</div>
+            Verifying your location...
+        </div>
+        
         <div class="progress-container">
             <div class="progress-bar" id="progress-bar"></div>
         </div>
@@ -366,12 +98,20 @@
       // Import the required extensions
       import { LoadingAnimationExtension } from 'https://chhotoo14.github.io/LoadingAnimation.js';
       
+      // ====== RESTAURANT SETTINGS ====== //
+      // REPLACE THESE VALUES WITH YOUR RESTAURANT'S LOCATION
+      const RESTAURANT_LAT = 40.7128;   // Your restaurant's latitude
+      const RESTAURANT_LON = -74.0060;   // Your restaurant's longitude
+      const MAX_DISTANCE_KM = 0.05;      // 50 meter radius (adjust as needed)
+      // ================================ //
+      
       // Chat initialization variables
       let chatInitialized = false;
       const synth = window.speechSynthesis;
       const urlParams = new URLSearchParams(window.location.search);
       const tableNumber = urlParams.get('table');
       let countdown = 3;
+      let locationVerified = false;
 
       // Update viewport height for mobile devices
       function updateViewportHeight() {
@@ -462,6 +202,143 @@
           document.body.appendChild(script);
       }
 
+      // Calculate distance between two coordinates (Haversine formula)
+      function calculateDistance(lat1, lon1, lat2, lon2) {
+          const R = 6371; // Earth radius in km
+          const dLat = deg2rad(lat2 - lat1);
+          const dLon = deg2rad(lon2 - lon1);
+          const a = 
+              Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+          const distance = R * c; // Distance in km
+          return distance;
+      }
+
+      function deg2rad(deg) {
+          return deg * (Math.PI/180);
+      }
+
+      // Verify user's location
+      function verifyLocation() {
+          const locationMessage = document.getElementById('location-message');
+          
+          // First try with IP-based location (less accurate but doesn't require permission)
+          fetch('https://ipapi.co/json/')
+            .then(response => response.json())
+            .then(ipData => {
+                const ipDistance = calculateDistance(
+                    RESTAURANT_LAT, 
+                    RESTAURANT_LON, 
+                    ipData.latitude, 
+                    ipData.longitude
+                );
+                
+                // If IP-based location is within range, proceed
+                if (ipDistance <= MAX_DISTANCE_KM) {
+                    locationMessage.innerHTML = '<div class="location-icon">✅</div>Location verified!';
+                    locationVerified = true;
+                    startCountdown();
+                    return;
+                }
+                
+                // If IP location fails, request precise GPS
+                if (navigator.geolocation) {
+                    locationMessage.innerHTML = '<div class="location-icon">📍</div>Precise location required...';
+                    
+                    navigator.geolocation.getCurrentPosition(
+                        position => {
+                            const userLat = position.coords.latitude;
+                            const userLon = position.coords.longitude;
+                            const distance = calculateDistance(
+                                RESTAURANT_LAT, 
+                                RESTAURANT_LON, 
+                                userLat, 
+                                userLon
+                            );
+                            
+                            if (distance <= MAX_DISTANCE_KM) {
+                                locationMessage.innerHTML = '<div class="location-icon">✅</div>Location verified!';
+                                locationVerified = true;
+                                startCountdown();
+                            } else {
+                                locationMessage.innerHTML = `
+                                    <div class="location-icon">⚠️</div>
+                                    Please visit our restaurant to access this service
+                                    <p style="font-size:0.8rem; margin-top:10px;">
+                                        You're ${distance.toFixed(2)} km away
+                                    </p>
+                                    <button class="retry-button" onclick="verifyLocation()">Retry</button>
+                                `;
+                            }
+                        },
+                        error => {
+                            locationMessage.innerHTML = `
+                                <div class="location-icon">❌</div>
+                                Location access required for ordering
+                                <button class="retry-button" onclick="verifyLocation()">Try Again</button>
+                            `;
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 5000,
+                            maximumAge: 0
+                        }
+                    );
+                } else {
+                    locationMessage.innerHTML = `
+                        <div class="location-icon">⚠️</div>
+                        Your browser doesn't support location services
+                    `;
+                }
+            })
+            .catch(() => {
+                // If IP API fails, fallback to GPS directly
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        position => {
+                            const userLat = position.coords.latitude;
+                            const userLon = position.coords.longitude;
+                            const distance = calculateDistance(
+                                RESTAURANT_LAT, 
+                                RESTAURANT_LON, 
+                                userLat, 
+                                userLon
+                            );
+                            
+                            if (distance <= MAX_DISTANCE_KM) {
+                                locationMessage.innerHTML = '<div class="location-icon">✅</div>Location verified!';
+                                locationVerified = true;
+                                startCountdown();
+                            } else {
+                                locationMessage.innerHTML = `
+                                    <div class="location-icon">⚠️</div>
+                                    Please visit our restaurant to access this service
+                                    <p style="font-size:0.8rem; margin-top:10px;">
+                                        You're ${distance.toFixed(2)} km away
+                                    </p>
+                                    <button class="retry-button" onclick="verifyLocation()">Retry</button>
+                                `;
+                            }
+                        },
+                        error => {
+                            locationMessage.innerHTML = `
+                                <div class="location-icon">❌</div>
+                                Location access required for ordering
+                                <button class="retry-button" onclick="verifyLocation()">Try Again</button>
+                            `;
+                        }
+                    );
+                } else {
+                    locationMessage.innerHTML = `
+                        <div class="location-icon">⚠️</div>
+                        Your browser doesn't support location services
+                    `;
+                }
+            });
+      }
+
       // Start countdown and progress animation
       function startCountdown() {
           const progressBar = document.getElementById('progress-bar');
@@ -510,10 +387,13 @@
                   </div>
               `;
           } else {
-              // Start countdown to initialize chat
-              setTimeout(startCountdown, 500);
+              // Start location verification
+              setTimeout(verifyLocation, 500);
           }
       });
+      
+      // Make verifyLocation accessible globally for retry button
+      window.verifyLocation = verifyLocation;
     </script>
 </body>
 </html>

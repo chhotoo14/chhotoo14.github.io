@@ -45,7 +45,7 @@
             flex-direction: column;
         }
 
-        /* Initial Loading Screen */
+        /* New Initial Loading Screen */
         #initial-loading {
             position: fixed;
             top: 0;
@@ -235,45 +235,6 @@
             opacity: 0;
         }
 
-        /* Location Message */
-        .location-message {
-            font-size: clamp(1rem, 4vw, 1.2rem);
-            color: white;
-            margin: 15px 0;
-            text-align: center;
-            max-width: 90%;
-            font-weight: 500;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-        
-        .location-icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            animation: pulse 1.5s infinite;
-        }
-        
-        .retry-button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-weight: bold;
-            margin-top: 15px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            transition: var(--transition);
-        }
-        
-        .retry-button:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
         /* Voiceflow Container */
         #voiceflow-container {
             width: 100% !important;
@@ -283,12 +244,10 @@
             left: 0;
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
-            pointer-events: none;
         }
 
         #voiceflow-container.active {
             opacity: 1;
-            pointer-events: auto;
         }
 
         /* Loading Spinner */
@@ -368,7 +327,7 @@
     </style>
 </head>
 <body>
-    <!-- Initial Loading Screen -->
+    <!-- New Initial Loading Screen -->
     <div id="initial-loading">
         <div class="logo-container">
             <div class="logo">CRUNCH<span>CRAFT</span></div>
@@ -387,12 +346,6 @@
             Preparing your ordering experience...
         </div>
         
-        <!-- Location verification message -->
-        <div class="location-message" id="location-message">
-            <div class="location-icon">📍</div>
-            Verifying your location...
-        </div>
-        
         <div class="progress-container">
             <div class="progress-bar" id="progress-bar"></div>
         </div>
@@ -408,20 +361,17 @@
     <!-- Voiceflow Container -->
     <div id="voiceflow-container"></div>
     
+    <!-- Voiceflow script with external extensions -->
     <script type="module">
-      // ====== RESTAURANT SETTINGS ====== //
-      // REPLACE THESE VALUES WITH YOUR RESTAURANT'S LOCATION
-      const RESTAURANT_LAT = 22.71642;   // Your restaurant's latitude
-      const RESTAURANT_LON = 75.85944;   // Your restaurant's longitude
-      const MAX_DISTANCE_KM = 0.05;      // 50 meter radius (adjust as needed)
-      // ================================ //
+      // Import the required extensions
+      import { LoadingAnimationExtension } from 'https://chhotoo14.github.io/LoadingAnimation.js';
       
       // Chat initialization variables
       let chatInitialized = false;
+      const synth = window.speechSynthesis;
       const urlParams = new URLSearchParams(window.location.search);
       const tableNumber = urlParams.get('table');
       let countdown = 3;
-      let locationVerified = false;
 
       // Update viewport height for mobile devices
       function updateViewportHeight() {
@@ -451,7 +401,8 @@
                   url: 'https://general-runtime.voiceflow.com',
                   versionID: 'production',
                   assistant: {
-                      stylesheet: 'https://chhotoo14.github.io/restaurantbackground.css'
+                      stylesheet: 'https://chhotoo14.github.io/restaurantbackground.css',
+                      extensions: [LoadingAnimationExtension]
                   },
                   // Pass table number to Voiceflow
                   launch: {
@@ -475,7 +426,28 @@
                   setTimeout(() => {
                       document.querySelector('input[type="text"]')?.focus();
                   }, 500);
-                  
+
+                  // Handle bot messages with text-to-speech
+                  const observer = new MutationObserver(mutations => {
+                      mutations.forEach(({ addedNodes }) => {
+                          addedNodes.forEach(node => {
+                              if (node.classList?.contains('vfrc-message--bot')) {
+                                  const text = node.querySelector('.vfrc-message-content')?.textContent;
+                                  if (text) {
+                                      const utterance = new SpeechSynthesisUtterance(text);
+                                      utterance.rate = 1.1;
+                                      synth.speak(utterance);
+                                  }
+                              }
+                          });
+                      });
+                  });
+
+                  observer.observe(document.body, {
+                      childList: true,
+                      subtree: true
+                  });
+
                   // Hide loading spinner
                   loading.style.opacity = '0';
                   setTimeout(() => loading.style.display = 'none', 300);
@@ -484,174 +456,16 @@
 
           script.onerror = () => {
               const loading = document.getElementById('loading');
-              loading.innerHTML = '<div style="text-align:center;padding:20px;">Failed to load chat. Please check connection.</div>';
+              loading.innerHTML = 'Failed to load chat. Please check connection.';
           };
 
           document.body.appendChild(script);
-      }
-
-      // Calculate distance between two coordinates (Haversine formula)
-      function calculateDistance(lat1, lon1, lat2, lon2) {
-          const R = 6371; // Earth radius in km
-          const dLat = deg2rad(lat2 - lat1);
-          const dLon = deg2rad(lon2 - lon1);
-          const a = 
-              Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-              Math.sin(dLon/2) * Math.sin(dLon/2);
-          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-          const distance = R * c; // Distance in km
-          return distance;
-      }
-
-      function deg2rad(deg) {
-          return deg * (Math.PI/180);
-      }
-
-      // Verify user's location
-      function verifyLocation() {
-          const locationMessage = document.getElementById('location-message');
-          locationMessage.innerHTML = '<div class="location-icon">📍</div>Detecting your location...';
-          
-          // First try with IP-based location (less accurate but doesn't require permission)
-          fetch('https://ipapi.co/json/')
-            .then(response => response.json())
-            .then(ipData => {
-                const ipDistance = calculateDistance(
-                    RESTAURANT_LAT, 
-                    RESTAURANT_LON, 
-                    ipData.latitude, 
-                    ipData.longitude
-                );
-                
-                console.log(`IP-based distance: ${ipDistance.toFixed(3)} km`);
-                
-                // If IP-based location is within range, proceed
-                if (ipDistance <= MAX_DISTANCE_KM) {
-                    locationMessage.innerHTML = '<div class="location-icon">✅</div>Location verified!';
-                    locationVerified = true;
-                    startCountdown();
-                    return;
-                }
-                
-                // If IP location fails, request precise GPS
-                if (navigator.geolocation) {
-                    locationMessage.innerHTML = '<div class="location-icon">📍</div>Precise location required...';
-                    
-                    navigator.geolocation.getCurrentPosition(
-                        position => {
-                            const userLat = position.coords.latitude;
-                            const userLon = position.coords.longitude;
-                            const distance = calculateDistance(
-                                RESTAURANT_LAT, 
-                                RESTAURANT_LON, 
-                                userLat, 
-                                userLon
-                            );
-                            
-                            console.log(`GPS distance: ${distance.toFixed(3)} km`);
-                            
-                            if (distance <= MAX_DISTANCE_KM) {
-                                locationMessage.innerHTML = '<div class="location-icon">✅</div>Location verified!';
-                                locationVerified = true;
-                                startCountdown();
-                            } else {
-                                locationMessage.innerHTML = `
-                                    <div class="location-icon">⚠️</div>
-                                    Please visit our restaurant to access this service
-                                    <p style="font-size:0.8rem; margin-top:10px;">
-                                        You're ${distance.toFixed(2)} km away
-                                    </p>
-                                    <button class="retry-button" onclick="verifyLocation()">Retry</button>
-                                `;
-                            }
-                        },
-                        error => {
-                            console.log(`Geolocation error: ${error.message}`);
-                            if (error.code === error.PERMISSION_DENIED) {
-                                locationMessage.innerHTML = `
-                                    <div class="location-icon">❌</div>
-                                    Location access denied. Please enable permissions.
-                                    <button class="retry-button" onclick="verifyLocation()">Try Again</button>
-                                `;
-                            } else {
-                                locationMessage.innerHTML = `
-                                    <div class="location-icon">⚠️</div>
-                                    Could not determine your location
-                                    <button class="retry-button" onclick="verifyLocation()">Retry</button>
-                                `;
-                            }
-                        },
-                        {
-                            enableHighAccuracy: true,
-                            timeout: 5000,
-                            maximumAge: 0
-                        }
-                    );
-                } else {
-                    locationMessage.innerHTML = `
-                        <div class="location-icon">⚠️</div>
-                        Your browser doesn't support location services
-                    `;
-                }
-            })
-            .catch(() => {
-                // If IP API fails, fallback to GPS directly
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        position => {
-                            const userLat = position.coords.latitude;
-                            const userLon = position.coords.longitude;
-                            const distance = calculateDistance(
-                                RESTAURANT_LAT, 
-                                RESTAURANT_LON, 
-                                userLat, 
-                                userLon
-                            );
-                            
-                            console.log(`GPS fallback distance: ${distance.toFixed(3)} km`);
-                            
-                            if (distance <= MAX_DISTANCE_KM) {
-                                locationMessage.innerHTML = '<div class="location-icon">✅</div>Location verified!';
-                                locationVerified = true;
-                                startCountdown();
-                            } else {
-                                locationMessage.innerHTML = `
-                                    <div class="location-icon">⚠️</div>
-                                    Please visit our restaurant to access this service
-                                    <p style="font-size:0.8rem; margin-top:10px;">
-                                        You're ${distance.toFixed(2)} km away
-                                    </p>
-                                    <button class="retry-button" onclick="verifyLocation()">Retry</button>
-                                `;
-                            }
-                        },
-                        error => {
-                            console.log(`Geolocation fallback error: ${error.message}`);
-                            locationMessage.innerHTML = `
-                                <div class="location-icon">❌</div>
-                                Could not verify your location
-                                <button class="retry-button" onclick="verifyLocation()">Try Again</button>
-                            `;
-                        }
-                    );
-                } else {
-                    locationMessage.innerHTML = `
-                        <div class="location-icon">⚠️</div>
-                        Your browser doesn't support location services
-                    `;
-                }
-            });
       }
 
       // Start countdown and progress animation
       function startCountdown() {
           const progressBar = document.getElementById('progress-bar');
           const countdownElement = document.getElementById('countdown');
-          
-          // Reset countdown
-          countdown = 3;
-          progressBar.style.width = '0%';
           
           let progress = 0;
           const interval = setInterval(() => {
@@ -696,13 +510,10 @@
                   </div>
               `;
           } else {
-              // Start location verification after animations
-              setTimeout(verifyLocation, 1500);
+              // Start countdown to initialize chat
+              setTimeout(startCountdown, 500);
           }
       });
-      
-      // Make verifyLocation accessible globally for retry button
-      window.verifyLocation = verifyLocation;
     </script>
 </body>
 </html>
